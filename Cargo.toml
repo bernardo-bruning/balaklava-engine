@@ -1,0 +1,10 @@
+[package]
+name = "learn-gfx"
+version = "0.1.0"
+authors = ["Bernardo de Oliveira Bruning <bernardo.bruning@resultadosdigitais.com.br>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+winit = "0.18"
