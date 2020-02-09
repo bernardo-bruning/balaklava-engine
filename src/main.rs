@@ -47,19 +47,6 @@ impl WinState {
         });
     }
 
-    pub fn run(mut self) {
-        let mut running = true;
-
-        while running {
-            self.event_loop.poll_events(|event| match event {
-                Event::WindowEvent {
-                    event: WindowEvent::CloseRequested,
-                    ..
-                } => running = false,
-                _ => ()
-            });
-        }
-    }
 }
 
 impl Default for WinState {
@@ -69,9 +56,32 @@ impl Default for WinState {
     }
 }
 
+struct UserInput {
+    end_request: bool
+}
+
+impl UserInput {
+    fn poll_events(event_loop: &mut EventsLoop) -> Self {
+        let mut output = UserInput{ end_request: false };
+        event_loop.poll_events(|event| match event {
+            Event::WindowEvent{ event: WindowEvent::CloseRequested, .. } => {
+                output  .end_request = true
+            }
+            _ => () 
+        });
+        return output
+    }
+}
+
 fn main() {
-    let win_state = WinState::default();
+    let mut win_state = WinState::default();
     let hal_state = HalState::new(&win_state.window);
     let local_state = LocalState::default();
-    win_state.run();
+
+    loop {
+        let input = UserInput::poll_events(&mut win_state.event_loop);
+        if input.end_request {
+            break;
+        }
+    }
 }
