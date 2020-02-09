@@ -2,6 +2,8 @@ extern crate winit;
 
 use winit::{Event, WindowEvent, EventsLoop, WindowBuilder, Window, CreationError};
 use winit::dpi::LogicalSize;
+#[cfg(feature = "vulkan")]
+use gfx_backend_vulkan as back;
 
 struct LocalState {
 
