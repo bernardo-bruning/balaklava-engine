@@ -3,6 +3,31 @@ extern crate winit;
 use winit::{Event, WindowEvent, EventsLoop, WindowBuilder, Window, CreationError};
 use winit::dpi::LogicalSize;
 
+struct LocalState {
+
+}
+
+impl Default for LocalState {
+    fn default() -> Self {
+        LocalState{}
+    }
+}
+
+struct HalState {
+}
+
+impl HalState {
+    fn new(window: &Window) -> Self {
+        HalState{}
+    }
+}
+
+impl Default for HalState {
+    fn default() -> Self {
+        HalState{}
+    }
+}
+
 struct WinState {
     pub event_loop: EventsLoop,
     pub window: Window,
@@ -46,5 +71,7 @@ impl Default for WinState {
 
 fn main() {
     let win_state = WinState::default();
+    let hal_state = HalState::new(&win_state.window);
+    let local_state = LocalState::default();
     win_state.run();
 }
