@@ -1,9 +1,19 @@
 extern crate winit;
+extern crate gfx_backend_vulkan;
+extern crate gfx_hal;
 
 use winit::{Event, WindowEvent, EventsLoop, WindowBuilder, Window, CreationError};
 use winit::dpi::LogicalSize;
 #[cfg(feature = "vulkan")]
 use gfx_backend_vulkan as back;
+use gfx_hal::adapter::PhysicalDevice;
+use gfx_hal::{ 
+    Instance,
+    Adapter,
+    QueueFamily,
+    Graphics,
+    Device,
+};
 
 struct LocalState {
 
@@ -16,17 +26,45 @@ impl Default for LocalState {
 }
 
 struct HalState {
+    instance: back::Instance,
+    surface: <back::Backend as gfx_hal::Backend>::Surface,
 }
 
 impl HalState {
     fn new(window: &Window) -> Self {
-        HalState{}
-    }
-}
+        let instance = back::Instance::create("learning gfx", 1);
+        let surface = instance.create_surface(window);
+        let adapters = instance.enumerate_adapters();
+        let adapter: &Adapter<back::Backend> = adapters
+            .first()
+            .unwrap();
 
-impl Default for HalState {
-    fn default() -> Self {
-        HalState{}
+        let queue_family = adapter
+            .queue_families
+            .first()
+            .unwrap();
+
+        let mut gpu = unsafe {
+            adapter
+            .physical_device
+            .open(&[(&queue_family, &[1.0; 1])])
+            .unwrap()
+        };
+
+        let queue_group = gpu.queues.take::<Graphics>(queue_family.id()).unwrap();
+        let queue = queue_group.queues.first().unwrap();
+        
+
+        println!("size queue: {}", queue_group.queues.len());
+        
+        HalState{
+            instance,
+            surface
+        }
+    }
+
+    fn clear(&mut self) {
+        unimplemented!();
     }
 }
 
@@ -57,6 +95,7 @@ impl Default for WinState {
         .expect("Could not create a window!")
     }
 }
+
 
 struct UserInput {
     end_request: bool
