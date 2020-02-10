@@ -52,7 +52,8 @@ impl HalState {
         };
 
         let queue_group = gpu.queues.take::<Graphics>(queue_family.id()).unwrap();
-        let queue = queue_group.queues.first().unwrap();
+        let command_queue = queue_group.queues.first().unwrap();
+
         
 
         println!("size queue: {}", queue_group.queues.len());
