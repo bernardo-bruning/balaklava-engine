@@ -1,9 +1,14 @@
 extern crate glutin;
+extern crate gfx;
+extern crate gfx_window_glutin;
 
 fn main() {
     let event_loop = glutin::event_loop::EventLoop::new();
     let window_builder = glutin::window::WindowBuilder::new()
         .with_title("Teste Aplicativo");
+    let context_builder = glutin::ContextBuilder::new()
+        .with_gl(glutin::GlRequest::Latest)
+        .with_vsync(true);
     let _window = window_builder
         .build(&event_loop)
         .unwrap();
