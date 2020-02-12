@@ -1,25 +1,38 @@
-extern crate glutin;
 extern crate gfx;
+extern crate glutin;
 extern crate gfx_window_glutin;
+use gfx::Device;
+
 
 fn main() {
-    let event_loop = glutin::event_loop::EventLoop::new();
-    let window_builder = glutin::window::WindowBuilder::new()
+    let mut event_loop = glutin::EventsLoop::new();
+    let window_builder = glutin::WindowBuilder::new()
+        .with_dimensions(500, 400)
         .with_title("Teste Aplicativo");
+        
     let context_builder = glutin::ContextBuilder::new()
-        .with_gl(glutin::GlRequest::Latest)
+        .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
         .with_vsync(true);
-    let _window = window_builder
-        .build(&event_loop)
-        .unwrap();
+    
+    let (_window, mut _device, _factory, _color, _depth_view) =
+        gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
+        window_builder, 
+        context_builder, 
+        &event_loop
+    );
 
-    event_loop.run(|event, _, control_flow| {
-        match event {
-            glutin::event::Event::WindowEvent{ event, .. } => 
-                if event == glutin::event::WindowEvent::CloseRequested {
-                    *control_flow = glutin::event_loop::ControlFlow::Exit
-                },
-            _ => ()
-        }
-    });
+
+    let mut running = true;
+    while running {
+        event_loop.poll_events(|event| {
+            match event {
+                glutin::Event::WindowEvent{ event, .. } => 
+                    match event {
+                        glutin::WindowEvent::Closed => running = false,
+                        _ => ()
+                    }
+                _ => ()
+            }
+        });
+    }
 }
