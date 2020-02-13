@@ -1,8 +1,25 @@
+#[macro_use]
 extern crate gfx;
 extern crate glutin;
 extern crate gfx_window_glutin;
 use gfx::Device;
 
+gfx_defines!{
+    vertex Vertex {
+        pos: [f32; 4] = "a_Pos",
+        color: [f32; 3] = "a_Color",
+    }
+
+    constant Transform{
+        transform: [[f32;4];4] = "u_Transform",
+    }
+
+    pipeline pipe {
+        vbuf: gfx::VertexBuffer<Vertex> = (),
+        transform: gfx::ConstantBuffer<Transform> = "Transform",
+        out: gfx::RenderTarget<gfx::format::Srgba8> = "Target0",
+    }
+}
 
 fn main() {
     let mut event_loop = glutin::EventsLoop::new();
@@ -20,7 +37,6 @@ fn main() {
         context_builder, 
         &event_loop
     );
-
 
     let mut running = true;
     while running {
