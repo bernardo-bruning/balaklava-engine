@@ -2,7 +2,8 @@
 extern crate gfx;
 extern crate glutin;
 extern crate gfx_window_glutin;
-use gfx::Device;
+
+use gfx::traits::FactoryExt;
 
 gfx_defines!{
     vertex Vertex {
@@ -31,12 +32,18 @@ fn main() {
         .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
         .with_vsync(true);
     
-    let (_window, mut _device, _factory, _color, _depth_view) =
+    let (_window, mut _device, mut factory, _color, _depth_view) =
         gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
         window_builder, 
         context_builder, 
         &event_loop
     );
+
+    let _pso = factory.create_pipeline_simple(
+        include_bytes!("shader/shader_150.glslv"),
+        include_bytes!("shader/shader_150.glslf"),
+        pipe::new()
+    ).unwrap();
 
     let mut running = true;
     while running {
