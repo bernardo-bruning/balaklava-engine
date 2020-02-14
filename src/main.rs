@@ -13,13 +13,8 @@ gfx_defines!{
         color: [f32; 3] = "a_Color",
     }
 
-    constant Transform{
-        transform: [[f32;4];4] = "u_Transform",
-    }
-
     pipeline pipe {
         vbuf: gfx::VertexBuffer<Vertex> = (),
-        transform: gfx::ConstantBuffer<Transform> = "Transform",
         out: gfx::RenderTarget<gfx::format::Srgba8> = "Target0",
     }
 }
@@ -55,18 +50,10 @@ fn main() {
         Vertex { pos: [  0.0,  0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
     ];
 
-    let transform: Transform = Transform {
-        transform: [[1.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 1.0]]
-    };
 
     let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&triangle, ());
-    let transform_buffer = factory.create_constant_buffer::<Transform>(1);
     let data = pipe::Data {
         vbuf: vertex_buffer,
-        transform: transform_buffer,
         out: color.clone(),
     };
     
@@ -87,7 +74,6 @@ fn main() {
         device.cleanup();
 
         encoder.clear(&color, [0.0, 0.0, 0.0, 1.0]);
-        encoder.update_buffer(&data.transform, &[transform], 0);
         encoder.draw(&slice, &pso, &data);
         encoder.flush(&mut device);
     }
