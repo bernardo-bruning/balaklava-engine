@@ -4,6 +4,8 @@ extern crate glutin;
 extern crate gfx_window_glutin;
 
 use gfx::traits::FactoryExt;
+use gfx::Device;
+use glutin::{GlContext};
 
 gfx_defines!{
     vertex Vertex {
@@ -31,20 +33,43 @@ fn main() {
     let context_builder = glutin::ContextBuilder::new()
         .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
         .with_vsync(true);
-    
-    let (_window, mut _device, mut factory, _color, _depth_view) =
+        
+    let (window, mut device, mut factory, color, depth_view) =
         gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
         window_builder, 
         context_builder, 
         &event_loop
     );
 
-    let _pso = factory.create_pipeline_simple(
+    let pso = factory.create_pipeline_simple(
         include_bytes!("shader/shader_150.glslv"),
         include_bytes!("shader/shader_150.glslf"),
         pipe::new()
     ).unwrap();
 
+    
+    let mut encoder: gfx::Encoder<_,_> = factory.create_command_buffer().into();
+    let triangle: [Vertex; 3] = [
+        Vertex { pos: [ -0.5, -0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
+        Vertex { pos: [  0.5, -0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
+        Vertex { pos: [  0.0,  0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
+    ];
+
+    let transform: Transform = Transform {
+        transform: [[1.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 0.0, 0.0],
+                    [0.0, 0.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 1.0]]
+    };
+
+    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&triangle, ());
+    let transform_buffer = factory.create_constant_buffer::<Transform>(1);
+    let data = pipe::Data {
+        vbuf: vertex_buffer,
+        transform: transform_buffer,
+        out: color.clone(),
+    };
+    
     let mut running = true;
     while running {
         event_loop.poll_events(|event| {
@@ -57,5 +82,13 @@ fn main() {
                 _ => ()
             }
         });
+
+        window.swap_buffers().unwrap();
+        device.cleanup();
+
+        encoder.clear(&color, [0.0, 0.0, 0.0, 1.0]);
+        encoder.update_buffer(&data.transform, &[transform], 0);
+        encoder.draw(&slice, &pso, &data);
+        encoder.flush(&mut device);
     }
 }
