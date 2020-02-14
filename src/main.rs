@@ -14,6 +14,7 @@ gfx_defines!{
     }
 
     constant Light {
+        pos: [f32; 4] = "u_Pos",
         color: [f32; 3] = "u_Color",
     }
 
@@ -55,6 +56,7 @@ fn main() {
         Vertex { pos: [  0.0,  0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
     ];
     let light = Light {
+        pos: [0.0, 1.0, 0.0, 0.0],
         color: [1.0, 1.0, 1.0]
     };
 
