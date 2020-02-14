@@ -14,7 +14,7 @@ gfx_defines!{
     }
 
     constant Light {
-        color: [f32; 3] = "u_lightcolor",
+        color: [f32; 3] = "u_Color",
     }
 
     pipeline pipe {
@@ -82,7 +82,7 @@ fn main() {
 
         window.swap_buffers().unwrap();
         device.cleanup();
-        encoder.update_buffer(&data.light, &[light], 1).unwrap();
+        encoder.update_buffer(&data.light, &[light], 0);
         encoder.clear(&color, [0.0, 0.0, 0.0, 1.0]);
         encoder.draw(&slice, &pso, &data);
         encoder.flush(&mut device);
