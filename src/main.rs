@@ -13,8 +13,13 @@ gfx_defines!{
         color: [f32; 3] = "a_Color",
     }
 
+    constant Light {
+        color: [f32; 3] = "u_lightcolor",
+    }
+
     pipeline pipe {
         vbuf: gfx::VertexBuffer<Vertex> = (),
+        light: gfx::ConstantBuffer<Light> = "Light",
         out: gfx::RenderTarget<gfx::format::Srgba8> = "Target0",
     }
 }
@@ -49,11 +54,16 @@ fn main() {
         Vertex { pos: [  0.5, -0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
         Vertex { pos: [  0.0,  0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
     ];
+    let light = Light {
+        color: [1.0, 1.0, 1.0]
+    };
 
+    let light_buffer = factory.create_constant_buffer(1);
 
     let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&triangle, ());
     let data = pipe::Data {
         vbuf: vertex_buffer,
+        light: light_buffer,
         out: color.clone(),
     };
     
@@ -72,7 +82,7 @@ fn main() {
 
         window.swap_buffers().unwrap();
         device.cleanup();
-
+        encoder.update_buffer(&data.light, &[light], 1).unwrap();
         encoder.clear(&color, [0.0, 0.0, 0.0, 1.0]);
         encoder.draw(&slice, &pso, &data);
         encoder.flush(&mut device);
