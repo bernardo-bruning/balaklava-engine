@@ -26,6 +26,19 @@ gfx_defines!{
     }
 }
 
+struct Engine {
+}
+
+impl Engine {
+    fn new() -> Result<Engine, String>{
+        panic!("not implemented");
+    }
+
+    fn run(self) {
+        panic!("not implemented");
+    }
+}
+
 fn main() {
     let mut event_loop = glutin::EventsLoop::new();
     let window_builder = glutin::WindowBuilder::new()
