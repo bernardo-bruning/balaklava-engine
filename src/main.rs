@@ -15,8 +15,8 @@ gfx_defines!{
     }
 
     constant Light {
-        pos: [f32; 4] = "u_Pos",
-        color: [f32; 3] = "u_Color",
+        pos: [f32; 4] = "light_position",
+        color: [f32; 3] = "light_color",
     }
 
     pipeline pipe {

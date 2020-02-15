@@ -3,11 +3,6 @@
 in vec4 vertex_position;
 in vec3 vertex_color;
 
-uniform Light {
-    vec4 u_Pos;
-    vec3 u_Color;
-};
-
 out vec4 v_Color;
 out vec3 FragPos;
 
