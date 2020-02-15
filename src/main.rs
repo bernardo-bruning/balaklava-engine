@@ -10,8 +10,8 @@ use glutin::{GlContext};
 gfx_defines!{
     vertex Vertex {
         pos: [f32; 4] = "vertex_position",
-        norm: [f32; 3] = "a_Norm",
-        color: [f32; 3] = "a_Color",
+        norm: [f32; 3] = "vertex_normal",
+        color: [f32; 3] = "vertex_color",
     }
 
     constant Light {
