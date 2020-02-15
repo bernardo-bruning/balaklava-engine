@@ -65,11 +65,6 @@ impl <'a> Engine<'a> {
 
         let mut encoder: gfx::Encoder<_,_> = factory.create_command_buffer().into();
 
-        let light = Light {
-            position: [0.0, 0.0, 0.07, 1.0],
-            color: [1.0, 1.0, 1.0]
-        };
-
         let light_buffer = factory.create_constant_buffer(1);
 
         let mesh = self.meshes[0];
@@ -95,7 +90,7 @@ impl <'a> Engine<'a> {
 
             window.swap_buffers().unwrap();
             device.cleanup();
-            encoder.update_buffer(&data.light, &[light], 0).unwrap();
+            encoder.update_buffer(&data.light, &self.lights, 0).unwrap();
             encoder.clear(&color, [0.0, 0.0, 0.0, 1.0]);
             encoder.draw(&slice, &pso, &data);
             encoder.flush(&mut device);
