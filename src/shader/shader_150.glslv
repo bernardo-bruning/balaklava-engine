@@ -1,6 +1,6 @@
 #version 150 core
 
-in vec4 a_Pos;
+in vec4 vertex_position;
 in vec3 a_Color;
 
 uniform Light {
@@ -13,6 +13,6 @@ out vec3 FragPos;
 
 void main() {
     v_Color = vec4(a_Color, 1.0);
-    FragPos = vec3(a_Pos);
-    gl_Position = a_Pos;
+    FragPos = vec3(vertex_position);
+    gl_Position = vertex_position;
 }
