@@ -21,8 +21,8 @@ gfx_defines!{
 
     pipeline pipe {
         vbuf: gfx::VertexBuffer<Vertex> = (),
-        light: gfx::ConstantBuffer<Light> = "Light",
-        out: gfx::RenderTarget<gfx::format::Srgba8> = "Target",
+        light: gfx::ConstantBuffer<Light> = "light",
+        out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
     }
 }
 
