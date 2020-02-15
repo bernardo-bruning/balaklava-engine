@@ -9,13 +9,13 @@ use glutin::{GlContext};
 
 gfx_defines!{
     vertex Vertex {
-        pos: [f32; 4] = "vertex_position",
-        norm: [f32; 3] = "vertex_normal",
+        position: [f32; 4] = "vertex_position",
+        normal: [f32; 3] = "vertex_normal",
         color: [f32; 3] = "vertex_color",
     }
 
     constant Light {
-        pos: [f32; 4] = "light_position",
+        position: [f32; 4] = "light_position",
         color: [f32; 3] = "light_color",
     }
 
@@ -36,7 +36,7 @@ fn main() {
         .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
         .with_vsync(true);
         
-    let (window, mut device, mut factory, color, depth_view) =
+    let (window, mut device, mut factory, color, _depth_view) =
         gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
         window_builder, 
         context_builder, 
@@ -53,24 +53,24 @@ fn main() {
     let mut encoder: gfx::Encoder<_,_> = factory.create_command_buffer().into();
     let triangle: [Vertex; 3] = [
         Vertex { 
-            pos: [ -0.5, -0.5, 0.0, 1.0 ], 
-            norm: [0.0, 0.0, 1.0], 
+            position: [ -0.5, -0.5, 0.0, 1.0 ], 
+            normal: [0.0, 0.0, 1.0], 
             color: [1.0, 0.0, 0.0] 
         },
         Vertex { 
-            pos: [  0.5, -0.5, 0.0, 1.0 ], 
-            norm: [0.0, 0.0, 1.0], 
-            color: [1.0, 0.0, 0.0] 
+            position: [  0.5, -0.5, 0.0, 1.0 ], 
+            normal: [0.0, 0.0, 1.0], 
+            color: [0.0, 1.0, 0.0] 
         },
         Vertex { 
-            pos: [  0.0,  0.5, 0.0, 1.0 ], 
-            norm: [0.0, 0.0, 1.0], 
-            color: [1.0, 0.0, 0.0] 
+            position: [  0.0,  0.5, 0.0, 1.0 ], 
+            normal: [0.0, 0.0, 1.0], 
+            color: [0.0, 0.0, 1.0] 
         },
     ];
 
     let light = Light {
-        pos: [0.0, 0.0, 0.07, 1.0],
+        position: [0.0, 0.0, 0.07, 1.0],
         color: [1.0, 1.0, 1.0]
     };
 
