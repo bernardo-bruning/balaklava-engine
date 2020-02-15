@@ -2,6 +2,7 @@
 extern crate gfx;
 extern crate glutin;
 extern crate gfx_window_glutin;
+extern crate gfx_device_gl as back;
 
 use gfx::traits::FactoryExt;
 use gfx::Device;
@@ -18,7 +19,7 @@ gfx_defines!{
         position: [f32; 4] = "light_position",
         color: [f32; 3] = "light_color",
     }
-
+    
     pipeline pipe {
         vbuf: gfx::VertexBuffer<Vertex> = (),
         light: gfx::ConstantBuffer<Light> = "light",
@@ -28,20 +29,20 @@ gfx_defines!{
 
 struct Engine<'a> {
     pub meshes: &'a[&'a[Vertex]],
-    pub lights: &'a[Light]
+    pub lights: &'a[Light],
+    event_loop: glutin::EventsLoop,
+    window: glutin::GlWindow,
+    device: back::Device,
+    factory: back::Factory,
+    color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
+    encoder: gfx::Encoder<back::Resources, back::CommandBuffer>,
+    pso: gfx::pso::PipelineState<back::Resources, pipe::Meta>
 }
 
 impl <'a> Engine<'a> {
     fn new(meshes: &'a[&'a[Vertex]], lights: &'a[Light]) 
         -> Result<Engine<'a>, String>{
-        return Ok(Engine {
-            meshes,
-            lights
-        })
-    }
-
-    fn run(self) {
-        let mut event_loop = glutin::EventsLoop::new();
+        let event_loop = glutin::EventsLoop::new();
         let window_builder = glutin::WindowBuilder::new()
             .with_dimensions(500, 400)
             .with_title("Teste Aplicativo");
@@ -50,7 +51,7 @@ impl <'a> Engine<'a> {
             .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
             .with_vsync(true);
             
-        let (window, mut device, mut factory, color, _depth_view) =
+        let (window, device, mut factory, color, _depth_view) =
             gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
             window_builder, 
             context_builder, 
@@ -63,21 +64,36 @@ impl <'a> Engine<'a> {
             pipe::new()
         ).unwrap();
 
-        let mut encoder: gfx::Encoder<_,_> = factory.create_command_buffer().into();
+        let encoder: gfx::Encoder<back::Resources, back::CommandBuffer> = 
+            factory.create_command_buffer().into();
 
-        let light_buffer = factory.create_constant_buffer(1);
+        return Ok(Engine {
+            meshes,
+            lights,
+            event_loop,
+            window,
+            device,
+            factory,
+            color,
+            encoder,
+            pso
+        })
+    }
+
+    fn run(mut self) {
+        let light_buffer = self.factory.create_constant_buffer(1);
 
         let mesh = self.meshes[0];
-        let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(mesh, ());
+        let (vertex_buffer, slice) = self.factory.create_vertex_buffer_with_slice(mesh, ());
         let data = pipe::Data {
             vbuf: vertex_buffer,
             light: light_buffer,
-            out: color.clone(),
+            out: self.color.clone(),
         };
         
         let mut running = true;
         while running {
-            event_loop.poll_events(|event| {
+            self.event_loop.poll_events(|event| {
                 match event {
                     glutin::Event::WindowEvent{ event, .. } => 
                         match event {
@@ -88,12 +104,12 @@ impl <'a> Engine<'a> {
                 }
             });
 
-            window.swap_buffers().unwrap();
-            device.cleanup();
-            encoder.update_buffer(&data.light, &self.lights, 0).unwrap();
-            encoder.clear(&color, [0.0, 0.0, 0.0, 1.0]);
-            encoder.draw(&slice, &pso, &data);
-            encoder.flush(&mut device);
+            self.window.swap_buffers().unwrap();
+            self.device.cleanup();
+            self.encoder.update_buffer(&data.light, &self.lights, 0).unwrap();
+            self.encoder.clear(&self.color, [0.0, 0.0, 0.0, 1.0]);
+            self.encoder.draw(&slice, &self.pso, &data);
+            self.encoder.flush(&mut self.device);
         }
     }
 }
