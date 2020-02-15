@@ -31,89 +31,89 @@ struct Engine {
 
 impl Engine {
     fn new() -> Result<Engine, String>{
-        panic!("not implemented");
+        return Ok(Engine{})
     }
 
     fn run(self) {
-        panic!("not implemented");
+        let mut event_loop = glutin::EventsLoop::new();
+        let window_builder = glutin::WindowBuilder::new()
+            .with_dimensions(500, 400)
+            .with_title("Teste Aplicativo");
+            
+        let context_builder = glutin::ContextBuilder::new()
+            .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
+            .with_vsync(true);
+            
+        let (window, mut device, mut factory, color, _depth_view) =
+            gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
+            window_builder, 
+            context_builder, 
+            &event_loop
+        );
+
+        let pso = factory.create_pipeline_simple(
+            include_bytes!("shader/shader_150.glslv"),
+            include_bytes!("shader/shader_150.glslf"),
+            pipe::new()
+        ).unwrap();
+
+        let mut encoder: gfx::Encoder<_,_> = factory.create_command_buffer().into();
+        let meshes: [Vertex; 3] = [
+            Vertex { 
+                position: [ -0.5, -0.5, 0.0, 1.0 ], 
+                normal: [0.0, 0.0, 1.0], 
+                color: [1.0, 0.0, 0.0] 
+            },
+            Vertex { 
+                position: [  0.5, -0.5, 0.0, 1.0 ], 
+                normal: [0.0, 0.0, 1.0], 
+                color: [0.0, 1.0, 0.0] 
+            },
+            Vertex { 
+                position: [  0.0,  0.5, 0.0, 1.0 ], 
+                normal: [0.0, 0.0, 1.0], 
+                color: [0.0, 0.0, 1.0] 
+            },
+        ];
+
+        let light = Light {
+            position: [0.0, 0.0, 0.07, 1.0],
+            color: [1.0, 1.0, 1.0]
+        };
+
+        let light_buffer = factory.create_constant_buffer(1);
+
+        let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&meshes, ());
+        let data = pipe::Data {
+            vbuf: vertex_buffer,
+            light: light_buffer,
+            out: color.clone(),
+        };
+        
+        let mut running = true;
+        while running {
+            event_loop.poll_events(|event| {
+                match event {
+                    glutin::Event::WindowEvent{ event, .. } => 
+                        match event {
+                            glutin::WindowEvent::Closed => running = false,
+                            _ => ()
+                        }
+                    _ => ()
+                }
+            });
+
+            window.swap_buffers().unwrap();
+            device.cleanup();
+            encoder.update_buffer(&data.light, &[light], 0).unwrap();
+            encoder.clear(&color, [0.0, 0.0, 0.0, 1.0]);
+            encoder.draw(&slice, &pso, &data);
+            encoder.flush(&mut device);
+        }
     }
 }
 
 fn main() {
-    let mut event_loop = glutin::EventsLoop::new();
-    let window_builder = glutin::WindowBuilder::new()
-        .with_dimensions(500, 400)
-        .with_title("Teste Aplicativo");
-        
-    let context_builder = glutin::ContextBuilder::new()
-        .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
-        .with_vsync(true);
-        
-    let (window, mut device, mut factory, color, _depth_view) =
-        gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
-        window_builder, 
-        context_builder, 
-        &event_loop
-    );
-
-    let pso = factory.create_pipeline_simple(
-        include_bytes!("shader/shader_150.glslv"),
-        include_bytes!("shader/shader_150.glslf"),
-        pipe::new()
-    ).unwrap();
-
-    
-    let mut encoder: gfx::Encoder<_,_> = factory.create_command_buffer().into();
-    let triangle: [Vertex; 3] = [
-        Vertex { 
-            position: [ -0.5, -0.5, 0.0, 1.0 ], 
-            normal: [0.0, 0.0, 1.0], 
-            color: [1.0, 0.0, 0.0] 
-        },
-        Vertex { 
-            position: [  0.5, -0.5, 0.0, 1.0 ], 
-            normal: [0.0, 0.0, 1.0], 
-            color: [0.0, 1.0, 0.0] 
-        },
-        Vertex { 
-            position: [  0.0,  0.5, 0.0, 1.0 ], 
-            normal: [0.0, 0.0, 1.0], 
-            color: [0.0, 0.0, 1.0] 
-        },
-    ];
-
-    let light = Light {
-        position: [0.0, 0.0, 0.07, 1.0],
-        color: [1.0, 1.0, 1.0]
-    };
-
-    let light_buffer = factory.create_constant_buffer(1);
-
-    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&triangle, ());
-    let data = pipe::Data {
-        vbuf: vertex_buffer,
-        light: light_buffer,
-        out: color.clone(),
-    };
-    
-    let mut running = true;
-    while running {
-        event_loop.poll_events(|event| {
-            match event {
-                glutin::Event::WindowEvent{ event, .. } => 
-                    match event {
-                        glutin::WindowEvent::Closed => running = false,
-                        _ => ()
-                    }
-                _ => ()
-            }
-        });
-
-        window.swap_buffers().unwrap();
-        device.cleanup();
-        encoder.update_buffer(&data.light, &[light], 0).unwrap();
-        encoder.clear(&color, [0.0, 0.0, 0.0, 1.0]);
-        encoder.draw(&slice, &pso, &data);
-        encoder.flush(&mut device);
-    }
+    let engine = Engine::new().unwrap();
+    engine.run();
 }
