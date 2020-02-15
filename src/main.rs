@@ -26,12 +26,15 @@ gfx_defines!{
     }
 }
 
-struct Engine {
+struct Engine<'a> {
+    pub meshes: &'a[&'a[Vertex]]
 }
 
-impl Engine {
-    fn new() -> Result<Engine, String>{
-        return Ok(Engine{})
+impl <'a> Engine<'a> {
+    fn new(meshes: &'a[&'a[Vertex]]) -> Result<Engine<'a>, String>{
+        return Ok(Engine {
+            meshes
+        })
     }
 
     fn run(self) {
@@ -58,23 +61,6 @@ impl Engine {
         ).unwrap();
 
         let mut encoder: gfx::Encoder<_,_> = factory.create_command_buffer().into();
-        let meshes: [Vertex; 3] = [
-            Vertex { 
-                position: [ -0.5, -0.5, 0.0, 1.0 ], 
-                normal: [0.0, 0.0, 1.0], 
-                color: [1.0, 0.0, 0.0] 
-            },
-            Vertex { 
-                position: [  0.5, -0.5, 0.0, 1.0 ], 
-                normal: [0.0, 0.0, 1.0], 
-                color: [0.0, 1.0, 0.0] 
-            },
-            Vertex { 
-                position: [  0.0,  0.5, 0.0, 1.0 ], 
-                normal: [0.0, 0.0, 1.0], 
-                color: [0.0, 0.0, 1.0] 
-            },
-        ];
 
         let light = Light {
             position: [0.0, 0.0, 0.07, 1.0],
@@ -83,7 +69,8 @@ impl Engine {
 
         let light_buffer = factory.create_constant_buffer(1);
 
-        let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&meshes, ());
+        let mesh = self.meshes[0];
+        let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(mesh, ());
         let data = pipe::Data {
             vbuf: vertex_buffer,
             light: light_buffer,
@@ -114,6 +101,24 @@ impl Engine {
 }
 
 fn main() {
-    let engine = Engine::new().unwrap();
+    let meshes = [&[
+        Vertex { 
+            position: [ -0.5, -0.5, 0.0, 1.0 ], 
+            normal: [0.0, 0.0, 1.0], 
+            color: [1.0, 0.0, 0.0] 
+        },
+        Vertex { 
+            position: [  0.5, -0.5, 0.0, 1.0 ], 
+            normal: [0.0, 0.0, 1.0], 
+            color: [0.0, 1.0, 0.0] 
+        },
+        Vertex { 
+            position: [  0.0,  0.5, 0.0, 1.0 ], 
+            normal: [0.0, 0.0, 1.0], 
+            color: [0.0, 0.0, 1.0] 
+        },
+    ][0..3]];
+
+    let engine = Engine::new(&meshes).unwrap();
     engine.run();
 }
