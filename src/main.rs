@@ -27,13 +27,16 @@ gfx_defines!{
 }
 
 struct Engine<'a> {
-    pub meshes: &'a[&'a[Vertex]]
+    pub meshes: &'a[&'a[Vertex]],
+    pub lights: &'a[Light]
 }
 
 impl <'a> Engine<'a> {
-    fn new(meshes: &'a[&'a[Vertex]]) -> Result<Engine<'a>, String>{
+    fn new(meshes: &'a[&'a[Vertex]], lights: &'a[Light]) 
+        -> Result<Engine<'a>, String>{
         return Ok(Engine {
-            meshes
+            meshes,
+            lights
         })
     }
 
@@ -101,7 +104,7 @@ impl <'a> Engine<'a> {
 }
 
 fn main() {
-    let meshes = [&[
+    let meshes = &[&[
         Vertex { 
             position: [ -0.5, -0.5, 0.0, 1.0 ], 
             normal: [0.0, 0.0, 1.0], 
@@ -119,6 +122,13 @@ fn main() {
         },
     ][0..3]];
 
-    let engine = Engine::new(&meshes).unwrap();
+    let lights = &[
+        Light {
+            position: [0.0, 0.0, 0.07, 1.0],
+            color: [1.0, 1.0, 1.0]
+        }
+    ][0..1];
+
+    let engine = Engine::new(meshes, lights).unwrap();
     engine.run();
 }
