@@ -10,6 +10,7 @@ use glutin::{GlContext};
 gfx_defines!{
     vertex Vertex {
         pos: [f32; 4] = "a_Pos",
+        norm: [f32; 3] = "a_Norm",
         color: [f32; 3] = "a_Color",
     }
 
@@ -51,10 +52,23 @@ fn main() {
     
     let mut encoder: gfx::Encoder<_,_> = factory.create_command_buffer().into();
     let triangle: [Vertex; 3] = [
-        Vertex { pos: [ -0.5, -0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
-        Vertex { pos: [  0.5, -0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
-        Vertex { pos: [  0.0,  0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
+        Vertex { 
+            pos: [ -0.5, -0.5, 0.0, 1.0 ], 
+            norm: [0.0, 0.0, 1.0], 
+            color: [1.0, 0.0, 0.0] 
+        },
+        Vertex { 
+            pos: [  0.5, -0.5, 0.0, 1.0 ], 
+            norm: [0.0, 0.0, 1.0], 
+            color: [1.0, 0.0, 0.0] 
+        },
+        Vertex { 
+            pos: [  0.0,  0.5, 0.0, 1.0 ], 
+            norm: [0.0, 0.0, 1.0], 
+            color: [1.0, 0.0, 0.0] 
+        },
     ];
+
     let light = Light {
         pos: [0.0, 0.0, 0.07, 1.0],
         color: [1.0, 1.0, 1.0]
@@ -84,7 +98,7 @@ fn main() {
 
         window.swap_buffers().unwrap();
         device.cleanup();
-        encoder.update_buffer(&data.light, &[light], 0);
+        encoder.update_buffer(&data.light, &[light], 0).unwrap();
         encoder.clear(&color, [0.0, 0.0, 0.0, 1.0]);
         encoder.draw(&slice, &pso, &data);
         encoder.flush(&mut device);
