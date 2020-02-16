@@ -27,6 +27,37 @@ gfx_defines!{
     }
 }
 
+struct EngineConfiguration<'a> {
+    name: String,
+    vertex_shader: &'a[u8],
+    pixel_shader: &'a[u8]
+}
+
+impl <'a> EngineConfiguration<'a> {
+    fn default() -> EngineConfiguration<'a> {
+        return EngineConfiguration{
+            name: "".to_string(),
+            vertex_shader: include_bytes!("shader/shader_150.glslv"),
+            pixel_shader: include_bytes!("shader/shader_150.glslf"),
+        }
+    }
+
+    fn with_name(mut self, name: String) -> EngineConfiguration<'a> {
+        self.name = name;
+        self
+    } 
+
+    fn with_vertex_shader(mut self, shader: &'a[u8]) -> EngineConfiguration<'a> {
+        self.vertex_shader = shader;
+        self
+    }
+
+    fn with_pixel_shader(mut self, shader: &'a[u8]) -> EngineConfiguration<'a> {
+        self.pixel_shader = shader;
+        self
+    }
+}
+
 struct Engine<'a> {
     pub meshes: &'a[&'a[Vertex]],
     pub lights: &'a[Light],
@@ -40,12 +71,12 @@ struct Engine<'a> {
 }
 
 impl <'a> Engine<'a> {
-    fn new(meshes: &'a[&'a[Vertex]], lights: &'a[Light]) 
+    fn new(config: EngineConfiguration<'a>, meshes: &'a[&'a[Vertex]], lights: &'a[Light]) 
         -> Result<Engine<'a>, String>{
         let event_loop = glutin::EventsLoop::new();
         let window_builder = glutin::WindowBuilder::new()
             .with_dimensions(500, 400)
-            .with_title("Teste Aplicativo");
+            .with_title(config.name);
             
         let context_builder = glutin::ContextBuilder::new()
             .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
@@ -59,8 +90,8 @@ impl <'a> Engine<'a> {
         );
 
         let pso = factory.create_pipeline_simple(
-            include_bytes!("shader/shader_150.glslv"),
-            include_bytes!("shader/shader_150.glslf"),
+            config.vertex_shader,
+            config.pixel_shader,
             pipe::new()
         ).unwrap();
 
@@ -115,6 +146,9 @@ impl <'a> Engine<'a> {
 }
 
 fn main() {
+    let config = EngineConfiguration::default()
+        .with_name("Learn GFX".to_string());
+
     let meshes = &[&[
         Vertex { 
             position: [ -0.5, -0.5, 0.0, 1.0 ], 
@@ -140,6 +174,7 @@ fn main() {
         }
     ][0..1];
 
-    let engine = Engine::new(meshes, lights).unwrap();
+    let engine = Engine::new(config, meshes, lights)
+        .unwrap();
     engine.run();
 }
