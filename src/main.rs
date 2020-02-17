@@ -62,8 +62,33 @@ enum Event {
     Closed,
 }
 
-struct Mesh {
-    
+struct Mesh<'a> {
+    vertices: &'a[Vertex],
+    index: Option<gfx::Slice<back::Resources>>,
+    data: Option<pipe::Data<back::Resources>>
+}
+
+impl <'a> Mesh<'a> {
+    fn new(vertices: &'a[Vertex]) -> Self {
+        return Mesh{
+            vertices: vertices,
+            index: Option::None,
+            data: Option::None
+        }
+    }
+
+    fn bind(&mut self, mut engine: Engine) {
+        let light_buffer = engine.factory.create_constant_buffer(1);
+        let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(self.vertices, ());
+        let data = pipe::Data {
+            vbuf: vertex_buffer,
+            light: light_buffer,
+            out: engine.color.clone(),
+        };
+
+        self.index = Option::Some(index);
+        self.data = Option::Some(data);
+    }
 }
 
 struct Engine<'a> {
@@ -141,6 +166,7 @@ impl <'a> Engine<'a> {
         self.window.swap_buffers().unwrap();
         self.encoder.flush(&mut self.device);
     }
+
 
     fn run(mut self) {
         let light_buffer = self.factory.create_constant_buffer(1);
