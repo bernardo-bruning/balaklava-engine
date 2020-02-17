@@ -62,6 +62,10 @@ enum Event {
     Closed,
 }
 
+struct Mesh {
+    
+}
+
 struct Engine<'a> {
     pub meshes: &'a[&'a[Vertex]],
     pub lights: &'a[Light],
