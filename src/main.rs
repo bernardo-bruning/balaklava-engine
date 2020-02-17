@@ -70,6 +70,10 @@ struct Engine<'a> {
     pso: gfx::pso::PipelineState<back::Resources, pipe::Meta>
 }
 
+enum Event {
+    Closed,
+}
+
 impl <'a> Engine<'a> {
     fn new(config: EngineConfiguration<'a>, meshes: &'a[&'a[Vertex]], lights: &'a[Light]) 
         -> Result<Engine<'a>, String>{
@@ -109,6 +113,20 @@ impl <'a> Engine<'a> {
             encoder,
             pso
         })
+    }
+
+    #[inline]
+    fn poll_event<F>(&mut self, callback: F) where F:Fn(Event) {
+        self.event_loop.poll_events(|event| {
+            match event {
+                glutin::Event::WindowEvent{ event, .. } => 
+                    match event {
+                        glutin::WindowEvent::Closed => callback(Event::Closed),
+                        _ => ()
+                    }
+                _ => ()
+            }
+        });
     }
 
     fn run(mut self) {
