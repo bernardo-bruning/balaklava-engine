@@ -114,8 +114,7 @@ impl <'a> Engine<'a> {
             pso
         })
     }
-
-    #[inline]
+    
     fn poll_event<F>(&mut self, mut callback: F) where F:FnMut(Event) {
         self.event_loop.poll_events(|event| {
             match event {
