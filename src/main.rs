@@ -90,14 +90,15 @@ impl <'a> Mesh<'a> {
         self.data = Option::Some(data);
     }
 
-    fn render(mut self, mut engine: Engine) {
+    fn render(&mut self, engine: &mut Engine) {
         if self.data == Option::None || self.index == Option::None {
-            self.bind(&mut engine);
+            self.bind(engine);
         }
 
-        let data = self.data.unwrap();
+        let data = self.data.as_ref().unwrap();
+        let index = self.index.as_ref().unwrap();
         engine.encoder.update_buffer(&data.light, &engine.lights, 0).unwrap();
-        engine.encoder.draw(&self.index.unwrap(), &engine.pso, &data);
+        engine.encoder.draw(index, &engine.pso, data);
     }
 }
 
@@ -178,16 +179,8 @@ impl <'a> Engine<'a> {
     }
 
 
-    fn run(mut self) {
-        let light_buffer = self.factory.create_constant_buffer(1);
-
-        let mesh = self.meshes[0];
-        let (vertex_buffer, slice) = self.factory.create_vertex_buffer_with_slice(mesh, ());
-        let data = pipe::Data {
-            vbuf: vertex_buffer,
-            light: light_buffer,
-            out: self.color.clone(),
-        };
+    fn run(&mut self) {
+        let mut mesh = Mesh::new(self.meshes[0]);
         
         let mut running = true;
         while running {
@@ -196,8 +189,7 @@ impl <'a> Engine<'a> {
             });
 
             self.clear();
-            self.encoder.update_buffer(&data.light, &self.lights, 0).unwrap();
-            self.encoder.draw(&slice, &self.pso, &data);
+            mesh.render(self);
             self.update();
         }
     }
@@ -232,7 +224,7 @@ fn main() {
         }
     ][0..1];
 
-    let engine = Engine::new(config, meshes, lights)
+    let mut engine = Engine::new(config, meshes, lights)
         .unwrap();
     engine.run();
 }
