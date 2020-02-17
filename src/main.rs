@@ -133,6 +133,11 @@ impl <'a> Engine<'a> {
         self.encoder.clear(&self.color, [0.0, 0.0, 0.0, 1.0]);
     }
 
+    fn update(&mut self) {
+        self.window.swap_buffers().unwrap();
+        self.encoder.flush(&mut self.device);
+    }
+
     fn run(mut self) {
         let light_buffer = self.factory.create_constant_buffer(1);
 
@@ -151,10 +156,9 @@ impl <'a> Engine<'a> {
             });
 
             self.clear();
-            self.window.swap_buffers().unwrap();
             self.encoder.update_buffer(&data.light, &self.lights, 0).unwrap();
             self.encoder.draw(&slice, &self.pso, &data);
-            self.encoder.flush(&mut self.device);
+            self.update();
         }
     }
 }
