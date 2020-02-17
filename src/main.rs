@@ -58,6 +58,10 @@ impl <'a> EngineConfiguration<'a> {
     }
 }
 
+enum Event {
+    Closed,
+}
+
 struct Engine<'a> {
     pub meshes: &'a[&'a[Vertex]],
     pub lights: &'a[Light],
@@ -68,10 +72,6 @@ struct Engine<'a> {
     color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     encoder: gfx::Encoder<back::Resources, back::CommandBuffer>,
     pso: gfx::pso::PipelineState<back::Resources, pipe::Meta>
-}
-
-enum Event {
-    Closed,
 }
 
 impl <'a> Engine<'a> {
