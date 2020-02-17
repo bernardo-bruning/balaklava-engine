@@ -116,7 +116,7 @@ impl <'a> Engine<'a> {
     }
 
     #[inline]
-    fn poll_event<F>(&mut self, callback: F) where F:Fn(Event) {
+    fn poll_event<F>(&mut self, mut callback: F) where F:FnMut(Event) {
         self.event_loop.poll_events(|event| {
             match event {
                 glutin::Event::WindowEvent{ event, .. } => 
@@ -142,15 +142,8 @@ impl <'a> Engine<'a> {
         
         let mut running = true;
         while running {
-            self.event_loop.poll_events(|event| {
-                match event {
-                    glutin::Event::WindowEvent{ event, .. } => 
-                        match event {
-                            glutin::WindowEvent::Closed => running = false,
-                            _ => ()
-                        }
-                    _ => ()
-                }
+            self.poll_event(|event| match event {
+                Event::Closed => running = false
             });
 
             self.window.swap_buffers().unwrap();
