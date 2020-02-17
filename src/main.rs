@@ -128,6 +128,11 @@ impl <'a> Engine<'a> {
         });
     }
 
+    fn clear(&mut self) {
+        self.device.cleanup();
+        self.encoder.clear(&self.color, [0.0, 0.0, 0.0, 1.0]);
+    }
+
     fn run(mut self) {
         let light_buffer = self.factory.create_constant_buffer(1);
 
@@ -145,8 +150,7 @@ impl <'a> Engine<'a> {
                 Event::Closed => running = false
             });
 
-            self.device.cleanup();
-            self.encoder.clear(&self.color, [0.0, 0.0, 0.0, 1.0]);
+            self.clear();
             self.window.swap_buffers().unwrap();
             self.encoder.update_buffer(&data.light, &self.lights, 0).unwrap();
             self.encoder.draw(&slice, &self.pso, &data);
