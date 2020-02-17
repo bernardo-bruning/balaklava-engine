@@ -77,7 +77,7 @@ impl <'a> Mesh<'a> {
         }
     }
 
-    fn bind(&mut self, mut engine: Engine) {
+    fn bind(&mut self, engine: &mut Engine) {
         let light_buffer = engine.factory.create_constant_buffer(1);
         let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(self.vertices, ());
         let data = pipe::Data {
@@ -88,6 +88,16 @@ impl <'a> Mesh<'a> {
 
         self.index = Option::Some(index);
         self.data = Option::Some(data);
+    }
+
+    fn render(mut self, mut engine: Engine) {
+        if self.data == Option::None || self.index == Option::None {
+            self.bind(&mut engine);
+        }
+
+        let data = self.data.unwrap();
+        engine.encoder.update_buffer(&data.light, &engine.lights, 0).unwrap();
+        engine.encoder.draw(&self.index.unwrap(), &engine.pso, &data);
     }
 }
 
