@@ -114,7 +114,7 @@ impl <'a> Engine<'a> {
             pso
         })
     }
-    
+
     fn poll_event<F>(&mut self, mut callback: F) where F:FnMut(Event) {
         self.event_loop.poll_events(|event| {
             match event {
@@ -145,10 +145,10 @@ impl <'a> Engine<'a> {
                 Event::Closed => running = false
             });
 
-            self.window.swap_buffers().unwrap();
             self.device.cleanup();
-            self.encoder.update_buffer(&data.light, &self.lights, 0).unwrap();
             self.encoder.clear(&self.color, [0.0, 0.0, 0.0, 1.0]);
+            self.window.swap_buffers().unwrap();
+            self.encoder.update_buffer(&data.light, &self.lights, 0).unwrap();
             self.encoder.draw(&slice, &self.pso, &data);
             self.encoder.flush(&mut self.device);
         }
