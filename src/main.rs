@@ -19,10 +19,15 @@ gfx_defines!{
         position: [f32; 4] = "light_position",
         color: [f32; 3] = "light_color",
     }
+
+    constant Viewport {
+        position: [f32; 4] = "viewport_position",
+    }
     
     pipeline pipe {
         vbuf: gfx::VertexBuffer<Vertex> = (),
         light: gfx::ConstantBuffer<Light> = "light",
+        viewport: gfx::ConstantBuffer<Viewport> = "viewport",
         out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
     }
 }
@@ -79,10 +84,12 @@ impl <'a> Mesh<'a> {
 
     fn bind(&mut self, engine: &mut Engine) {
         let light_buffer = engine.factory.create_constant_buffer(1);
+        let viewport_buffer = engine.factory.create_constant_buffer(1);
         let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(self.vertices, ());
         let data = pipe::Data {
             vbuf: vertex_buffer,
             light: light_buffer,
+            viewport: viewport_buffer,
             out: engine.color.clone(),
         };
 
