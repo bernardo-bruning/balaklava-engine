@@ -101,10 +101,14 @@ impl <'a> Mesh<'a> {
         if self.data == Option::None || self.index == Option::None {
             self.bind(engine);
         }
-
+        
+        let viewport = engine.viewport.unwrap_or(Viewport{
+            position: [0.0, 0.0, 0.0, 0.0]
+        });
         let data = self.data.as_ref().unwrap();
         let index = self.index.as_ref().unwrap();
         engine.encoder.update_buffer(&data.light, &engine.lights, 0).unwrap();
+        engine.encoder.update_buffer(&data.viewport, &[viewport], 0).unwrap();
         engine.encoder.draw(index, &engine.pso, data);
     }
 }
@@ -118,7 +122,8 @@ struct Engine<'a> {
     factory: back::Factory,
     color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     encoder: gfx::Encoder<back::Resources, back::CommandBuffer>,
-    pso: gfx::pso::PipelineState<back::Resources, pipe::Meta>
+    pso: gfx::pso::PipelineState<back::Resources, pipe::Meta>,
+    viewport: Option<Viewport>
 }
 
 impl <'a> Engine<'a> {
@@ -158,7 +163,8 @@ impl <'a> Engine<'a> {
             factory,
             color,
             encoder,
-            pso
+            pso,
+            viewport: Option::None
         })
     }
 
@@ -173,6 +179,10 @@ impl <'a> Engine<'a> {
                 _ => ()
             }
         });
+    }
+
+    fn set_viewport(&mut self, viewport: Viewport) {
+        self.viewport = Option::from(viewport);
     }
 
     fn clear(&mut self) {
