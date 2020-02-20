@@ -21,7 +21,7 @@ gfx_defines!{
     }
 
     constant Viewport {
-        position: [f32; 4] = "viewport_position",
+        transform: [[f32; 4]; 4] = "viewport_tranform",
     }
     
     pipeline pipe {
@@ -103,7 +103,12 @@ impl <'a> Mesh<'a> {
         }
         
         let viewport = engine.viewport.unwrap_or(Viewport{
-            position: [0.0, 0.0, 0.0, 0.0]
+            transform: [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ]
         });
         let data = self.data.as_ref().unwrap();
         let index = self.index.as_ref().unwrap();

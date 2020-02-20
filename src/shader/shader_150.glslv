@@ -5,7 +5,7 @@ in vec3 vertex_color;
 in vec3 vertex_normal;
 
 uniform viewport {
-    vec4 viewport_position;
+    mat4 viewport_tranform;
 };
 
 out vec4 color;
@@ -15,6 +15,6 @@ out vec3 normal;
 void main() {
     color = vec4(vertex_color, 1.0);
     normal = vertex_normal;
-    position = vertex_position+viewport_position;
+    position = vertex_position*(viewport_tranform);
     gl_Position = position;
 }
