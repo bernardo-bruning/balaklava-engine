@@ -105,9 +105,9 @@ impl <'a> Mesh<'a> {
         let viewport = engine.viewport.unwrap_or(Viewport{
             transform: [
                 [1.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0, 0.0],
-                [0.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 1.0],
+                [0.0, 0.6, 0.0, 0.0],
+                [0.0, 0.0, 0.6, 0.0],
+                [0.0, 0.0, 0.0, 0.6],
             ]
         });
         let data = self.data.as_ref().unwrap();
@@ -248,5 +248,13 @@ fn main() {
 
     let mut engine = Engine::new(config, meshes, lights)
         .unwrap();
+    engine.set_viewport(Viewport{
+        transform: [
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.6, 0.0, 0.0],
+            [0.0, 0.0, 0.6, 0.0],
+            [0.0, 0.0, 0.0, 0.6],
+        ]
+    });
     engine.run();
 }
