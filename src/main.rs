@@ -120,7 +120,6 @@ impl <'a> Mesh<'a> {
 }
 
 struct Engine<'a> {
-    pub meshes: &'a[&'a[Vertex]],
     pub lights: &'a[Light],
     event_loop: glutin::EventsLoop,
     window: glutin::GlWindow,
@@ -133,7 +132,7 @@ struct Engine<'a> {
 }
 
 impl <'a> Engine<'a> {
-    fn new(config: EngineConfiguration<'a>, meshes: &'a[&'a[Vertex]], lights: &'a[Light]) 
+    fn new(config: EngineConfiguration<'a>, lights: &'a[Light]) 
         -> Result<Engine<'a>, String>{
         let event_loop = glutin::EventsLoop::new();
         let window_builder = glutin::WindowBuilder::new()
@@ -161,7 +160,6 @@ impl <'a> Engine<'a> {
             factory.create_command_buffer().into();
 
         return Ok(Engine {
-            meshes,
             lights,
             event_loop,
             window,
@@ -200,45 +198,32 @@ impl <'a> Engine<'a> {
         self.window.swap_buffers().unwrap();
         self.encoder.flush(&mut self.device);
     }
-
-
-    fn run(&mut self) {
-        let mut mesh = Mesh::new(self.meshes[0]);
-        
-        let mut running = true;
-        while running {
-            self.poll_event(|event| match event {
-                Event::Closed => running = false
-            });
-
-            self.clear();
-            mesh.render(self);
-            self.update();
-        }
-    }
 }
 
 fn main() {
     let config = EngineConfiguration::default()
         .with_name("Learn GFX".to_string());
 
-    let meshes = &[&[
-        Vertex { 
-            position: [ -0.5, -0.5, 0.0, 1.0 ], 
-            normal: [0.0, 0.0, 1.0], 
-            color: [1.0, 0.0, 0.0] 
-        },
-        Vertex { 
-            position: [  0.5, -0.5, 0.0, 1.0 ], 
-            normal: [0.0, 0.0, 1.0], 
-            color: [0.0, 1.0, 0.0] 
-        },
-        Vertex { 
-            position: [  0.0,  0.5, 0.0, 1.0 ], 
-            normal: [0.0, 0.0, 1.0], 
-            color: [0.0, 0.0, 1.0] 
-        },
-    ][0..3]];
+    let mut mesh = Mesh::new(
+        &[
+            Vertex { 
+                position: [ -0.5, -0.5, 0.0, 1.0 ], 
+                normal: [0.0, 0.0, 1.0], 
+                color: [1.0, 0.0, 0.0] 
+            },
+            Vertex { 
+                position: [  0.5, -0.5, 0.0, 1.0 ], 
+                normal: [0.0, 0.0, 1.0], 
+                color: [0.0, 1.0, 0.0] 
+            },
+            Vertex { 
+                position: [  0.0,  0.5, 0.0, 1.0 ], 
+                normal: [0.0, 0.0, 1.0], 
+                color: [0.0, 0.0, 1.0] 
+            },
+        ]
+    );
+
 
     let lights = &[
         Light {
@@ -247,16 +232,16 @@ fn main() {
         }
     ][0..1];
 
-    let mut engine = Engine::new(config, meshes, lights)
+    let mut engine = Engine::new(config, lights)
         .unwrap();
-    let mut rotate = 0.0;
-    engine.set_viewport(Viewport{ transform: na::Matrix4::from_scaled_axis(na::base::Vector3::new(0.0, 0.0, rotate)).into() });
-    let mut mesh = Mesh::new(meshes[0]);
+    let mut transform = na::Matrix4::from_scaled_axis(na::base::Vector3::new(0.0, 0.0, 0.0));
+    engine.set_viewport(Viewport{ transform: transform.into() });
     
+    let rotation = na::Rotation3::new(na::Vector3::new(0.0, 0.0, 0.01));
     let mut running = true;
     while running {
-        rotate += 0.01;
-        engine.set_viewport(Viewport{ transform: na::Matrix4::from_scaled_axis(na::base::Vector3::new(0.0, 0.0, rotate)).into() });
+        transform = transform * rotation.to_homogeneous();
+        engine.set_viewport(Viewport{ transform: transform.into() });
         engine.poll_event(|event| match event {
             Event::Closed => running = false
         });
