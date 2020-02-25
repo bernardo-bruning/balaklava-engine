@@ -8,6 +8,7 @@ extern crate nalgebra as na;
 use gfx::traits::FactoryExt;
 use gfx::Device;
 use glutin::{GlContext};
+use na::{Matrix4,Vector3,Rotation3};
 
 gfx_defines!{
     vertex Vertex {
@@ -24,10 +25,15 @@ gfx_defines!{
     constant Viewport {
         transform: [[f32; 4]; 4] = "viewport_tranform",
     }
+
+    constant Transform {
+        matrix: [[f32; 4]; 4] = "transform_matrix",
+    }
     
     pipeline pipe {
         vbuf: gfx::VertexBuffer<Vertex> = (),
         light: gfx::ConstantBuffer<Light> = "light",
+        transformation: gfx::ConstantBuffer<Transform> = "transform",
         viewport: gfx::ConstantBuffer<Viewport> = "viewport",
         out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
     }
@@ -70,6 +76,7 @@ enum Event {
 
 struct Mesh<'a> {
     vertices: &'a[Vertex],
+    transformation: Matrix4<f32>,
     index: Option<gfx::Slice<back::Resources>>,
     data: Option<pipe::Data<back::Resources>>
 }
@@ -78,19 +85,27 @@ impl <'a> Mesh<'a> {
     fn new(vertices: &'a[Vertex]) -> Self {
         return Mesh{
             vertices: vertices,
+            transformation: Matrix4::from_scaled_axis(Vector3::new(0., 0.,0.)),
             index: Option::None,
             data: Option::None
         }
     }
 
+    fn set_rotation(&mut self, angles: Vector3<f32>) {
+        let rotation = Rotation3::new(angles);
+        self.transformation = rotation.to_homogeneous() * self.transformation;
+    }
+
     fn bind(&mut self, engine: &mut Engine) {
         let light_buffer = engine.factory.create_constant_buffer(1);
         let viewport_buffer = engine.factory.create_constant_buffer(1);
+        let transform_buffer = engine.factory.create_constant_buffer(1);
         let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(self.vertices, ());
         let data = pipe::Data {
             vbuf: vertex_buffer,
             light: light_buffer,
             viewport: viewport_buffer,
+            transformation: transform_buffer,
             out: engine.color.clone(),
         };
 
@@ -111,9 +126,11 @@ impl <'a> Mesh<'a> {
                 [0.0, 0.0, 0.0, 0.6],
             ]
         });
+        let transform = Transform{matrix: self.transformation.into() };
         let data = self.data.as_ref().unwrap();
         let index = self.index.as_ref().unwrap();
         engine.encoder.update_buffer(&data.light, &engine.lights, 0).unwrap();
+        engine.encoder.update_buffer(&data.transformation, &[transform], 0).unwrap();
         engine.encoder.update_buffer(&data.viewport, &[viewport], 0).unwrap();
         engine.encoder.draw(index, &engine.pso, data);
     }
@@ -224,7 +241,6 @@ fn main() {
         ]
     );
 
-
     let lights = &[
         Light {
             position: [0.5, 0.0, 0.07, 1.0],
@@ -234,14 +250,11 @@ fn main() {
 
     let mut engine = Engine::new(config, lights)
         .unwrap();
+
     let mut transform = na::Matrix4::from_scaled_axis(na::base::Vector3::new(0.0, 0.0, 0.0));
     engine.set_viewport(Viewport{ transform: transform.into() });
-    
-    let rotation = na::Rotation3::new(na::Vector3::new(0.0, 0.0, 0.01));
     let mut running = true;
     while running {
-        transform = transform * rotation.to_homogeneous();
-        engine.set_viewport(Viewport{ transform: transform.into() });
         engine.poll_event(|event| match event {
             Event::Closed => running = false
         });

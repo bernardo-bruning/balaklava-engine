@@ -8,6 +8,10 @@ uniform viewport {
     mat4 viewport_tranform;
 };
 
+uniform transform {
+    mat4 transform_matrix;
+};
+
 out vec4 color;
 out vec4 position;
 out vec3 normal;
@@ -15,6 +19,6 @@ out vec3 normal;
 void main() {
     color = vec4(vertex_color, 1.0);
     normal = vertex_normal;
-    position = vertex_position*(viewport_tranform);
+    position = vertex_position*(transform_matrix);
     gl_Position = position;
 }
