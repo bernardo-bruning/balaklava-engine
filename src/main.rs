@@ -3,6 +3,7 @@ extern crate gfx;
 extern crate glutin;
 extern crate gfx_window_glutin;
 extern crate gfx_device_gl as back;
+extern crate nalgebra as na;
 
 use gfx::traits::FactoryExt;
 use gfx::Device;
@@ -241,20 +242,27 @@ fn main() {
 
     let lights = &[
         Light {
-            position: [0.0, 0.0, 0.07, 1.0],
+            position: [0.5, 0.0, 0.07, 1.0],
             color: [1.0, 1.0, 1.0]
         }
     ][0..1];
 
     let mut engine = Engine::new(config, meshes, lights)
         .unwrap();
-    engine.set_viewport(Viewport{
-        transform: [
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 0.6, 0.0, 0.0],
-            [0.0, 0.0, 0.6, 0.0],
-            [0.0, 0.0, 0.0, 0.6],
-        ]
-    });
-    engine.run();
+    let mut rotate = 0.0;
+    engine.set_viewport(Viewport{ transform: na::Matrix4::from_scaled_axis(na::base::Vector3::new(0.0, 0.0, rotate)).into() });
+    let mut mesh = Mesh::new(meshes[0]);
+    
+    let mut running = true;
+    while running {
+        rotate += 0.01;
+        engine.set_viewport(Viewport{ transform: na::Matrix4::from_scaled_axis(na::base::Vector3::new(0.0, 0.0, rotate)).into() });
+        engine.poll_event(|event| match event {
+            Event::Closed => running = false
+        });
+
+        engine.clear();
+        mesh.render(&mut engine);
+        engine.update();
+    }
 }
