@@ -1,0 +1,154 @@
+extern crate gfx;
+extern crate glutin;
+extern crate gfx_window_glutin;
+extern crate gfx_device_gl as back;
+extern crate nalgebra as na;
+
+use gfx::traits::FactoryExt;
+use gfx::Device;
+use glutin::{GlContext};
+
+gfx_defines!{
+    vertex Vertex {
+        position: [f32; 4] = "vertex_position",
+        normal: [f32; 3] = "vertex_normal",
+        color: [f32; 3] = "vertex_color",
+    }
+
+    constant Light {
+        position: [f32; 4] = "light_position",
+        color: [f32; 3] = "light_color",
+    }
+
+    constant Camera {
+        transform: [[f32; 4]; 4] = "camera_tranform",
+    }
+
+    constant Transform {
+        matrix: [[f32; 4]; 4] = "transform_matrix",
+    }
+    
+    pipeline pipe {
+        vbuf: gfx::VertexBuffer<Vertex> = (),
+        light: gfx::ConstantBuffer<Light> = "light",
+        transformation: gfx::ConstantBuffer<Transform> = "transform",
+        camera: gfx::ConstantBuffer<Camera> = "camera",
+        out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
+    }
+}
+
+pub struct EngineConfiguration<'a> {
+    name: String,
+    vertex_shader: &'a[u8],
+    pixel_shader: &'a[u8]
+}
+
+impl <'a> EngineConfiguration<'a> {
+    pub fn default() -> EngineConfiguration<'a> {
+        return EngineConfiguration{
+            name: "".to_string(),
+            vertex_shader: include_bytes!("shader/shader_150.glslv"),
+            pixel_shader: include_bytes!("shader/shader_150.glslf"),
+        }
+    }
+
+    pub fn with_name(mut self, name: String) -> EngineConfiguration<'a> {
+        self.name = name;
+        self
+    } 
+
+    fn with_vertex_shader(mut self, shader: &'a[u8]) -> EngineConfiguration<'a> {
+        self.vertex_shader = shader;
+        self
+    }
+
+    fn with_pixel_shader(mut self, shader: &'a[u8]) -> EngineConfiguration<'a> {
+        self.pixel_shader = shader;
+        self
+    }
+}
+
+pub enum Event {
+    Closed,
+}
+
+pub struct Engine<'a> {
+    pub lights: &'a[Light],
+    event_loop: glutin::EventsLoop,
+    window: glutin::GlWindow,
+    device: back::Device,
+    pub factory: back::Factory,
+    pub color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
+    pub encoder: gfx::Encoder<back::Resources, back::CommandBuffer>,
+    pub pso: gfx::pso::PipelineState<back::Resources, pipe::Meta>,
+    pub camera: Option<Camera>
+}
+
+impl <'a> Engine<'a> {
+    pub fn new(config: EngineConfiguration<'a>, lights: &'a[Light]) 
+        -> Result<Engine<'a>, String>{
+        let event_loop = glutin::EventsLoop::new();
+        let window_builder = glutin::WindowBuilder::new()
+            .with_dimensions(500, 400)
+            .with_title(config.name);
+            
+        let context_builder = glutin::ContextBuilder::new()
+            .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
+            .with_vsync(true);
+            
+        let (window, device, mut factory, color, _depth_view) =
+            gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
+            window_builder, 
+            context_builder, 
+            &event_loop
+        );
+
+        let pso = factory.create_pipeline_simple(
+            config.vertex_shader,
+            config.pixel_shader,
+            pipe::new()
+        ).unwrap();
+
+        let encoder: gfx::Encoder<back::Resources, back::CommandBuffer> = 
+            factory.create_command_buffer().into();
+
+        return Ok(Engine {
+            lights,
+            event_loop,
+            window,
+            device,
+            factory,
+            color,
+            encoder,
+            pso,
+            camera: Option::None
+        })
+    }
+
+    pub fn poll_event<F>(&mut self, mut callback: F) where F:FnMut(Event) {
+        self.event_loop.poll_events(|event| {
+            match event {
+                glutin::Event::WindowEvent{ event, .. } => 
+                    match event {
+                        glutin::WindowEvent::Closed => callback(Event::Closed),
+                        _ => ()
+                    }
+                _ => ()
+            }
+        });
+    }
+
+    pub fn set_camera(&mut self, camera: Camera) {
+        self.camera = Option::from(camera);
+    }
+
+    pub fn clear(&mut self) {
+        self.device.cleanup();
+        self.encoder.clear(&self.color, [0.0, 0.0, 0.0, 1.0]);
+    }
+
+    pub fn update(&mut self) {
+        self.window.swap_buffers().unwrap();
+        self.encoder.flush(&mut self.device);
+    }
+}
