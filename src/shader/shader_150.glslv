@@ -19,6 +19,6 @@ out vec3 normal;
 void main() {
     color = vec4(vertex_color, 1.0);
     normal = vertex_normal;
-    position = vertex_position*(transform_matrix);
+    position = vertex_position*viewport_tranform;
     gl_Position = position;
 }

@@ -15,4 +15,5 @@ void main() {
     float diff = max(dot(normal, lightDir), 0.0);
     vec4 diffuse = diff * vec4(0.2);
     target = color * diffuse;
+    //target = vec4(1.0, 0.0, 0.0, 1.0);
 }

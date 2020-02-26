@@ -8,7 +8,7 @@ extern crate nalgebra as na;
 use gfx::traits::FactoryExt;
 use gfx::Device;
 use glutin::{GlContext};
-use na::{Matrix4,Vector3,Rotation3};
+use na::{Matrix4,Vector3,Rotation3, Point3, Translation3, Orthographic3};
 
 gfx_defines!{
     vertex Vertex {
@@ -224,17 +224,17 @@ fn main() {
     let mut mesh = Mesh::new(
         &[
             Vertex { 
-                position: [ -0.5, -0.5, 0.0, 1.0 ], 
+                position: [ -0.5, -0.5, 1.0, 1.0 ], 
                 normal: [0.0, 0.0, 1.0], 
                 color: [1.0, 0.0, 0.0] 
             },
             Vertex { 
-                position: [  0.5, -0.5, 0.0, 1.0 ], 
+                position: [  0.5, -0.5, 1.0, 1.0 ], 
                 normal: [0.0, 0.0, 1.0], 
                 color: [0.0, 1.0, 0.0] 
             },
             Vertex { 
-                position: [  0.0,  0.5, 0.0, 1.0 ], 
+                position: [  0.0,  0.5, 1.0, 1.0 ], 
                 normal: [0.0, 0.0, 1.0], 
                 color: [0.0, 0.0, 1.0] 
             },
@@ -251,10 +251,28 @@ fn main() {
     let mut engine = Engine::new(config, lights)
         .unwrap();
 
-    let mut transform = na::Matrix4::from_scaled_axis(na::base::Vector3::new(0.0, 0.0, 0.0));
-    engine.set_viewport(Viewport{ transform: transform.into() });
+    let projection = Orthographic3::new(-10., 10., -10., 10., 0., 100.).to_homogeneous();
+    println!("{}", projection);
+    let mut view = na::Matrix4::look_at_rh(
+        &Point3::new(0., 0., 1.), 
+        &Point3::new(0., 0., 0.), 
+        &Vector3::new(0., 1., 0.)
+    );
+
+    let mut camera = projection * view;
+    engine.set_viewport(Viewport{ transform: camera.into() });
+    let translation = Translation3::new(0., 0., -0.01).to_homogeneous();
+
+    //print!("{}", camera);
+
+    let rotation = Rotation3::new(Vector3::new(0., 0.01, 0.0)).to_homogeneous();
+    
     let mut running = true;
     while running {
+        camera = camera * translation ;
+        print!("{}", camera);
+        engine.set_viewport(Viewport{ transform: camera.into() });
+        
         engine.poll_event(|event| match event {
             Event::Closed => running = false
         });
