@@ -22,8 +22,8 @@ gfx_defines!{
         color: [f32; 3] = "light_color",
     }
 
-    constant Viewport {
-        transform: [[f32; 4]; 4] = "viewport_tranform",
+    constant Camera {
+        transform: [[f32; 4]; 4] = "camera_tranform",
     }
 
     constant Transform {
@@ -34,7 +34,7 @@ gfx_defines!{
         vbuf: gfx::VertexBuffer<Vertex> = (),
         light: gfx::ConstantBuffer<Light> = "light",
         transformation: gfx::ConstantBuffer<Transform> = "transform",
-        viewport: gfx::ConstantBuffer<Viewport> = "viewport",
+        camera: gfx::ConstantBuffer<Camera> = "camera",
         out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
     }
 }
@@ -98,13 +98,13 @@ impl <'a> Mesh<'a> {
 
     fn bind(&mut self, engine: &mut Engine) {
         let light_buffer = engine.factory.create_constant_buffer(1);
-        let viewport_buffer = engine.factory.create_constant_buffer(1);
+        let camera_buffer = engine.factory.create_constant_buffer(1);
         let transform_buffer = engine.factory.create_constant_buffer(1);
         let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(self.vertices, ());
         let data = pipe::Data {
             vbuf: vertex_buffer,
             light: light_buffer,
-            viewport: viewport_buffer,
+            camera: camera_buffer,
             transformation: transform_buffer,
             out: engine.color.clone(),
         };
@@ -118,7 +118,7 @@ impl <'a> Mesh<'a> {
             self.bind(engine);
         }
         
-        let viewport = engine.viewport.unwrap_or(Viewport{
+        let camera = engine.camera.unwrap_or(Camera{
             transform: [
                 [1.0, 0.0, 0.0, 0.0],
                 [0.0, 0.6, 0.0, 0.0],
@@ -131,7 +131,7 @@ impl <'a> Mesh<'a> {
         let index = self.index.as_ref().unwrap();
         engine.encoder.update_buffer(&data.light, &engine.lights, 0).unwrap();
         engine.encoder.update_buffer(&data.transformation, &[transform], 0).unwrap();
-        engine.encoder.update_buffer(&data.viewport, &[viewport], 0).unwrap();
+        engine.encoder.update_buffer(&data.camera, &[camera], 0).unwrap();
         engine.encoder.draw(index, &engine.pso, data);
     }
 }
@@ -145,7 +145,7 @@ struct Engine<'a> {
     color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     encoder: gfx::Encoder<back::Resources, back::CommandBuffer>,
     pso: gfx::pso::PipelineState<back::Resources, pipe::Meta>,
-    viewport: Option<Viewport>
+    camera: Option<Camera>
 }
 
 impl <'a> Engine<'a> {
@@ -185,7 +185,7 @@ impl <'a> Engine<'a> {
             color,
             encoder,
             pso,
-            viewport: Option::None
+            camera: Option::None
         })
     }
 
@@ -202,8 +202,8 @@ impl <'a> Engine<'a> {
         });
     }
 
-    fn set_viewport(&mut self, viewport: Viewport) {
-        self.viewport = Option::from(viewport);
+    fn set_camera(&mut self, camera: Camera) {
+        self.camera = Option::from(camera);
     }
 
     fn clear(&mut self) {
@@ -260,7 +260,7 @@ fn main() {
     );
 
     let mut camera = projection * view;
-    engine.set_viewport(Viewport{ transform: camera.into() });
+    engine.set_camera(Camera{ transform: camera.into() });
     let translation = Translation3::new(0., 0., -0.01).to_homogeneous();
 
     //print!("{}", camera);
@@ -271,7 +271,7 @@ fn main() {
     while running {
         camera = camera * translation ;
         print!("{}", camera);
-        engine.set_viewport(Viewport{ transform: camera.into() });
+        engine.set_camera(Camera{ transform: camera.into() });
         
         engine.poll_event(|event| match event {
             Event::Closed => running = false
