@@ -48,21 +48,14 @@ impl <'a> Mesh<'a> {
         if self.data == Option::None || self.index == Option::None {
             self.bind(engine);
         }
-        
-        let camera = engine.camera.unwrap_or(Camera{
-            transform: [
-                [1.0, 0.0, 0.0, 0.0],
-                [0.0, 0.6, 0.0, 0.0],
-                [0.0, 0.0, 0.6, 0.0],
-                [0.0, 0.0, 0.0, 0.6],
-            ]
-        });
+    
+        let camera_buffer = Camera{ transform: engine.camera.get_view() };
         let transform = Transform{matrix: self.transformation.into() };
         let data = self.data.as_ref().unwrap();
         let index = self.index.as_ref().unwrap();
         engine.encoder.update_buffer(&data.light, &engine.lights, 0).unwrap();
         engine.encoder.update_buffer(&data.transformation, &[transform], 0).unwrap();
-        engine.encoder.update_buffer(&data.camera, &[camera], 0).unwrap();
+        engine.encoder.update_buffer(&data.camera, &[camera_buffer], 0).unwrap();
         engine.encoder.draw(index, &engine.pso, data);
     }
 }

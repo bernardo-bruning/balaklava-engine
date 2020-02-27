@@ -4,6 +4,7 @@ extern crate gfx_window_glutin;
 extern crate gfx_device_gl as back;
 extern crate nalgebra as na;
 
+use crate::camera;
 use na::Matrix4;
 use gfx::traits::FactoryExt;
 use gfx::Device;
@@ -38,43 +39,103 @@ gfx_defines!{
     }
 }
 
-pub struct EngineConfiguration<'a> {
+pub struct Builder<'a> {
     name: String,
     vertex_shader: &'a[u8],
-    pixel_shader: &'a[u8]
+    pixel_shader: &'a[u8],
+    light: Option<Light>
 }
 
-impl <'a> EngineConfiguration<'a> {
-    pub fn default() -> EngineConfiguration<'a> {
-        return EngineConfiguration{
+impl <'a> Builder<'a> {
+    pub fn default() -> Builder<'a> {
+        return Self{
             name: "".to_string(),
             vertex_shader: include_bytes!("shader/shader_150.glslv"),
             pixel_shader: include_bytes!("shader/shader_150.glslf"),
+            light: Option::None
         }
     }
 
-    pub fn with_name(mut self, name: String) -> EngineConfiguration<'a> {
+    pub fn with_name(mut self, name: String) -> Self {
         self.name = name;
         self
     } 
 
-    fn with_vertex_shader(mut self, shader: &'a[u8]) -> EngineConfiguration<'a> {
+    fn with_vertex_shader(mut self, shader: &'a[u8]) -> Self {
         self.vertex_shader = shader;
         self
     }
 
-    fn with_pixel_shader(mut self, shader: &'a[u8]) -> EngineConfiguration<'a> {
+    fn with_pixel_shader(mut self, shader: &'a[u8]) -> Self {
         self.pixel_shader = shader;
         self
     }
+
+    fn set_light(mut self, light: Light) -> Self{
+        self.light = Option::Some(light);
+        self
+    }
+    
+    fn get_lights(&self) -> Vec<Light>{
+        if self.light.is_some() {
+            let light = self.light.unwrap();
+            return vec!(light);
+        }
+        return vec!();
+    }
+
+    fn get_eventsloop(&self) -> glutin::EventsLoop {
+        return glutin::EventsLoop::new();
+    }
+
+    fn get_window_builder(&self) -> glutin::WindowBuilder {
+        glutin::WindowBuilder::new()
+            .with_dimensions(500, 400)
+            .with_title(self.name.clone())
+    }
+
+    fn get_context_builder(&self) -> glutin::ContextBuilder {
+        glutin::ContextBuilder::new()
+            .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
+            .with_vsync(true)
+    }
+
+    pub fn build(&self) -> Engine {            
+        let (window, device, mut factory, color, _depth_view) =
+            gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
+            self.get_window_builder(), 
+            self.get_context_builder(), 
+            &self.get_eventsloop()
+        );
+
+        let pso = factory.create_pipeline_simple(
+            self.vertex_shader,
+            self.pixel_shader,
+            pipe::new()
+        ).unwrap();
+
+        let encoder: gfx::Encoder<back::Resources, back::CommandBuffer> = 
+            factory.create_command_buffer().into();
+        return Engine::new(
+            self.get_lights(),
+            self.get_eventsloop(),
+            window,
+            device,
+            factory,
+            color,
+            encoder,
+            pso,
+            camera::Orthographic::default()
+        )
+    } 
 }
 
 pub enum Event {
     Closed,
 }
 
-pub struct Engine<'a> {
-    pub lights: &'a[Light],
+pub struct Engine {
+    pub lights: Vec<Light>,
     event_loop: glutin::EventsLoop,
     window: glutin::GlWindow,
     device: back::Device,
@@ -82,38 +143,22 @@ pub struct Engine<'a> {
     pub color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     pub encoder: gfx::Encoder<back::Resources, back::CommandBuffer>,
     pub pso: gfx::pso::PipelineState<back::Resources, pipe::Meta>,
-    pub camera: Option<Camera>
+    pub camera: camera::Orthographic
 }
 
-impl <'a> Engine<'a> {
-    pub fn new(config: EngineConfiguration<'a>, lights: &'a[Light]) 
-        -> Result<Engine<'a>, String>{
-        let event_loop = glutin::EventsLoop::new();
-        let window_builder = glutin::WindowBuilder::new()
-            .with_dimensions(500, 400)
-            .with_title(config.name);
-            
-        let context_builder = glutin::ContextBuilder::new()
-            .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
-            .with_vsync(true);
-            
-        let (window, device, mut factory, color, _depth_view) =
-            gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
-            window_builder, 
-            context_builder, 
-            &event_loop
-        );
-
-        let pso = factory.create_pipeline_simple(
-            config.vertex_shader,
-            config.pixel_shader,
-            pipe::new()
-        ).unwrap();
-
-        let encoder: gfx::Encoder<back::Resources, back::CommandBuffer> = 
-            factory.create_command_buffer().into();
-
-        return Ok(Engine {
+impl Engine {
+    pub fn new(
+        lights: Vec<Light>,
+        event_loop: glutin::EventsLoop,
+        window: glutin::GlWindow,
+        device: back::Device,
+        factory: back::Factory,
+        color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
+        encoder: gfx::Encoder<back::Resources, back::CommandBuffer>,
+        pso: gfx::PipelineState<back::Resources, pipe::Meta>,
+        camera: camera::Orthographic
+    ) -> Self {
+        return Engine {
             lights,
             event_loop,
             window,
@@ -122,8 +167,8 @@ impl <'a> Engine<'a> {
             color,
             encoder,
             pso,
-            camera: Option::None
-        })
+            camera: camera::Orthographic::default()
+        }
     }
 
     pub fn poll_event<F>(&mut self, mut callback: F) where F:FnMut(Event) {
@@ -137,10 +182,6 @@ impl <'a> Engine<'a> {
                 _ => ()
             }
         });
-    }
-
-    pub fn set_camera(&mut self, transform: Matrix4<f32>) {
-        self.camera = Option::from(Camera{transform: transform.into()});
     }
 
     pub fn clear(&mut self) {
