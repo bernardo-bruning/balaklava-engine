@@ -4,6 +4,7 @@ extern crate gfx_window_glutin;
 extern crate gfx_device_gl as back;
 extern crate nalgebra as na;
 
+use na::Matrix4;
 use gfx::traits::FactoryExt;
 use gfx::Device;
 use glutin::{GlContext};
@@ -138,8 +139,8 @@ impl <'a> Engine<'a> {
         });
     }
 
-    pub fn set_camera(&mut self, camera: Camera) {
-        self.camera = Option::from(camera);
+    pub fn set_camera(&mut self, transform: Matrix4<f32>) {
+        self.camera = Option::from(Camera{transform: transform.into()});
     }
 
     pub fn clear(&mut self) {

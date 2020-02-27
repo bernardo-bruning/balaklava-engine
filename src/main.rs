@@ -50,7 +50,7 @@ fn main() {
     );
 
     let mut camera = projection * view;
-    engine.set_camera(Camera{ transform: camera.into() });
+    engine.set_camera(camera);
     let translation = Translation3::new(0., 0., -0.01).to_homogeneous();
 
     let rotation = Rotation3::new(Vector3::new(0., 0.01, 0.0)).to_homogeneous();
@@ -58,7 +58,7 @@ fn main() {
     let mut running = true;
     while running {
         camera = camera * translation ;
-        engine.set_camera(Camera{ transform: camera.into() });
+        engine.set_camera(camera);
         
         engine.poll_event(|event| match event {
             Event::Closed => running = false
