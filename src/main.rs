@@ -12,7 +12,11 @@ use crate::camera::Orthographic;
 
 fn main() {
     let builder = core::Builder::default()
-        .with_name("Learn GFX".to_string());
+        .with_name("Learn GFX".to_string())
+        .with_light(Light {
+            position: [0.5, 0.0, 0.07, 1.0],
+            color: [1.0, 1.0, 1.0]
+        });
 
     let mut mesh = Mesh::new(
         &[
@@ -34,15 +38,7 @@ fn main() {
         ]
     );
 
-    let lights = &[
-        Light {
-            position: [0.5, 0.0, 0.07, 1.0],
-            color: [1.0, 1.0, 1.0]
-        }
-    ][0..1];
-
-    let mut engine = Engine::new(config, lights)
-        .unwrap();
+    let mut engine = builder.build();
 
     let mut running = true;
     while running {

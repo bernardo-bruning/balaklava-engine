@@ -61,17 +61,17 @@ impl <'a> Builder<'a> {
         self
     } 
 
-    fn with_vertex_shader(mut self, shader: &'a[u8]) -> Self {
+    pub fn with_vertex_shader(mut self, shader: &'a[u8]) -> Self {
         self.vertex_shader = shader;
         self
     }
 
-    fn with_pixel_shader(mut self, shader: &'a[u8]) -> Self {
+    pub fn with_pixel_shader(mut self, shader: &'a[u8]) -> Self {
         self.pixel_shader = shader;
         self
     }
 
-    fn set_light(mut self, light: Light) -> Self{
+    pub fn with_light(mut self, light: Light) -> Self{
         self.light = Option::Some(light);
         self
     }
@@ -101,11 +101,12 @@ impl <'a> Builder<'a> {
     }
 
     pub fn build(&self) -> Engine {            
+        let events_loop = self.get_eventsloop();
         let (window, device, mut factory, color, _depth_view) =
             gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
             self.get_window_builder(), 
             self.get_context_builder(), 
-            &self.get_eventsloop()
+            &events_loop
         );
 
         let pso = factory.create_pipeline_simple(
@@ -116,9 +117,10 @@ impl <'a> Builder<'a> {
 
         let encoder: gfx::Encoder<back::Resources, back::CommandBuffer> = 
             factory.create_command_buffer().into();
+            
         return Engine::new(
             self.get_lights(),
-            self.get_eventsloop(),
+            events_loop,
             window,
             device,
             factory,
