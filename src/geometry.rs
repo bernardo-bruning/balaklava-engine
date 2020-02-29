@@ -4,6 +4,54 @@ extern crate nalgebra as na;
 use crate::core::*;
 use na::{Matrix4,Vector3,Rotation3};
 use gfx::traits::FactoryExt;
+use std::ops::Deref;
+
+pub trait Renderable {
+    fn render(&mut self, engine: &mut Engine);
+}
+
+pub struct Triangle<'a> {
+    pub mesh: Mesh<'a>
+}
+
+impl<'a> Triangle<'a> {
+    pub fn new() -> Self{
+        return Triangle{
+            mesh: Mesh::new(
+                &[
+                    Vertex { 
+                        position: [ -0.5, -0.5, 1.0, 1.0 ], 
+                        normal: [0.0, 0.0, 1.0], 
+                        color: [1.0, 0.0, 0.0] 
+                    },
+                    Vertex { 
+                        position: [  0.5, -0.5, 1.0, 1.0 ], 
+                        normal: [0.0, 0.0, 1.0], 
+                        color: [0.0, 1.0, 0.0] 
+                    },
+                    Vertex { 
+                        position: [  0.0,  0.5, 1.0, 1.0 ], 
+                        normal: [0.0, 0.0, 1.0], 
+                        color: [0.0, 0.0, 1.0] 
+                    },
+                ]
+            ) 
+        };
+    }
+}
+
+impl<'a> Renderable for Triangle<'a>{
+    fn render(&mut self, engine: &mut Engine) {
+        self.mesh.render(engine);
+    }
+}
+
+impl<'a> Deref for Triangle<'a> {
+    type Target = Mesh<'a>;
+    fn deref(&self) -> &Mesh<'a> {
+        return &self.mesh
+    }
+}
 
 pub struct Mesh<'a> {
     vertices: &'a[Vertex],
@@ -43,8 +91,10 @@ impl <'a> Mesh<'a> {
         self.index = Option::Some(index);
         self.data = Option::Some(data);
     }
+}
 
-    pub fn render(&mut self, engine: &mut Engine) {
+impl <'a> Renderable for Mesh<'a> {
+    fn render(&mut self, engine: &mut Engine) {
         if self.data == Option::None || self.index == Option::None {
             self.bind(engine);
         }

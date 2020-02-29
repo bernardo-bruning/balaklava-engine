@@ -4,11 +4,8 @@ extern crate nalgebra as na;
 mod core;
 mod geometry;
 mod camera;
-
-use na::{Vector3,Rotation3, Point3, Translation3, Orthographic3};
-use crate::geometry::Mesh;
+use crate::geometry::{Triangle, Renderable};
 use crate::core::*;
-use crate::camera::Orthographic;
 
 fn main() {
     let builder = core::Builder::default()
@@ -18,26 +15,7 @@ fn main() {
             color: [1.0, 1.0, 1.0]
         });
 
-    let mut mesh = Mesh::new(
-        &[
-            Vertex { 
-                position: [ -0.5, -0.5, 1.0, 1.0 ], 
-                normal: [0.0, 0.0, 1.0], 
-                color: [1.0, 0.0, 0.0] 
-            },
-            Vertex { 
-                position: [  0.5, -0.5, 1.0, 1.0 ], 
-                normal: [0.0, 0.0, 1.0], 
-                color: [0.0, 1.0, 0.0] 
-            },
-            Vertex { 
-                position: [  0.0,  0.5, 1.0, 1.0 ], 
-                normal: [0.0, 0.0, 1.0], 
-                color: [0.0, 0.0, 1.0] 
-            },
-        ]
-    );
-
+    let mut triangle = Triangle::new();
     let mut engine = builder.build();
 
     let mut running = true;
@@ -48,7 +26,7 @@ fn main() {
         });
 
         engine.clear();
-        mesh.render(&mut engine);
+        triangle.render(&mut engine);
         engine.update();
     }
 }

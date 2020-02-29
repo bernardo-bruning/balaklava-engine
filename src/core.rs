@@ -188,6 +188,7 @@ impl Engine {
 
     pub fn clear(&mut self) {
         self.device.cleanup();
+        self.encoder.reset();
         self.encoder.clear(&self.color, [0.0, 0.0, 0.0, 1.0]);
     }
 
