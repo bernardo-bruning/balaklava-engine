@@ -35,7 +35,7 @@ gfx_defines!{
         light: gfx::ConstantBuffer<Light> = "light",
         transformation: gfx::ConstantBuffer<Transform> = "transform",
         camera: gfx::ConstantBuffer<Camera> = "camera",
-        texture: gfx::TextureSampler<[f32; 4]> = "texture",
+        texture: gfx::TextureSampler<[f32; 4]> = "t_texture",
         out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
     }
 }
