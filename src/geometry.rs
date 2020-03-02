@@ -5,6 +5,7 @@ use crate::core::*;
 use na::{Matrix4,Vector3,Rotation3};
 use gfx::traits::FactoryExt;
 use std::ops::Deref;
+use crate::core::Bindable;
 
 pub trait Renderable {
     fn render(&mut self, engine: &mut Engine);
@@ -57,7 +58,8 @@ pub struct Mesh<'a> {
     vertices: &'a[Vertex],
     transformation: Matrix4<f32>,
     index: Option<gfx::Slice<back::Resources>>,
-    data: Option<pipe::Data<back::Resources>>
+    data: Option<pipe::Data<back::Resources>>,
+    texture: Option<Texture>
 }
 
 impl <'a> Mesh<'a> {
@@ -65,6 +67,7 @@ impl <'a> Mesh<'a> {
         return Mesh{
             vertices: vertices,
             transformation: Matrix4::from_scaled_axis(Vector3::new(0., 0.,0.)),
+            texture: Option::None,
             index: Option::None,
             data: Option::None
         }
@@ -80,11 +83,30 @@ impl <'a> Mesh<'a> {
         let camera_buffer = engine.factory.create_constant_buffer(1);
         let transform_buffer = engine.factory.create_constant_buffer(1);
         let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(self.vertices, ());
+        if self.texture.is_none() {
+            return;
+        }
+        let mut texture = self.texture.clone().unwrap();
+        if texture.resource.is_none() {
+            let result = engine.bind(texture);
+            if result.is_err() {
+                return;
+            }
+
+            texture = result.unwrap();
+        }
+
+        if texture.resource.is_none() {
+            return;
+        }        
+
+        let sampler = engine.factory.create_sampler_linear();
         let data = pipe::Data {
             vbuf: vertex_buffer,
             light: light_buffer,
             camera: camera_buffer,
             transformation: transform_buffer,
+            texture: (texture.resource.unwrap(), sampler),
             out: engine.color.clone(),
         };
 

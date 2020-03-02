@@ -5,7 +5,6 @@ extern crate gfx_device_gl as back;
 extern crate nalgebra as na;
 
 use crate::camera;
-use na::Matrix4;
 use gfx::traits::FactoryExt;
 use gfx::{Device, Factory};
 use glutin::{GlContext};
@@ -35,6 +34,7 @@ gfx_defines!{
         light: gfx::ConstantBuffer<Light> = "light",
         transformation: gfx::ConstantBuffer<Transform> = "transform",
         camera: gfx::ConstantBuffer<Camera> = "camera",
+        texture: gfx::TextureSampler<[f32; 4]> = "texture",
         out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
     }
 }
@@ -136,10 +136,12 @@ pub enum Event {
     Closed,
 }
 
+#[derive(Debug, Clone)]
 pub struct Texture {
     data: Vec<u8>,
     width: u16,
-    height: u16
+    height: u16,
+    pub resource: Option<gfx::handle::ShaderResourceView<back::Resources, [f32; 4]>>
 }
 
 impl Texture {
@@ -153,15 +155,16 @@ impl Texture {
         let texture = Texture{
             width: width as u16,
             height: height as u16,
-            data: image.to_vec()
+            data: image.to_vec(),
+            resource: Option::None
         };
         
         return Result::Ok(texture);
     }
 }
 
-trait Bindable<T> {
-    fn bind(&mut self, t:T) -> bool;
+pub trait Bindable<T> {
+    fn bind(&mut self, t:T) -> Result<T, String>;
 }
 
 pub struct Engine {
@@ -227,10 +230,19 @@ impl Engine {
 }
 
 impl Bindable<Texture> for Engine {
-    fn bind(&mut self, texture: Texture) -> bool {
+    fn bind(&mut self, texture: Texture) -> Result<Texture, String> {
         use gfx::format::Rgba8;
         let kind = gfx::texture::Kind::D2(texture.width, texture.height, gfx::texture::AaMode::Single);
-        let result = self.factory.create_texture_immutable_u8::<Rgba8>(kind, gfx::texture::Mipmap::Provided, &[&texture.data])
-        return result.is_ok();
+        let result = self.factory.create_texture_immutable_u8::<Rgba8>(kind, gfx::texture::Mipmap::Provided, &[&texture.data]);
+        if result.is_err() {
+            return Result::Err("Erro to create texture".to_string());
+        }
+        let (_, resource) = result.unwrap();
+        return Result::Ok(Texture{
+            width: texture.width,
+            height: texture.height,
+            data: texture.data,
+            resource: Option::Some(resource)
+        });
     }
 }
