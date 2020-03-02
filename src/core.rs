@@ -7,7 +7,7 @@ extern crate nalgebra as na;
 use crate::camera;
 use na::Matrix4;
 use gfx::traits::FactoryExt;
-use gfx::Device;
+use gfx::{Device, Factory};
 use glutin::{GlContext};
 
 gfx_defines!{
@@ -136,6 +136,34 @@ pub enum Event {
     Closed,
 }
 
+pub struct Texture {
+    data: Vec<u8>,
+    width: u16,
+    height: u16
+}
+
+impl Texture {
+    fn load(path: String) -> Result<Self, String>{
+        let image_result = image::open(path);
+        if image_result.is_err() {
+            return Result::Err("Error to load data!".to_string())
+        }
+        let image = image_result.unwrap().to_rgb();
+        let (width, height) = image.dimensions();
+        let texture = Texture{
+            width: width as u16,
+            height: height as u16,
+            data: image.to_vec()
+        };
+        
+        return Result::Ok(texture);
+    }
+}
+
+trait Bindable<T> {
+    fn bind(&mut self, t:T) -> bool;
+}
+
 pub struct Engine {
     pub lights: Vec<Light>,
     event_loop: glutin::EventsLoop,
@@ -195,5 +223,14 @@ impl Engine {
     pub fn update(&mut self) {
         self.window.swap_buffers().unwrap();
         self.encoder.flush(&mut self.device);
+    }
+}
+
+impl Bindable<Texture> for Engine {
+    fn bind(&mut self, texture: Texture) -> bool {
+        use gfx::format::Rgba8;
+        let kind = gfx::texture::Kind::D2(texture.width, texture.height, gfx::texture::AaMode::Single);
+        let result = self.factory.create_texture_immutable_u8::<Rgba8>(kind, gfx::texture::Mipmap::Provided, &[&texture.data])
+        return result.is_ok();
     }
 }
