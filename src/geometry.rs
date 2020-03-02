@@ -76,6 +76,16 @@ impl <'a> Mesh<'a> {
         }
     }
 
+    pub fn new_with_texture(vertices: &'a[Vertex], texture: Texture) -> Self {
+        return Mesh{
+            vertices: vertices,
+            transformation: Matrix4::from_scaled_axis(Vector3::new(0., 0.,0.)),
+            texture: Option::Some(texture),
+            index: Option::None,
+            data: Option::None
+        }
+    }
+
     fn set_rotation(&mut self, angles: Vector3<f32>) {
         let rotation = Rotation3::new(angles);
         self.transformation = rotation.to_homogeneous() * self.transformation;
