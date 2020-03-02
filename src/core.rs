@@ -14,6 +14,7 @@ gfx_defines!{
         position: [f32; 4] = "vertex_position",
         normal: [f32; 3] = "vertex_normal",
         color: [f32; 3] = "vertex_color",
+        uv: [f32; 2] = "vertex_uv",
     }
 
     constant Light {
@@ -160,6 +161,17 @@ impl Texture {
         };
         
         return Result::Ok(texture);
+    }
+}
+
+impl Default for Texture {
+    fn default() -> Self{
+        return Texture{
+            width: 1,
+            height: 1,
+            data: vec!(std::u8::MAX),
+            resource: Option::None
+        }
     }
 }
 

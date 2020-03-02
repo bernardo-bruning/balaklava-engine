@@ -23,17 +23,20 @@ impl<'a> Triangle<'a> {
                     Vertex { 
                         position: [ -0.5, -0.5, 1.0, 1.0 ], 
                         normal: [0.0, 0.0, 1.0], 
-                        color: [1.0, 0.0, 0.0] 
+                        color: [1.0, 0.0, 0.0],
+                        uv: [0.0, 0.0]
                     },
                     Vertex { 
                         position: [  0.5, -0.5, 1.0, 1.0 ], 
                         normal: [0.0, 0.0, 1.0], 
-                        color: [0.0, 1.0, 0.0] 
+                        color: [0.0, 1.0, 0.0] ,
+                        uv: [0.0, 1.0]
                     },
                     Vertex { 
                         position: [  0.0,  0.5, 1.0, 1.0 ], 
                         normal: [0.0, 0.0, 1.0], 
-                        color: [0.0, 0.0, 1.0] 
+                        color: [0.0, 0.0, 1.0],
+                        uv: [0.5, 0.0]
                     },
                 ]
             ) 
@@ -67,7 +70,7 @@ impl <'a> Mesh<'a> {
         return Mesh{
             vertices: vertices,
             transformation: Matrix4::from_scaled_axis(Vector3::new(0., 0.,0.)),
-            texture: Option::None,
+            texture: Option::Some(Texture::default()),
             index: Option::None,
             data: Option::None
         }
