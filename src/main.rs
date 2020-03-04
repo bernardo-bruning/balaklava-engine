@@ -4,6 +4,7 @@ extern crate nalgebra as na;
 mod core;
 mod geometry;
 mod camera;
+mod loaders;
 use crate::geometry::{Triangle, Renderable};
 use crate::core::*;
 
