@@ -11,11 +11,11 @@ pub trait Renderable {
     fn render(&mut self, engine: &mut Engine);
 }
 
-pub struct Triangle<'a> {
+pub struct Triangle {
     pub mesh: Mesh
 }
 
-impl<'a> Triangle<'a> {
+impl Triangle {
     pub fn new() -> Self{
         return Triangle{
             mesh: Mesh::new(
@@ -44,13 +44,13 @@ impl<'a> Triangle<'a> {
     }
 }
 
-impl<'a> Renderable for Triangle<'a>{
+impl<'a> Renderable for Triangle {
     fn render(&mut self, engine: &mut Engine) {
         self.mesh.render(engine);
     }
 }
 
-impl<'a> Deref for Triangle<'a> {
+impl<'a> Deref for Triangle {
     type Target = Mesh;
     fn deref(&self) -> &Mesh {
         return &self.mesh
