@@ -12,14 +12,14 @@ pub trait Renderable {
 }
 
 pub struct Triangle<'a> {
-    pub mesh: Mesh<'a>
+    pub mesh: Mesh
 }
 
 impl<'a> Triangle<'a> {
     pub fn new() -> Self{
         return Triangle{
             mesh: Mesh::new(
-                &[
+                vec![
                     Vertex { 
                         position: [ -0.5, -0.5, 1.0, 1.0 ], 
                         normal: [0.0, 0.0, 1.0], 
@@ -51,22 +51,22 @@ impl<'a> Renderable for Triangle<'a>{
 }
 
 impl<'a> Deref for Triangle<'a> {
-    type Target = Mesh<'a>;
-    fn deref(&self) -> &Mesh<'a> {
+    type Target = Mesh;
+    fn deref(&self) -> &Mesh {
         return &self.mesh
     }
 }
 
-pub struct Mesh<'a> {
-    vertices: &'a[Vertex],
+pub struct Mesh {
+    vertices: Vec<Vertex>,
     transformation: Matrix4<f32>,
     index: Option<gfx::Slice<back::Resources>>,
     data: Option<pipe::Data<back::Resources>>,
     texture: Option<Texture>
 }
 
-impl <'a> Mesh<'a> {
-    pub fn new(vertices: &'a[Vertex]) -> Self {
+impl Mesh {
+    pub fn new(vertices: Vec<Vertex>) -> Self {
         return Mesh{
             vertices: vertices,
             transformation: Matrix4::from_scaled_axis(Vector3::new(0., 0.,0.)),
@@ -76,7 +76,7 @@ impl <'a> Mesh<'a> {
         }
     }
 
-    pub fn new_with_texture(vertices: &'a[Vertex], texture: Texture) -> Self {
+    pub fn new_with_texture(vertices: Vec<Vertex>, texture: Texture) -> Self {
         return Mesh{
             vertices: vertices,
             transformation: Matrix4::from_scaled_axis(Vector3::new(0., 0.,0.)),
@@ -95,7 +95,7 @@ impl <'a> Mesh<'a> {
         let light_buffer = engine.factory.create_constant_buffer(1);
         let camera_buffer = engine.factory.create_constant_buffer(1);
         let transform_buffer = engine.factory.create_constant_buffer(1);
-        let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(self.vertices, ());
+        let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(self.vertices.as_slice(), ());
         if self.texture.is_none() {
             return;
         }
@@ -128,7 +128,7 @@ impl <'a> Mesh<'a> {
     }
 }
 
-impl <'a> Renderable for Mesh<'a> {
+impl <'a> Renderable for Mesh {
     fn render(&mut self, engine: &mut Engine) {
         if self.data == Option::None || self.index == Option::None {
             self.bind(engine);
