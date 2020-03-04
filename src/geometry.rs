@@ -57,6 +57,7 @@ impl<'a> Deref for Triangle {
     }
 }
 
+#[derive(Debug)]
 pub struct Mesh {
     vertices: Vec<Vertex>,
     transformation: Matrix4<f32>,

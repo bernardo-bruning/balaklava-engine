@@ -6,6 +6,7 @@ use std::fs::File;
 use std::error::Error;
 use std::iter::Map;
 
+#[derive(Debug)]
 pub struct Obj {
     models: Vec<Model>,
     materials: Vec<Material>
@@ -13,7 +14,8 @@ pub struct Obj {
 
 impl Obj {
     pub fn open<P: AsRef<Path>>(path: P) -> Result<Self, String> {
-        let result = tobj::load_obj(path.as_ref());
+        let file_name = path.as_ref();
+        let result = tobj::load_obj(file_name);
         if result.is_err() {
             let error = result.unwrap_err();
             return Result::Err(String::from(error.description()));

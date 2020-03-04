@@ -1050,6 +1050,9 @@ dependencies = [
 name = "tobj"
 version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "token_store"

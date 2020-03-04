@@ -7,9 +7,10 @@ mod core;
 mod geometry;
 mod camera;
 mod loaders;
-use crate::geometry::{Triangle, Renderable};
+use crate::geometry::{Renderable};
 use crate::core::*;
 use log::{info};
+use crate::loaders::Obj;
 
 fn main() {
     env_logger::init();
@@ -21,7 +22,19 @@ fn main() {
             color: [1.0, 1.0, 1.0]
         });
 
-    let mut triangle = Triangle::new();
+    let obj_result = Obj::open("./penguin.obj");
+    if obj_result.is_err() {
+        let error: String = obj_result.unwrap_err();
+        panic!("One error ocurred: {}", error);
+    }
+
+    let obj = obj_result.unwrap();
+    let model_result: Result<geometry::Mesh, String> = obj.into();
+    if model_result.is_err() {
+        panic!("One error ocurred when convert Obj into Mesh: {}", model_result.unwrap_err());
+    }
+
+    let mut model = model_result.unwrap();
     let mut engine = builder.build();
 
     let mut running = true;
@@ -33,7 +46,7 @@ fn main() {
         });
 
         engine.clear();
-        triangle.render(&mut engine);
+        model.render(&mut engine);
         engine.update();
     }
     info!("Close program");
