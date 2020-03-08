@@ -14,6 +14,18 @@ pub struct Obj {
     materials: Vec<Material>
 }
 
+fn load_vector_n(plan_vector: &Vec<f32>, v: usize, n: usize) -> Vec<f32>{
+    let mut result = Vec::new();
+
+    for i in 0..n {
+        if plan_vector.len() > n*v+i {
+            result.push(plan_vector[n*v+i]);
+        }
+    }
+
+    return result;
+}
+
 fn load_vector(plan_vector: &Vec<f32>, v: usize) -> [f32; 3]{
     let mut x = 0.0;
     let mut y = 0.0;
@@ -76,14 +88,15 @@ impl <'a> Into<Result<Mesh, String>> for Obj {
             let v3 = model.mesh.indices[3*f + 2];
 
             for v in vec![v1, v2, v3] {
-                let position = load_vector(&model.mesh.positions, v as usize);
-                let normals = load_vector(&model.mesh.normals, v as usize);
+                let position = load_vector_n(&model.mesh.positions, v as usize, 3);
+                let normals = load_vector_n(&model.mesh.normals, v as usize, 3);
+                let uv = load_vector_n(&model.mesh.texcoords, v as usize, 2);
                 
                 vertices.push(Vertex {
                     position: [ position[0], position[1], position[2], 1.0 ], 
-                    normal: normals, 
+                    normal: [normals[0], normals[1], normals[2]], 
                     color: [0.0, 0.0, 0.0],
-                    uv: [0.0, 0.0]
+                    uv: [uv[0], uv[1]]
                 })
             }
         }

@@ -25,11 +25,18 @@ fn test_obj_into_mesh() {
         1, 2, 3
     ];
 
+    let texcoords = vec![
+        0., 0.,
+        0., 1.,
+        1., 0.,
+        1., 1.
+    ];
+
     let models = vec![
         Model::new(Mesh::new(
             positions, 
             normals, 
-            vec![], 
+            texcoords, 
             indices, 
             Option::None
         ), "plane".to_string())
@@ -44,37 +51,37 @@ fn test_obj_into_mesh() {
             position: [ 0., 0., 0., 1.0 ], 
             normal: [0.0, 0.0, 1.0], 
             color: [0.0, 0.0, 0.0],
-            uv: [0.0, 0.0]
+            uv: [0., 0.]
         },
         Vertex {
             position: [ 0., 1., 0., 1.0 ], 
             normal: [0.0, 0.0, 1.0], 
             color: [0.0, 0.0, 0.0],
-            uv: [0.0, 0.0]
+            uv: [0.0, 1.0]
         },
         Vertex {
             position: [ 1., 0., 0., 1.0 ], 
             normal: [0.0, 0.0, 1.0], 
             color: [0.0, 0.0, 0.0],
-            uv: [0.0, 0.0]
+            uv: [1., 0.]
         },
         Vertex {
             position: [ 0., 1., 0., 1.0 ], 
             normal: [0.0, 0.0, 1.0], 
             color: [0.0, 0.0, 0.0],
-            uv: [0.0, 0.0]
+            uv: [0., 1.]
         },
         Vertex {
             position: [ 1., 0., 0., 1.0 ], 
             normal: [0.0, 0.0, 1.0], 
             color: [0.0, 0.0, 0.0],
-            uv: [0.0, 0.0]
+            uv: [1., 0.]
         },
         Vertex {
             position: [ 1., 1., 0., 1.0 ], 
             normal: [0.0, 0.0, 1.0], 
             color: [0.0, 0.0, 0.0],
-            uv: [0.0, 0.0]
+            uv: [1., 1.]
         },
     ], mesh.vertices);
 }
