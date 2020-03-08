@@ -17,16 +17,14 @@ impl Orthographic {
         }
     }
 
+    pub fn get_projection(&self) -> [[f32; 4]; 4] {
+        let matrix = self.projection;
+        return self.projection.transpose().into();
+    }
+
     pub fn get_view(&self) -> [[f32;4]; 4] {
-        let matrix = self.projection*self.view;
-        println!("{}", matrix);
-        let array: [[f32; 4]; 4] = [
-            [matrix[0], matrix[4], matrix[8], matrix[12]],
-            [matrix[1], matrix[5], matrix[9], matrix[13]],
-            [matrix[2], matrix[6], matrix[10], matrix[14]],
-            [matrix[3], matrix[7], matrix[11], matrix[15]],
-        ];
-        return array;
+        let matrix = self.view;
+        return matrix.into();
     }
 
     pub fn translate(&mut self, x:f32, y:f32, z:f32) {

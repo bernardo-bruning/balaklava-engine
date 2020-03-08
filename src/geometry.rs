@@ -135,7 +135,10 @@ impl <'a> Renderable for Mesh {
             self.bind(engine);
         }
     
-        let camera_buffer = Camera{ transform: engine.camera.get_view() };
+        let camera_buffer = Camera{ 
+            transform: engine.camera.get_view(),
+            projection: engine.camera.get_projection()
+        };
         let transform = Transform{matrix: self.transformation.into() };
         let data = self.data.as_ref().unwrap();
         let index = self.index.as_ref().unwrap();

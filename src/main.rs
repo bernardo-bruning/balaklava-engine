@@ -40,7 +40,7 @@ fn main() {
     let mut running = true;
     info!("Initialize render");
     while running {
-        engine.camera.translate(0., 0., 1.);
+        engine.camera.translate(0., 0., -0.1);
         engine.poll_event(|event| match event {
             Event::Closed => running = false
         });

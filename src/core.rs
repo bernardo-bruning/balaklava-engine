@@ -24,6 +24,7 @@ gfx_defines!{
 
     constant Camera {
         transform: [[f32; 4]; 4] = "camera_tranform",
+        projection: [[f32; 4]; 4] = "camera_projection",
     }
 
     constant Transform {
