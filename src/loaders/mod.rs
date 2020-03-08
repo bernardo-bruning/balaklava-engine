@@ -14,6 +14,23 @@ pub struct Obj {
     materials: Vec<Material>
 }
 
+fn load_vector(plan_vector: &Vec<f32>, v: usize) -> [f32; 3]{
+    let mut x = 0.0;
+    let mut y = 0.0;
+    let mut z = 0.0;
+    if plan_vector.len() > 3*v {
+        x = plan_vector[3*v];
+    }
+    if plan_vector.len() > 3*v+1 {
+        y = plan_vector[3*v+1];
+    }
+    if plan_vector.len() > 3*v+2 {
+        z = plan_vector[3*v+2];
+    }
+
+    return [x, y, z];
+}
+
 impl Obj {
     pub fn new(models: Vec<Model>, materials: Vec<Material>) -> Obj {
         Obj {
@@ -52,35 +69,19 @@ impl <'a> Into<Result<Mesh, String>> for Obj {
             return Result::Err("Not contains model in OBJ file.".to_string());
         }
         let model: &tobj::Model = result_model.unwrap();
-        let positions = model.mesh.positions.clone();
         let mut vertices = Vec::new();
         for f in 0..model.mesh.indices.len()/3 {
             let v1 = model.mesh.indices[3*f];
             let v2 = model.mesh.indices[3*f + 1];
             let v3 = model.mesh.indices[3*f + 2];
 
-            for vi in vec![v1, v2, v3] {
-                let v = vi as usize;
-                let x = positions[3*v];
-                let y = positions[3*v+1];
-                let z = positions[3*v+2];
-
-                let mut normal_x = 0.0;
-                let mut normal_y = 0.0;
-                let mut normal_z = 0.0;
-                if model.mesh.normals.len() > 3*v {
-                    normal_x = model.mesh.normals[3*v];
-                }
-                if model.mesh.normals.len() > 3*v+1 {
-                    normal_y = model.mesh.normals[3*v+1];
-                }
-                if model.mesh.normals.len() > 3*v+2 {
-                    normal_z = model.mesh.normals[3*v+2];
-                }
-
+            for v in vec![v1, v2, v3] {
+                let position = load_vector(&model.mesh.positions, v as usize);
+                let normals = load_vector(&model.mesh.normals, v as usize);
+                
                 vertices.push(Vertex {
-                    position: [ x, y, z, 1.0 ], 
-                    normal: [normal_x, normal_y, normal_z], 
+                    position: [ position[0], position[1], position[2], 1.0 ], 
+                    normal: normals, 
                     color: [0.0, 0.0, 0.0],
                     uv: [0.0, 0.0]
                 })
