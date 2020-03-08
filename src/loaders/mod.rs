@@ -60,13 +60,27 @@ impl <'a> Into<Result<Mesh, String>> for Obj {
             let v3 = model.mesh.indices[3*f + 2];
 
             for vi in vec![v1, v2, v3] {
-                let v = (vi as usize);
+                let v = vi as usize;
                 let x = positions[3*v];
                 let y = positions[3*v+1];
                 let z = positions[3*v+2];
+
+                let mut normal_x = 0.0;
+                let mut normal_y = 0.0;
+                let mut normal_z = 0.0;
+                if model.mesh.normals.len() > 3*v {
+                    normal_x = model.mesh.normals[3*v];
+                }
+                if model.mesh.normals.len() > 3*v+1 {
+                    normal_y = model.mesh.normals[3*v+1];
+                }
+                if model.mesh.normals.len() > 3*v+2 {
+                    normal_z = model.mesh.normals[3*v+2];
+                }
+
                 vertices.push(Vertex {
                     position: [ x, y, z, 1.0 ], 
-                    normal: [0.0, 0.0, 0.0], 
+                    normal: [normal_x, normal_y, normal_z], 
                     color: [0.0, 0.0, 0.0],
                     uv: [0.0, 0.0]
                 })
