@@ -63,7 +63,7 @@ pub struct Mesh {
     transformation: Matrix4<f32>,
     index: Option<gfx::Slice<back::Resources>>,
     data: Option<pipe::Data<back::Resources>>,
-    texture: Option<Texture>
+    pub texture: Option<Texture>
 }
 
 impl Mesh {
@@ -87,7 +87,7 @@ impl Mesh {
         }
     }
 
-    fn set_rotation(&mut self, angles: Vector3<f32>) {
+    pub fn set_rotation(&mut self, angles: Vector3<f32>) {
         let rotation = Rotation3::new(angles);
         self.transformation = rotation.to_homogeneous() * self.transformation;
     }

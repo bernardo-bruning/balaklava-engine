@@ -147,12 +147,13 @@ pub struct Texture {
 }
 
 impl Texture {
-    fn load(path: String) -> Result<Self, String>{
+    pub fn load(path: String) -> Result<Self, String>{
         let image_result = image::open(path);
         if image_result.is_err() {
             return Result::Err("Error to load data!".to_string())
         }
-        let image = image_result.unwrap().to_rgb();
+        let image = image_result.unwrap().to_rgba();
+        log::info!("image loaded has size {}", image.len());
         let (width, height) = image.dimensions();
         let texture = Texture{
             width: width as u16,
@@ -170,7 +171,7 @@ impl Default for Texture {
         return Texture{
             width: 1,
             height: 1,
-            data: vec!(std::u8::MAX),
+            data: vec![0],
             resource: Option::None
         }
     }

@@ -1,5 +1,6 @@
 use crate::geometry::Mesh;
 use crate::core::Vertex;
+use crate::core::Texture;
 use tobj::{Model, Material};
 use std::path::Path;
 use std::fs::File;
@@ -84,6 +85,6 @@ impl <'a> Into<Result<Mesh, String>> for Obj {
             }
         }
         
-        return Result::Ok(Mesh::new(vertices));
+        return Result::Ok(Mesh::new_with_texture(vertices, Texture::default()));
     }
 }
