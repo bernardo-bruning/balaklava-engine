@@ -21,7 +21,7 @@ out vec2 uv;
 void main() {
     color = vec4(vertex_color, 1.0);
     normal = vertex_normal;
-    position = vertex_position*camera_tranform;
+    position = camera_tranform*vertex_position;
     gl_Position = position;
     uv = vertex_uv;
 }

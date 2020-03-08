@@ -8,7 +8,7 @@ pub struct Orthographic {
 
 impl Orthographic {
     pub fn new(position: Point3<f32>, direction: Point3<f32>) -> Self {
-        let projection = Orthographic3::new(-10., 10., -10., 10., 0., 100.).to_homogeneous();;
+        let projection = Orthographic3::new(-1., 1., -1., 1., 0., 100.).to_homogeneous();
         let view = Matrix4::look_at_rh(&position, &direction, &Vector3::new(0., 1., 0.));
 
         return Self{
@@ -18,12 +18,20 @@ impl Orthographic {
     }
 
     pub fn get_view(&self) -> [[f32;4]; 4] {
-        return (self.projection * self.view).into();
+        let matrix = self.projection*self.view;
+        println!("{}", matrix);
+        let array: [[f32; 4]; 4] = [
+            [matrix[0], matrix[4], matrix[8], matrix[12]],
+            [matrix[1], matrix[5], matrix[9], matrix[13]],
+            [matrix[2], matrix[6], matrix[10], matrix[14]],
+            [matrix[3], matrix[7], matrix[11], matrix[15]],
+        ];
+        return array;
     }
 
     pub fn translate(&mut self, x:f32, y:f32, z:f32) {
         let translation = Translation3::new(x, y, z).to_homogeneous();
-        self.view = self.view*translation;
+        self.view = translation*self.view;
     }
 }
 
