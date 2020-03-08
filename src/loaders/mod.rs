@@ -26,23 +26,6 @@ fn load_vector_n(plan_vector: &Vec<f32>, v: usize, n: usize) -> Vec<f32>{
     return result;
 }
 
-fn load_vector(plan_vector: &Vec<f32>, v: usize) -> [f32; 3]{
-    let mut x = 0.0;
-    let mut y = 0.0;
-    let mut z = 0.0;
-    if plan_vector.len() > 3*v {
-        x = plan_vector[3*v];
-    }
-    if plan_vector.len() > 3*v+1 {
-        y = plan_vector[3*v+1];
-    }
-    if plan_vector.len() > 3*v+2 {
-        z = plan_vector[3*v+2];
-    }
-
-    return [x, y, z];
-}
-
 impl Obj {
     pub fn new(models: Vec<Model>, materials: Vec<Material>) -> Obj {
         Obj {
