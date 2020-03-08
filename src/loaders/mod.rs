@@ -6,6 +6,8 @@ use std::fs::File;
 use std::error::Error;
 use std::iter::Map;
 
+mod test;
+
 #[derive(Debug)]
 pub struct Obj {
     models: Vec<Model>,
@@ -13,6 +15,13 @@ pub struct Obj {
 }
 
 impl Obj {
+    pub fn new(models: Vec<Model>, materials: Vec<Material>) -> Obj {
+        Obj {
+            models,
+            materials
+        }
+    }
+
     pub fn open<P: AsRef<Path>>(path: P) -> Result<Self, String> {
         let file_name = path.as_ref();
         let result = tobj::load_obj(file_name);

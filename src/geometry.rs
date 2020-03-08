@@ -59,7 +59,7 @@ impl<'a> Deref for Triangle {
 
 #[derive(Debug)]
 pub struct Mesh {
-    vertices: Vec<Vertex>,
+    pub vertices: Vec<Vertex>,
     transformation: Matrix4<f32>,
     index: Option<gfx::Slice<back::Resources>>,
     data: Option<pipe::Data<back::Resources>>,
