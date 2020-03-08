@@ -22,7 +22,7 @@ fn main() {
             color: [1.0, 1.0, 1.0]
         });
 
-    let obj_result = Obj::open("./penguin.obj");
+    let obj_result = Obj::open("./triangle.obj");
     if obj_result.is_err() {
         let error: String = obj_result.unwrap_err();
         panic!("One error ocurred: {}", error);
