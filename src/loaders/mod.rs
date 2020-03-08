@@ -45,16 +45,23 @@ impl <'a> Into<Result<Mesh, String>> for Obj {
         let model: &tobj::Model = result_model.unwrap();
         let positions = model.mesh.positions.clone();
         let mut vertices = Vec::new();
-        for v in 0..positions.len()/3 {
-            let x = positions[3*v];
-            let y = positions[3*v+1];
-            let z = positions[3*v+2];
-            vertices.push(Vertex {
-                position: [ x, y, z, 1.0 ], 
-                normal: [0.0, 0.0, 0.0], 
-                color: [0.0, 0.0, 0.0],
-                uv: [0.0, 0.0]
-            })
+        for f in 0..model.mesh.indices.len()/3 {
+            let v1 = model.mesh.indices[3*f];
+            let v2 = model.mesh.indices[3*f + 1];
+            let v3 = model.mesh.indices[3*f + 2];
+
+            for vi in vec![v1, v2, v3] {
+                let v = (vi as usize);
+                let x = positions[3*v];
+                let y = positions[3*v+1];
+                let z = positions[3*v+2];
+                vertices.push(Vertex {
+                    position: [ x, y, z, 1.0 ], 
+                    normal: [0.0, 0.0, 0.0], 
+                    color: [0.0, 0.0, 0.0],
+                    uv: [0.0, 0.0]
+                })
+            }
         }
         
         return Result::Ok(Mesh::new(vertices));

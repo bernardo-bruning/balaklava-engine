@@ -22,7 +22,7 @@ fn main() {
             color: [1.0, 1.0, 1.0]
         });
 
-    let obj_result = Obj::open("./triangle.obj");
+    let obj_result = Obj::open("./penguin.obj");
     if obj_result.is_err() {
         let error: String = obj_result.unwrap_err();
         panic!("One error ocurred: {}", error);
@@ -40,7 +40,7 @@ fn main() {
     let mut running = true;
     info!("Initialize render");
     while running {
-        engine.camera.translate(0., 0., -0.1);
+        engine.camera.translate(0., 0., -0.01);
         engine.poll_event(|event| match event {
             Event::Closed => running = false
         });
