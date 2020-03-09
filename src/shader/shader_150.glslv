@@ -23,6 +23,6 @@ void main() {
     color = vec4(vertex_color, 1.0);
     normal = vertex_normal;
     position = position;
-    gl_Position = camera_projection*camera_tranform*vertex_position;
+    gl_Position = camera_projection*camera_tranform*transform_matrix*vertex_position;
     uv = vertex_uv;
 }

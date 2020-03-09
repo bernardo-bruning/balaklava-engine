@@ -80,7 +80,7 @@ impl <'a> Into<Result<Mesh, String>> for Obj {
                     position: [ position[0], position[1], position[2], 1.0 ], 
                     normal: [normals[0], normals[1], normals[2]], 
                     color: [0.0, 0.0, 0.0],
-                    uv: [uv[0], uv[1]]
+                    uv: [uv[0], 1.-uv[1]]
                 })
             }
         }

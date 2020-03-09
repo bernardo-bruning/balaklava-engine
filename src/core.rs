@@ -38,6 +38,10 @@ gfx_defines!{
         camera: gfx::ConstantBuffer<Camera> = "camera",
         texture: gfx::TextureSampler<[f32; 4]> = "t_texture",
         out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
+        depth: gfx::DepthTarget<gfx::format::Depth> = gfx::state::Depth {
+            fun: gfx::state::Comparison::LessEqual,
+            write: false,
+        },
     }
 }
 

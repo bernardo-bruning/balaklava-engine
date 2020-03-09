@@ -35,12 +35,14 @@ fn main() {
     }
 
     let mut model = model_result.unwrap();
+    model.texture = Texture::load("texture.png".to_string()).ok();
     let mut engine = builder.build();
 
     let mut running = true;
     info!("Initialize render");
     while running {
-        engine.camera.translate(0., 0., -0.01);
+        model.set_rotation(na::Vector3::new(0., 0.01, 0.));
+        //engine.camera.translate(0., 0., -0.01);
         engine.poll_event(|event| match event {
             Event::Closed => running = false
         });
