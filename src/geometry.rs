@@ -5,6 +5,7 @@ use crate::core::*;
 use na::{Matrix4,Vector3,Rotation3};
 use gfx::traits::FactoryExt;
 use std::ops::Deref;
+use gfx::Factory;
 use crate::core::Bindable;
 
 pub trait Renderable {
@@ -112,8 +113,7 @@ impl Mesh {
 
         if texture.resource.is_none() {
             return;
-        }        
-
+        }
         let sampler = engine.factory.create_sampler_linear();
         let data = pipe::Data {
             vbuf: vertex_buffer,
@@ -122,6 +122,7 @@ impl Mesh {
             transformation: transform_buffer,
             texture: (texture.resource.unwrap(), sampler),
             out: engine.color.clone(),
+            depth: engine.depth.clone()
         };
 
         self.index = Option::Some(index);

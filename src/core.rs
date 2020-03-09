@@ -38,10 +38,7 @@ gfx_defines!{
         camera: gfx::ConstantBuffer<Camera> = "camera",
         texture: gfx::TextureSampler<[f32; 4]> = "t_texture",
         out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
-        depth: gfx::DepthTarget<gfx::format::Depth> = gfx::state::Depth {
-            fun: gfx::state::Comparison::LessEqual,
-            write: false,
-        },
+        depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
     }
 }
 
@@ -108,7 +105,7 @@ impl <'a> Builder<'a> {
 
     pub fn build(&self) -> Engine {            
         let events_loop = self.get_eventsloop();
-        let (window, device, mut factory, color, _depth_view) =
+        let (window, device, mut factory, color, depth_view) =
             gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
             self.get_window_builder(), 
             self.get_context_builder(), 
@@ -131,6 +128,7 @@ impl <'a> Builder<'a> {
             device,
             factory,
             color,
+            depth_view,
             encoder,
             pso,
             camera::Orthographic::default()
@@ -188,9 +186,10 @@ pub trait Bindable<T> {
 pub struct Engine {
     pub lights: Vec<Light>,
     event_loop: glutin::EventsLoop,
-    window: glutin::GlWindow,
+    pub window: glutin::GlWindow,
     device: back::Device,
     pub factory: back::Factory,
+    pub depth: gfx::handle::DepthStencilView<back::Resources, gfx::format::DepthStencil>,
     pub color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     pub encoder: gfx::Encoder<back::Resources, back::CommandBuffer>,
     pub pso: gfx::pso::PipelineState<back::Resources, pipe::Meta>,
@@ -205,6 +204,7 @@ impl Engine {
         device: back::Device,
         factory: back::Factory,
         color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
+        depth: gfx::handle::DepthStencilView<back::Resources, gfx::format::DepthStencil>,
         encoder: gfx::Encoder<back::Resources, back::CommandBuffer>,
         pso: gfx::PipelineState<back::Resources, pipe::Meta>,
         camera: camera::Orthographic
@@ -216,6 +216,7 @@ impl Engine {
             device,
             factory,
             color,
+            depth,
             encoder,
             pso,
             camera: camera::Orthographic::default()
@@ -238,7 +239,8 @@ impl Engine {
     pub fn clear(&mut self) {
         self.device.cleanup();
         self.encoder.reset();
-        self.encoder.clear(&self.color, [0.0, 0.0, 0.0, 1.0]);
+        self.encoder.clear(&self.color, [1.0, 1.0, 1.0, 1.0]);
+        self.encoder.clear_depth(&self.depth, 1.0);
     }
 
     pub fn update(&mut self) {
