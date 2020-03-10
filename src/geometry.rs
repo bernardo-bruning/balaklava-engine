@@ -5,7 +5,6 @@ use crate::core::*;
 use na::{Matrix4,Vector3,Rotation3};
 use gfx::traits::FactoryExt;
 use std::ops::Deref;
-use gfx::Factory;
 use crate::core::Bindable;
 
 pub trait Renderable {

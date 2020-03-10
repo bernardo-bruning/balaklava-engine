@@ -18,7 +18,6 @@ impl Orthographic {
     }
 
     pub fn get_projection(&self) -> [[f32; 4]; 4] {
-        let matrix = self.projection;
         return self.projection.transpose().into();
     }
 

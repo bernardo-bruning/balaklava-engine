@@ -219,7 +219,7 @@ impl Engine {
             depth,
             encoder,
             pso,
-            camera: camera::Orthographic::default()
+            camera: camera
         }
     }
 
