@@ -8,7 +8,7 @@ pub enum KeyCodes {
 #[derive(Debug, PartialEq)]
 pub struct KeyInput {
     scancode: u32,
-    //virtual_key: KeyCodes
+    virtual_key: Option<KeyCodes>
 }
 
 impl std::fmt::Display for KeyInput {
@@ -30,33 +30,33 @@ fn map_keycode(virtual_key: Option<glutin::VirtualKeyCode>) -> Option<KeyCodes> 
         return Option::None
     }
 
-    match virtual_key {
-        A => Option::Some(KeyCodes::A), 
-        B => Option::Some(KeyCodes::B), 
-        C => Option::Some(KeyCodes::C), 
-        D => Option::Some(KeyCodes::D), 
-        E => Option::Some(KeyCodes::E), 
-        F => Option::Some(KeyCodes::F), 
-        G => Option::Some(KeyCodes::G), 
-        H => Option::Some(KeyCodes::H), 
-        I => Option::Some(KeyCodes::I), 
-        J => Option::Some(KeyCodes::J), 
-        K => Option::Some(KeyCodes::K), 
-        L => Option::Some(KeyCodes::L), 
-        M => Option::Some(KeyCodes::M), 
-        N => Option::Some(KeyCodes::N), 
-        O => Option::Some(KeyCodes::O), 
-        P => Option::Some(KeyCodes::P), 
-        Q => Option::Some(KeyCodes::Q), 
-        R => Option::Some(KeyCodes::R), 
-        S => Option::Some(KeyCodes::S), 
-        T => Option::Some(KeyCodes::T), 
-        U => Option::Some(KeyCodes::U), 
-        V => Option::Some(KeyCodes::V), 
-        W => Option::Some(KeyCodes::W), 
-        X => Option::Some(KeyCodes::X), 
-        Y => Option::Some(KeyCodes::Y), 
-        Z => Option::Some(KeyCodes::Z),
+    match virtual_key.unwrap() {
+        glutin::VirtualKeyCode::A => Option::Some(KeyCodes::A), 
+        glutin::VirtualKeyCode::B => Option::Some(KeyCodes::B), 
+        glutin::VirtualKeyCode::C => Option::Some(KeyCodes::C), 
+        glutin::VirtualKeyCode::D => Option::Some(KeyCodes::D), 
+        glutin::VirtualKeyCode::E => Option::Some(KeyCodes::E), 
+        glutin::VirtualKeyCode::F => Option::Some(KeyCodes::F), 
+        glutin::VirtualKeyCode::G => Option::Some(KeyCodes::G), 
+        glutin::VirtualKeyCode::H => Option::Some(KeyCodes::H), 
+        glutin::VirtualKeyCode::I => Option::Some(KeyCodes::I), 
+        glutin::VirtualKeyCode::J => Option::Some(KeyCodes::J), 
+        glutin::VirtualKeyCode::K => Option::Some(KeyCodes::K), 
+        glutin::VirtualKeyCode::L => Option::Some(KeyCodes::L), 
+        glutin::VirtualKeyCode::M => Option::Some(KeyCodes::M), 
+        glutin::VirtualKeyCode::N => Option::Some(KeyCodes::N), 
+        glutin::VirtualKeyCode::O => Option::Some(KeyCodes::O), 
+        glutin::VirtualKeyCode::P => Option::Some(KeyCodes::P), 
+        glutin::VirtualKeyCode::Q => Option::Some(KeyCodes::Q), 
+        glutin::VirtualKeyCode::R => Option::Some(KeyCodes::R), 
+        glutin::VirtualKeyCode::S => Option::Some(KeyCodes::S), 
+        glutin::VirtualKeyCode::T => Option::Some(KeyCodes::T), 
+        glutin::VirtualKeyCode::U => Option::Some(KeyCodes::U), 
+        glutin::VirtualKeyCode::V => Option::Some(KeyCodes::V), 
+        glutin::VirtualKeyCode::W => Option::Some(KeyCodes::W), 
+        glutin::VirtualKeyCode::X => Option::Some(KeyCodes::X), 
+        glutin::VirtualKeyCode::Y => Option::Some(KeyCodes::Y), 
+        glutin::VirtualKeyCode::Z => Option::Some(KeyCodes::Z),
         _ => Option::None
     }
 }
@@ -68,8 +68,8 @@ pub fn convert(event: glutin::Event) -> Option<Event> {
                 glutin::WindowEvent::Closed => Option::Some(Event::Closed),
                 glutin::WindowEvent::KeyboardInput { input, .. } => Option::Some(Event::KeyInput {
                     input: KeyInput { 
-                        scancode: input.scancode
-
+                        scancode: input.scancode,
+                        virtual_key: map_keycode(input.virtual_keycode)
                     }
                 }),
                 _ => Option::None
