@@ -1,6 +1,6 @@
 extern crate glutin;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 pub enum KeyCodes {
     A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
 }
@@ -13,7 +13,7 @@ pub struct KeyInput {
 
 impl std::fmt::Display for KeyInput {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "scancode: {}", self.scancode)
+        write!(f, "KeyInput(scancode: {}, {:?})", self.scancode, self.virtual_key)
     } 
 }
 
