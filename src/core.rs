@@ -5,6 +5,7 @@ extern crate gfx_device_gl as back;
 extern crate nalgebra as na;
 
 use crate::camera;
+use crate::events;
 use gfx::traits::FactoryExt;
 use gfx::{Device, Factory};
 use glutin::{GlContext};
@@ -136,10 +137,6 @@ impl <'a> Builder<'a> {
     } 
 }
 
-pub enum Event {
-    Closed,
-}
-
 #[derive(Debug, Clone)]
 pub struct Texture {
     data: Vec<u8>,
@@ -223,12 +220,12 @@ impl Engine {
         }
     }
 
-    pub fn poll_event<F>(&mut self, mut callback: F) where F:FnMut(Event) {
+    pub fn poll_event<F>(&mut self, mut callback: F) where F:FnMut(events::Event) {
         self.event_loop.poll_events(|event| {
             match event {
                 glutin::Event::WindowEvent{ event, .. } => 
                     match event {
-                        glutin::WindowEvent::Closed => callback(Event::Closed),
+                        glutin::WindowEvent::Closed => callback(events::Event::Closed),
                         _ => ()
                     }
                 _ => ()

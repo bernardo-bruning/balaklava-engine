@@ -3,10 +3,13 @@ extern crate gfx;
 extern crate nalgebra as na;
 extern crate log;
 extern crate env_logger;
+
 mod core;
 mod geometry;
 mod camera;
 mod loaders;
+mod events;
+
 use crate::geometry::{Renderable};
 use crate::core::*;
 use log::{info};
@@ -44,7 +47,7 @@ fn main() {
         model.set_rotation(na::Vector3::new(0., 0.01, 0.));
         //engine.camera.translate(0., 0., -0.01);
         engine.poll_event(|event| match event {
-            Event::Closed => running = false
+            events::Event::Closed => running = false
         });
 
         engine.clear();
