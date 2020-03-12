@@ -32,6 +32,7 @@ fn main() {
     }
 
     let obj = obj_result.unwrap();
+    let r: Result<u32, String> = Result::Err("test".to_string());
     let model_result: Result<geometry::Mesh, String> = obj.into();
     if model_result.is_err() {
         panic!("One error ocurred when convert Obj into Mesh: {}", model_result.unwrap_err());
@@ -47,7 +48,8 @@ fn main() {
         model.set_rotation(na::Vector3::new(0., 0.01, 0.));
         //engine.camera.translate(0., 0., -0.01);
         engine.poll_event(|event| match event {
-            events::Event::Closed => running = false
+            events::Event::Closed => running = false,
+            _ => ()
         });
 
         engine.clear();
