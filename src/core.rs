@@ -222,13 +222,9 @@ impl Engine {
 
     pub fn poll_event<F>(&mut self, mut callback: F) where F:FnMut(events::Event) {
         self.event_loop.poll_events(|event| {
-            match event {
-                glutin::Event::WindowEvent{ event, .. } => 
-                    match event {
-                        glutin::WindowEvent::Closed => callback(events::Event::Closed),
-                        _ => ()
-                    }
-                _ => ()
+            let event = events::convert(event);
+            if event.is_some() {
+                callback(event.unwrap());
             }
         });
     }
