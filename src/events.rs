@@ -7,8 +7,8 @@ pub enum KeyCodes {
 
 #[derive(Debug, PartialEq)]
 pub struct KeyInput {
-    scancode: u32,
-    virtual_key: Option<KeyCodes>
+    pub scancode: u32,
+    pub virtual_key: Option<KeyCodes>
 }
 
 impl std::fmt::Display for KeyInput {

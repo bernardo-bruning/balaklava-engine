@@ -40,7 +40,8 @@ fn main() {
 
     let mut model = model_result.unwrap();
     model.texture = Texture::load("texture.png".to_string()).ok();
-    let mut engine = builder.build();
+    
+    let mut engine = std::boxed::Box::from(builder.build());
 
     let mut running = true;
     info!("Initialize render");
@@ -49,6 +50,12 @@ fn main() {
         //engine.camera.translate(0., 0., -0.01);
         engine.poll_event(|event| match event {
             events::Event::Closed => running = false,
+            events::Event::KeyInput{ input } => 
+                match input.virtual_key {
+                    //Option::Some(events::KeyCodes::W) => engine.camera.translate(1., 0., 0.),
+                    //Option::Some(events::KeyCodes::W) => println!("teste"),
+                    _ => ()
+                },
             _ => ()
         });
 

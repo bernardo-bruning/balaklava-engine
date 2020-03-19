@@ -43,6 +43,29 @@ gfx_defines!{
     }
 }
 
+struct Wrap<A> {
+    app: A
+}
+
+fn launch<App>() where App: Sized+Application {
+    let app = App::new();
+}
+
+impl <A> Application for Wrap<A> where A: Application{
+    fn new() -> Self{
+        Wrap{
+            app: A::new()
+        }
+    }
+}
+
+trait Application {
+    fn new() -> Self;
+    fn launch(builder: Builder) where Self: Sized+Application {
+        launch::<Wrap<Self>>()
+    }
+}
+
 pub struct Builder<'a> {
     name: String,
     vertex_shader: &'a[u8],
