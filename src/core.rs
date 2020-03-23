@@ -10,6 +10,8 @@ use gfx::traits::FactoryExt;
 use gfx::{Device, Factory};
 use glutin::{GlContext};
 
+
+
 gfx_defines!{
     vertex Vertex {
         position: [f32; 4] = "vertex_position",
@@ -43,27 +45,10 @@ gfx_defines!{
     }
 }
 
-struct Wrap<A> {
-    app: A
-}
-
-fn launch<App>() where App: Sized+Application {
-    let app = App::new();
-}
-
-impl <A> Application for Wrap<A> where A: Application{
-    fn new() -> Self{
-        Wrap{
-            app: A::new()
-        }
-    }
-}
-
-trait Application {
+pub trait Application {
     fn new() -> Self;
-    fn launch(builder: Builder) where Self: Sized+Application {
-        launch::<Wrap<Self>>()
-    }
+    fn create(&mut self);
+    fn render(&mut self);
 }
 
 pub struct Builder<'a> {
@@ -127,7 +112,7 @@ impl <'a> Builder<'a> {
             .with_vsync(true)
     }
 
-    pub fn build(&self) -> Engine {            
+    pub fn build(&self) -> Graphics {            
         let events_loop = self.get_eventsloop();
         let (window, device, mut factory, color, depth_view) =
             gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
@@ -145,7 +130,7 @@ impl <'a> Builder<'a> {
         let encoder: gfx::Encoder<back::Resources, back::CommandBuffer> = 
             factory.create_command_buffer().into();
             
-        return Engine::new(
+        return Graphics::new(
             self.get_lights(),
             events_loop,
             window,
@@ -203,7 +188,7 @@ pub trait Bindable<T> {
     fn bind(&mut self, t:T) -> Result<T, String>;
 }
 
-pub struct Engine {
+pub struct Graphics {
     pub lights: Vec<Light>,
     event_loop: glutin::EventsLoop,
     pub window: glutin::GlWindow,
@@ -216,7 +201,7 @@ pub struct Engine {
     pub camera: camera::Orthographic
 }
 
-impl Engine {
+impl Graphics {
     pub fn new(
         lights: Vec<Light>,
         event_loop: glutin::EventsLoop,
@@ -229,7 +214,7 @@ impl Engine {
         pso: gfx::PipelineState<back::Resources, pipe::Meta>,
         camera: camera::Orthographic
     ) -> Self {
-        return Engine {
+        return Graphics {
             lights,
             event_loop,
             window,
@@ -265,7 +250,7 @@ impl Engine {
     }
 }
 
-impl Bindable<Texture> for Engine {
+impl Bindable<Texture> for Graphics {
     fn bind(&mut self, texture: Texture) -> Result<Texture, String> {
         use gfx::format::Rgba8;
         let kind = gfx::texture::Kind::D2(texture.width, texture.height, gfx::texture::AaMode::Single);
