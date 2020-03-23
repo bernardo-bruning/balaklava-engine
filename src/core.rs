@@ -45,12 +45,6 @@ gfx_defines!{
     }
 }
 
-pub trait Application {
-    fn new() -> Self;
-    fn create(&mut self);
-    fn render(&mut self);
-}
-
 pub struct Builder<'a> {
     name: String,
     vertex_shader: &'a[u8],
