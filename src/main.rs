@@ -15,17 +15,18 @@ use crate::geometry::{Renderable};
 use crate::core::*;
 use log::{info};
 use crate::loaders::Obj;
+use backend::{Graphics, Backend};
 
 
 pub trait Application {
-    fn new() -> Self;
+    fn new<G:Graphics, B: Backend<G>>(backend: B) -> Self;
     fn create(&mut self);
     fn render(&mut self);
 }
 
 struct Example{}
 impl Application for Example {
-    fn new() -> Self{
+    fn new<G: Graphics, B: Backend<G>>(backend: B) -> Self{
         return Example{}
     }
 
