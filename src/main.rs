@@ -87,6 +87,5 @@ impl Application for Example {
 
 
 fn main() {
-    let app = Example::new();
-    backend::gfx::launch(app)
+    backend::gfx::launch::<Example>()
 }
