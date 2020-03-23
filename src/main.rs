@@ -15,45 +15,6 @@ use crate::core::*;
 use log::{info};
 use crate::loaders::Obj;
 
-struct Example {}
-impl core::Application for Example {
-    fn new() -> Example {
-        return Example{}
-    }
-
-    fn create(&mut self) {
-        env_logger::init();
-        info!("Initialize program");
-        let builder = core::Builder::default()
-            .with_name("Learn GFX".to_string())
-            .with_light(Light {
-                position: [0.5, 0.0, 0.07, 1.0],
-                color: [1.0, 1.0, 1.0]
-            });
-
-        let obj_result = Obj::open("./penguin.obj");
-        if obj_result.is_err() {
-            let error: String = obj_result.unwrap_err();
-            panic!("One error ocurred: {}", error);
-        }
-
-        let obj = obj_result.unwrap();
-        let r: Result<u32, String> = Result::Err("test".to_string());
-        let model_result: Result<geometry::Mesh, String> = obj.into();
-        if model_result.is_err() {
-            panic!("One error ocurred when convert Obj into Mesh: {}", model_result.unwrap_err());
-        }
-
-        let mut model = model_result.unwrap();
-        model.texture = Texture::load("texture.png".to_string()).ok();
-        
-        let mut engine = std::boxed::Box::from(builder.build());
-    }
-
-    fn render(&mut self) {
-
-    }
-}
 
 fn main() {
     env_logger::init();

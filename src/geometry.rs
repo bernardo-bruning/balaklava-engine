@@ -8,7 +8,7 @@ use std::ops::Deref;
 use crate::core::Bindable;
 
 pub trait Renderable {
-    fn render(&mut self, engine: &mut Engine);
+    fn render(&mut self, engine: &mut Graphics);
 }
 
 pub struct Triangle {
@@ -45,7 +45,7 @@ impl Triangle {
 }
 
 impl<'a> Renderable for Triangle {
-    fn render(&mut self, engine: &mut Engine) {
+    fn render(&mut self, engine: &mut Graphics) {
         self.mesh.render(engine);
     }
 }
@@ -92,7 +92,7 @@ impl Mesh {
         self.transformation = rotation.to_homogeneous() * self.transformation;
     }
 
-    fn bind(&mut self, engine: &mut Engine) {
+    fn bind(&mut self, engine: &mut Graphics) {
         let light_buffer = engine.factory.create_constant_buffer(1);
         let camera_buffer = engine.factory.create_constant_buffer(1);
         let transform_buffer = engine.factory.create_constant_buffer(1);
@@ -130,7 +130,7 @@ impl Mesh {
 }
 
 impl <'a> Renderable for Mesh {
-    fn render(&mut self, engine: &mut Engine) {
+    fn render(&mut self, engine: &mut Graphics) {
         if self.data == Option::None || self.index == Option::None {
             self.bind(engine);
         }
