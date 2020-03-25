@@ -1,7 +1,10 @@
 use glutin::{WindowBuilder};
 use crate::Application;
 use crate::backend::Backend;
+use crate::graphics::{Bindable, Texture};
 extern crate gfx_device_gl as back;
+use gfx::Factory;
+use gfx::format::Rgba8;
 
 struct Graphics {
     window: glutin::GlWindow,
@@ -34,9 +37,19 @@ impl Graphics {
         }
     }
 }
-impl crate::backend::Graphics for Graphics {
 
+struct TextureResource {
+    shaderResourceView: gfx::handle::ShaderResourceView<back::Resources, [f32; 4]>
+} 
+
+impl crate::backend::Graphics<TextureResource> 
+    for Graphics {}
+impl  Bindable<Texture<TextureResource>> for Graphics {
+    fn bind(&mut self, bindable: &mut Texture<TextureResource>) {
+        unimplemented!()
+    }
 }
+
 
 struct Gfx {
     graphics: Graphics
@@ -50,7 +63,7 @@ impl Gfx {
     }
 }
 
-impl Backend<Graphics> for Gfx {
+impl Backend<TextureResource, Graphics> for Gfx {
     fn graphics() -> Graphics {
         return Graphics::new()
     }

@@ -10,6 +10,7 @@ mod camera;
 mod loaders;
 mod events;
 mod backend;
+mod graphics;
 
 use crate::geometry::{Renderable};
 use crate::core::*;
@@ -19,14 +20,14 @@ use backend::{Graphics, Backend};
 
 
 pub trait Application {
-    fn new<G:Graphics, B: Backend<G>>(backend: B) -> Self;
+    fn new<TR, G:Graphics<TR>, B: Backend<TR, G>>(backend: B) -> Self;
     fn create(&mut self);
     fn render(&mut self);
 }
 
 struct Example{}
 impl Application for Example {
-    fn new<G: Graphics, B: Backend<G>>(backend: B) -> Self{
+    fn new<TR, G:Graphics<TR>, B: Backend<TR, G>>(backend: B) -> Self{
         return Example{}
     }
 
