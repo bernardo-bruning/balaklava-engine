@@ -7,5 +7,5 @@ pub struct Texture<R> {
 }
 
 pub trait Bindable<T> {
-    fn bind(&mut self, bindable: &mut T);
+    fn bind(&mut self, bindable: &mut T) -> bool;
 }

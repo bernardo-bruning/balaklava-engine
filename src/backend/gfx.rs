@@ -45,7 +45,7 @@ struct TextureResource {
 impl crate::backend::Graphics<TextureResource> 
     for Graphics {}
 impl  Bindable<Texture<TextureResource>> for Graphics {
-    fn bind(&mut self, bindable: &mut Texture<TextureResource>) {
+    fn bind(&mut self, bindable: &mut Texture<TextureResource>) -> bool {
         unimplemented!()
     }
 }
