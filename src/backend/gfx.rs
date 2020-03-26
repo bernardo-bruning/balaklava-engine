@@ -1,7 +1,7 @@
 use glutin::{WindowBuilder};
 use crate::Application;
 use crate::backend::Backend;
-use crate::graphics::{Bindable, Texture};
+use crate::graphics::{Bindable, Texture, ShaderProgram};
 extern crate gfx_device_gl as back;
 use gfx::Factory;
 use gfx::format::Rgba8;
@@ -13,6 +13,7 @@ struct Graphics {
     color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     depth_view: gfx::handle::DepthStencilView<back::Resources, gfx::format::DepthStencil>,
 }
+
 impl Graphics {
     fn new() -> Graphics {
         let builder = WindowBuilder::new();
@@ -44,12 +45,18 @@ struct TextureResource {
 
 impl crate::backend::Graphics<TextureResource> 
     for Graphics {}
-impl  Bindable<Texture<TextureResource>> for Graphics {
+
+impl Bindable<Texture<TextureResource>> for Graphics {
     fn bind(&mut self, bindable: &mut Texture<TextureResource>) -> bool {
         unimplemented!()
     }
 }
 
+impl Bindable<ShaderProgram> for Graphics {
+    fn bind(&mut self, bindable: &mut ShaderProgram) -> bool {
+        unimplemented!()
+    }
+}
 
 struct Gfx {
     graphics: Graphics
