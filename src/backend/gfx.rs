@@ -136,8 +136,5 @@ impl Backend {
     }
 }
 
-impl crate::backend::Backend<TextureResource, Graphics> for Backend {
-    fn graphics() -> Graphics {
-        unimplemented!();
-    }
+impl crate::backend::Backend for Backend {
 }

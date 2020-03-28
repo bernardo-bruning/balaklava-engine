@@ -20,7 +20,7 @@ use backend::{Graphics, Backend};
 
 
 pub trait Application {
-    fn create<TR, G:Graphics<TR>, B: Backend<TR, G>>(&mut self, backend: &mut B);
+    fn create(&mut self, backend: &mut Backend);
     fn render(&mut self);
 }
 
@@ -33,7 +33,7 @@ impl Default for DummyApplication {
 }
 
 impl Application for DummyApplication {
-    fn create<TR, G:Graphics<TR>, B: Backend<TR, G>>(&mut self, backend: &mut B){}
+    fn create(&mut self, backend: &mut Backend){}
     fn render(&mut self){}
 }
 
