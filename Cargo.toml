@@ -9,6 +9,9 @@ edition = "2018"
 [features]
 default = ["tobj/log"]
 
+[lib]
+name = "balaklava"
+
 [dependencies]
 log = "0.4.8"
 env_logger = "0.7.1"
@@ -20,3 +23,8 @@ nalgebra = "0.20.0"
 image  = "0.23.0"
 tobj = "0.1.12"
 nalgebra-glm = "0.6"
+
+
+[[example]]
+name = "application"
+path = "example/application/main.rs"

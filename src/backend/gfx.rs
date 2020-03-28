@@ -1,10 +1,45 @@
 use glutin::{WindowBuilder};
 use crate::Application;
-use crate::backend::Backend;
 use crate::graphics::{Bindable, Texture, ShaderProgram};
+use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
 extern crate gfx_device_gl as back;
-use gfx::Factory;
-use gfx::format::Rgba8;
+
+pub struct Config {
+    title: String,
+    dimension_width: usize,
+    dimension_height: usize,
+    fullscreen: bool
+}
+
+impl Config {
+    pub fn with_title(mut self, title: String) -> Self {
+        self.title = title;
+        self
+    }
+
+    pub fn with_dimensions(mut self, width: usize, height: usize) -> Self {
+        self.dimension_width = width;
+        self.dimension_height = height;
+        self
+    }
+
+    pub fn with_fullscreen(mut self, fullscreen: bool) -> Self {
+        self.fullscreen = fullscreen;
+        self
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            title: "Balaklava Engine".to_string(),
+            dimension_height: 800,
+            dimension_width: 500,
+            fullscreen: false
+        }
+    }
+}
+
 
 struct Graphics {
     window: glutin::GlWindow,
@@ -12,15 +47,24 @@ struct Graphics {
     factory: back::Factory,
     color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     depth_view: gfx::handle::DepthStencilView<back::Resources, gfx::format::DepthStencil>,
+    events_loop: EventsLoop
 }
 
 impl Graphics {
-    fn new() -> Graphics {
-        let builder = WindowBuilder::new();
-        let context = glutin::ContextBuilder::new()
+    fn new(config: Config) -> Graphics {
+        let events_loop = glutin::EventsLoop::new();
+        let mut builder = WindowBuilder::new()
+            .with_title(config.title)
+            .with_dimensions(config.dimension_width as u32, config.dimension_height as u32);
+
+        if config.fullscreen {
+              builder = builder.with_fullscreen(Some(events_loop.get_primary_monitor()))
+        }
+
+        let context = ContextBuilder::new()
             .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3,2)))
             .with_vsync(true);
-        let events_loop = glutin::EventsLoop::new();
+
 
         let (window, device, factory, color, depth_view) =
             gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
@@ -34,7 +78,8 @@ impl Graphics {
             device,
             factory,
             color,
-            depth_view
+            depth_view,
+            events_loop
         }
     }
 }
@@ -58,29 +103,41 @@ impl Bindable<ShaderProgram> for Graphics {
     }
 }
 
-struct Gfx {
+pub struct Backend {
     graphics: Graphics
 }
 
-impl Gfx {
-    fn new() -> Self {
-        Gfx {
-            graphics: Graphics::new()
+impl Backend {
+    pub fn new(config: Config) -> Self {
+        Backend {
+            graphics: Graphics::new(config)
+        }
+    }
+
+    pub fn with_title(&mut self, title: String) {
+        println!("fix me: with_ttitle not implemented!");
+    }
+
+    pub fn launch<A>(&mut self, application: &mut A) where A: Application {
+        let mut running = true;
+        application.create(self);
+        while running {
+            self.graphics.events_loop.poll_events(|event|
+                match event {
+                    Event::WindowEvent { window_id, event } => match event {
+                        WindowEvent::Closed => running = false,
+                        _ => ()
+                    },
+                    _ => ()
+                }
+            );
+            application.render();
         }
     }
 }
 
-impl Backend<TextureResource, Graphics> for Gfx {
+impl crate::backend::Backend<TextureResource, Graphics> for Backend {
     fn graphics() -> Graphics {
-        return Graphics::new()
-    }
-}
-
-pub fn launch<A>() where A: Application {
-    let grahics = Gfx::new();
-    let mut app = A::new(grahics);
-    app.create();
-    loop {
-        app.render();
+        unimplemented!();
     }
 }
