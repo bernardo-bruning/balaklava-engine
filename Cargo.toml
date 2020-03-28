@@ -26,5 +26,9 @@ nalgebra-glm = "0.6"
 
 
 [[example]]
-name = "application"
-path = "example/application/main.rs"
+name = "application_dimensions"
+path = "example/application/dimensions.rs"
+
+[[example]]
+name = "application_fullscreen"
+path = "example/application/fullscreen.rs"

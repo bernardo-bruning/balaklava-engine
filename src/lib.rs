@@ -24,6 +24,19 @@ pub trait Application {
     fn render(&mut self);
 }
 
+pub struct DummyApplication {}
+
+impl Default for DummyApplication {
+    fn default() -> Self {
+        DummyApplication{}
+    }
+}
+
+impl Application for DummyApplication {
+    fn create<TR, G:Graphics<TR>, B: Backend<TR, G>>(&mut self, backend: &mut B){}
+    fn render(&mut self){}
+}
+
 struct Example{}
 // impl Application for Example {
 
