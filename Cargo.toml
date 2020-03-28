@@ -32,3 +32,7 @@ path = "example/application/dimensions.rs"
 [[example]]
 name = "application_fullscreen"
 path = "example/application/fullscreen.rs"
+
+[[example]]
+name = "graphics_square"
+path = "example/graphics/square.rs"
