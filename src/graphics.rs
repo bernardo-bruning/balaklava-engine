@@ -1,21 +1,17 @@
-#[derive(Debug, Clone)]
-pub struct Texture<R> {
-    data: Vec<u8>,
-    width: u16,
-    height: u16,
-    pub resource: R
+use nalgebra::Vector3;
+
+pub struct ShaderProgram<'a> {
+    pub vertex_shader: &'a[u8],
+    pub fragment_shader: &'a[u8],
+    pub vertices: Vec<Vector3<f32>>
 }
 
-pub struct ShaderProgram {
-    pub vertex_shader: String,
-    pub fragment_shader: String
-}
-
-impl ShaderProgram {
-    fn new(vertex_shader: String, fragment_shader: String) -> Self {
+impl <'a> ShaderProgram<'a> {
+    fn new(vertex_shader: &'a[u8], fragment_shader: &'a[u8]) -> Self {
         ShaderProgram {
             vertex_shader,
-            fragment_shader
+            fragment_shader,
+            vertices: Vec::new()
         }
     }
 }
