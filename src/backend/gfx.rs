@@ -33,8 +33,8 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             title: "Balaklava Engine".to_string(),
-            dimension_height: 800,
-            dimension_width: 500,
+            dimension_height: 600,
+            dimension_width: 800,
             fullscreen: false
         }
     }
@@ -51,7 +51,7 @@ struct Graphics {
 }
 
 impl Graphics {
-    fn new(config: Config) -> Graphics {
+    fn new(config: Config) -> Box<Graphics> {
         let events_loop = glutin::EventsLoop::new();
         let mut builder = WindowBuilder::new()
             .with_title(config.title)
@@ -73,14 +73,14 @@ impl Graphics {
             &events_loop
         );
 
-        Graphics{
+        Box::new(Graphics{
             window,
             device,
             factory,
             color,
             depth_view,
             events_loop
-        }
+        })
     }
 }
 
@@ -104,7 +104,7 @@ impl Bindable<ShaderProgram> for Graphics {
 }
 
 pub struct Backend {
-    graphics: Graphics
+    graphics: Box<Graphics>
 }
 
 impl Backend {
@@ -114,13 +114,9 @@ impl Backend {
         }
     }
 
-    pub fn with_title(&mut self, title: String) {
-        println!("fix me: with_ttitle not implemented!");
-    }
 
-    pub fn launch<A>(&mut self, application: &mut A) where A: Application {
+    pub fn launch<A>(&mut self, mut application: A) where A: Application {
         let mut running = true;
-        application.create(self);
         while running {
             self.graphics.events_loop.poll_events(|event|
                 match event {
@@ -131,8 +127,14 @@ impl Backend {
                     _ => ()
                 }
             );
-            application.render();
+            application.run(self);
         }
+    }
+}
+
+impl Default for Backend {
+    fn default() -> Self {
+        return Backend::new(Config::default())
     }
 }
 

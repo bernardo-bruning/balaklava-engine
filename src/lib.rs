@@ -20,8 +20,7 @@ use backend::{Graphics, Backend};
 
 
 pub trait Application {
-    fn create(&mut self, backend: &mut Backend);
-    fn render(&mut self);
+    fn run(&mut self, backend: &mut dyn Backend);
 }
 
 pub struct DummyApplication {}
@@ -33,8 +32,7 @@ impl Default for DummyApplication {
 }
 
 impl Application for DummyApplication {
-    fn create(&mut self, backend: &mut Backend){}
-    fn render(&mut self){}
+    fn run(&mut self, backend: &mut dyn Backend){}
 }
 
 struct Example{}
