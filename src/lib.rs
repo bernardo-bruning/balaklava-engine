@@ -11,12 +11,7 @@ mod loaders;
 mod events;
 pub mod backend;
 pub mod graphics;
-
-use crate::geometry::{Renderable};
-use crate::core::*;
-use log::{info};
-use crate::loaders::Obj;
-use backend::{Graphics, Backend};
+use backend::{Backend};
 
 
 pub trait Application {

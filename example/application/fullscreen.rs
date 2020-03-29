@@ -7,5 +7,5 @@ fn main() {
         .with_fullscreen(true);
     let mut backend = Backend::new(config);
     let mut app = DummyApplication::default();
-    backend.launch(&mut app)
+    backend.launch(app)
 }

@@ -1,13 +1,17 @@
 extern crate balaklava;
 use balaklava::backend::gfx::Backend as GfxBackend;
 use balaklava::backend::{Backend};
+use balaklava::graphics::ShaderProgram;
 use balaklava::Application;
 
 struct SquareApplication {
+
 }
 
 impl Application for SquareApplication {
-    fn run(&mut self, backend: &mut dyn Backend){}
+    fn run(&mut self, backend: &mut dyn Backend){
+        
+    }
 }
 
 fn main() {

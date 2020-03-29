@@ -9,5 +9,5 @@ fn main() {
 
     let mut backend = Backend::new(config);
     let mut application = DummyApplication::default();
-    backend.launch(&mut application);
+    backend.launch(application);
 }

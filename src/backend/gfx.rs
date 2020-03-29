@@ -1,6 +1,6 @@
 use glutin::{WindowBuilder};
 use crate::Application;
-use crate::graphics::{Bindable, Texture, ShaderProgram};
+use crate::graphics::{Bindable, ShaderProgram};
 use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
 extern crate gfx_device_gl as back;
 
@@ -41,7 +41,7 @@ impl Default for Config {
 }
 
 
-struct Graphics {
+struct Graphic {
     window: glutin::GlWindow,
     device: back::Device,
     factory: back::Factory,
@@ -50,8 +50,8 @@ struct Graphics {
     events_loop: EventsLoop
 }
 
-impl Graphics {
-    fn new(config: Config) -> Box<Graphics> {
+impl Graphic {
+    fn new(config: Config) -> Graphic {
         let events_loop = glutin::EventsLoop::new();
         let mut builder = WindowBuilder::new()
             .with_title(config.title)
@@ -73,14 +73,14 @@ impl Graphics {
             &events_loop
         );
 
-        Box::new(Graphics{
+        Graphic{
             window,
             device,
             factory,
             color,
             depth_view,
             events_loop
-        })
+        }
     }
 }
 
@@ -88,29 +88,23 @@ struct TextureResource {
     shaderResourceView: gfx::handle::ShaderResourceView<back::Resources, [f32; 4]>
 } 
 
-impl crate::backend::Graphics<TextureResource> 
-    for Graphics {}
+impl crate::backend::Graphic 
+    for Graphic {}
 
-impl Bindable<Texture<TextureResource>> for Graphics {
-    fn bind(&mut self, bindable: &mut Texture<TextureResource>) -> bool {
-        unimplemented!()
-    }
-}
-
-impl Bindable<ShaderProgram> for Graphics {
+impl Bindable<ShaderProgram> for Graphic {
     fn bind(&mut self, bindable: &mut ShaderProgram) -> bool {
         unimplemented!()
     }
 }
 
 pub struct Backend {
-    graphics: Box<Graphics>
+    graphic: Graphic
 }
 
 impl Backend {
     pub fn new(config: Config) -> Self {
         Backend {
-            graphics: Graphics::new(config)
+            graphic: Graphic::new(config)
         }
     }
 
@@ -118,7 +112,7 @@ impl Backend {
     pub fn launch<A>(&mut self, mut application: A) where A: Application {
         let mut running = true;
         while running {
-            self.graphics.events_loop.poll_events(|event|
+            self.graphic.events_loop.poll_events(|event|
                 match event {
                     Event::WindowEvent { window_id, event } => match event {
                         WindowEvent::Closed => running = false,
@@ -139,4 +133,7 @@ impl Default for Backend {
 }
 
 impl crate::backend::Backend for Backend {
+    fn graphic(&mut self) -> &mut dyn crate::backend::Graphic {
+        &mut self.graphic
+    }
 }
