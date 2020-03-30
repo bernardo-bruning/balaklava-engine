@@ -1,3 +1,5 @@
+mod pool;
+
 extern crate gfx;
 extern crate gfx_device_gl as back;
 use glutin::{WindowBuilder};
@@ -114,7 +116,10 @@ impl crate::backend::Graphic
 
 impl Bindable<ShaderProgram> for Graphic {
     fn bind(&mut self, bindable: ShaderProgram) -> Handle<ShaderProgram> {
-        return Handle::None;
+        return Handle {
+            identifier: 0,
+            type_marker: std::marker::PhantomData
+        };
     }
 }
 

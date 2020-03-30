@@ -1,9 +1,10 @@
-use crate::graphics::{ShaderProgram};
 pub mod gfx;
+use crate::graphics::{ShaderProgram};
+use std::marker::PhantomData;
 
-pub enum Handle<T> {
-    None,
-    Some(i32, T)
+pub struct Handle<T> {
+    identifier: u64,
+    type_marker: PhantomData<T>
 }
 
 pub trait Bindable<T> {
