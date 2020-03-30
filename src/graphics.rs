@@ -2,15 +2,15 @@ use nalgebra::Vector3;
 
 pub struct ShaderProgram {
     pub vertex_shader: Vec<u8>,
-    pub fragment_shader: Vec<u8>,
+    pub pixel_shader: Vec<u8>,
     pub vertices: Vec<Vector3<f32>>
 }
 
 impl ShaderProgram {
-    pub fn new(vertex_shader: Vec<u8>, fragment_shader: Vec<u8>) -> Self {
+    pub fn new(vertex_shader: Vec<u8>, pixel_shader: Vec<u8>) -> Self {
         ShaderProgram {
             vertex_shader: vertex_shader,
-            fragment_shader: fragment_shader,
+            pixel_shader: pixel_shader,
             vertices: Vec::new()
         }
     }
