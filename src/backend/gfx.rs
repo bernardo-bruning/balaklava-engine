@@ -1,8 +1,22 @@
+extern crate gfx;
+extern crate gfx_device_gl as back;
 use glutin::{WindowBuilder};
 use crate::Application;
 use crate::graphics::{Bindable, ShaderProgram};
 use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
-extern crate gfx_device_gl as back;
+
+
+gfx_defines!{
+    vertex Vertex {
+        position: [f32; 4] = "vertex_position",
+    }
+    
+    pipeline pipe {
+        vbuf: gfx::VertexBuffer<Vertex> = (),
+        out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
+        depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
+    }
+}
 
 pub struct Config {
     title: String,

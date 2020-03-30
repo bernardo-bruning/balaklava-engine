@@ -31,7 +31,8 @@ impl Default for SquareApplication {
 
 impl Application for SquareApplication {
     fn run(&mut self, backend: &mut dyn Backend){
-        
+        let graphic = backend.graphic();
+        graphic.bind(&mut self.shader_program);
     }
 }
 
