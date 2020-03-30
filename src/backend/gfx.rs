@@ -1,6 +1,7 @@
 extern crate gfx;
 extern crate gfx_device_gl as back;
 use glutin::{WindowBuilder};
+use gfx::Encoder;
 use crate::Application;
 use crate::graphics::{Bindable, ShaderProgram};
 use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
@@ -61,7 +62,8 @@ struct Graphic {
     factory: back::Factory,
     color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     depth_view: gfx::handle::DepthStencilView<back::Resources, gfx::format::DepthStencil>,
-    events_loop: EventsLoop
+    events_loop: EventsLoop,
+    encoder: Encoder<back::Resources, back::CommandBuffer>
 }
 
 impl Graphic {
@@ -80,12 +82,15 @@ impl Graphic {
             .with_vsync(true);
 
 
-        let (window, device, factory, color, depth_view) =
+        let (window, device, mut factory, color, depth_view) =
             gfx_window_glutin::init::<gfx::format::Srgba8, gfx::format::DepthStencil>(
             builder, 
             context, 
             &events_loop
         );
+
+        let encoder: Encoder<back::Resources, back::CommandBuffer> = 
+            factory.create_command_buffer().into();
 
         Graphic{
             window,
@@ -93,7 +98,8 @@ impl Graphic {
             factory,
             color,
             depth_view,
-            events_loop
+            events_loop,
+            encoder
         }
     }
 }
