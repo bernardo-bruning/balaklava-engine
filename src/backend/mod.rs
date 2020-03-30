@@ -1,4 +1,4 @@
-use crate::graphics::{Bindable, Texture, ShaderProgram};
+use crate::graphics::{Bindable, ShaderProgram};
 pub mod gfx;
 
 pub trait Graphic : Bindable<ShaderProgram> {}
