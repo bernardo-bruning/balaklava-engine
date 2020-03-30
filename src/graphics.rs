@@ -15,7 +15,3 @@ impl ShaderProgram {
         }
     }
 }
-
-pub trait Bindable<T> {
-    fn bind(&mut self, bindable: &mut T) -> bool;
-}

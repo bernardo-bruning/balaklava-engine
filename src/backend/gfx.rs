@@ -3,7 +3,8 @@ extern crate gfx_device_gl as back;
 use glutin::{WindowBuilder};
 use gfx::Encoder;
 use crate::Application;
-use crate::graphics::{Bindable, ShaderProgram};
+use crate::graphics::{ShaderProgram};
+use crate::backend::{Handle, Bindable};
 use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
 
 
@@ -112,8 +113,8 @@ impl crate::backend::Graphic
     for Graphic {}
 
 impl Bindable<ShaderProgram> for Graphic {
-    fn bind(&mut self, bindable: &mut ShaderProgram) -> bool {
-        unimplemented!()
+    fn bind(&mut self, bindable: ShaderProgram) -> Handle<ShaderProgram> {
+        return Handle::None;
     }
 }
 
