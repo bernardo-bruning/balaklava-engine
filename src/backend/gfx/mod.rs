@@ -131,8 +131,14 @@ impl Binder<ShaderProgram> for Graphic {
             panic!("Error to load pso!");
         }
 
+        let data = pipeline::pipe::Data {
+            vbuf: vertex_buffer,
+            out: self.color.clone(),
+            depth: self.depth_view.clone()
+        };
+
         let instance = instance::ShaderProgram {
-            vertex_buffer,
+            data,
             slice,
             pso: pso.unwrap()
         };
