@@ -5,11 +5,12 @@ mod instance;
 extern crate gfx;
 extern crate gfx_device_gl as back;
 use glutin::{WindowBuilder};
-use gfx::Encoder;
+use gfx::{Encoder, Device};
 use crate::Application;
 use crate::graphics::{ShaderProgram};
 use crate::backend::{Handle, Binder, Render};
 use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
+use glutin::GlContext;
 use gfx::traits::FactoryExt;
 
 gfx_defines!{
@@ -153,7 +154,17 @@ impl Binder<ShaderProgram> for Graphic {
 
 impl Render<ShaderProgram> for Graphic {
     fn render(&mut self, renderable: Handle<ShaderProgram>) {
-        unimplemented!();
+        let handle: Handle<instance::ShaderProgram> = Handle{ 
+            identifier: renderable.identifier, 
+            type_marker: std::marker::PhantomData 
+        };
+
+        let instance: &mut instance::ShaderProgram = self.shaders.borrow_mut(&handle).unwrap();
+        self.encoder.clear(&instance.data.out, [0.1, 0.2, 0.3, 1.0]);
+        self.encoder.draw(&instance.slice, &instance.pso, &instance.data);
+        self.encoder.flush(&mut self.device);
+        self.window.swap_buffers().unwrap();
+        self.device.cleanup();
     }
 }
 
