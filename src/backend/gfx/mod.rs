@@ -6,7 +6,7 @@ use glutin::{WindowBuilder};
 use gfx::Encoder;
 use crate::Application;
 use crate::graphics::{ShaderProgram};
-use crate::backend::{Handle, Bindable};
+use crate::backend::{Handle, Binder};
 use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
 
 
@@ -114,7 +114,7 @@ struct TextureResource {
 impl crate::backend::Graphic 
     for Graphic {}
 
-impl Bindable<ShaderProgram> for Graphic {
+impl Binder<ShaderProgram> for Graphic {
     fn bind(&mut self, bindable: ShaderProgram) -> Handle<ShaderProgram> {
         return Handle {
             identifier: 0,
