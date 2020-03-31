@@ -2,9 +2,11 @@ extern crate gfx;
 extern crate gfx_device_gl as back;
 extern crate nalgebra as na;
 use crate::core::*;
+use crate::core;
 use na::{Matrix4,Vector3,Rotation3};
 use gfx::traits::FactoryExt;
 use std::ops::Deref;
+use gfx::handle::Buffer;
 use crate::core::Bindable;
 
 pub trait Renderable {
@@ -57,6 +59,51 @@ impl<'a> Deref for Triangle {
     }
 }
 
+fn create_data_buffer() {
+    
+}
+
+struct DataBuffer {
+    vertex_buffer: Buffer<back::Resources, core::Vertex>,
+    light_buffer: Buffer<back::Resources, core::Light>,
+    camera_buffer: Buffer<back::Resources, core::Camera>,
+    transform_buffer: Buffer<back::Resources, core::Transform>,
+    index: gfx::Slice<back::Resources>
+}
+
+impl DataBuffer {
+    fn new(engine: &mut Graphics, vertices: Vec<core::Vertex>) -> Self {
+        let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(vertices.as_slice(), ());
+        DataBuffer {
+            vertex_buffer: vertex_buffer,
+            light_buffer: engine.factory.create_constant_buffer(1),
+            camera_buffer: engine.factory.create_constant_buffer(1),
+            transform_buffer: engine.factory.create_constant_buffer(1),
+            index: index
+        }
+    }
+}
+
+fn create_data(
+    engine: &Graphics, 
+    vertex_buffer: Buffer<back::Resources, core::Vertex>,
+    light_buffer: Buffer<back::Resources, core::Light>,
+    camera_buffer: Buffer<back::Resources, core::Camera>,
+    transform_buffer: Buffer<back::Resources, core::Transform>,
+    texture: core::Texture,
+    sampler: gfx::handle::Sampler<back::Resources>
+) -> pipe::Data<back::Resources> {
+    pipe::Data {
+        vbuf: vertex_buffer,
+        light: light_buffer,
+        camera: camera_buffer,
+        transformation: transform_buffer,
+        texture: (texture.resource.unwrap(), sampler),
+        out: engine.color.clone(),
+        depth: engine.depth.clone()
+    }
+}
+
 #[derive(Debug)]
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
@@ -93,10 +140,7 @@ impl Mesh {
     }
 
     fn bind(&mut self, engine: &mut Graphics) {
-        let light_buffer = engine.factory.create_constant_buffer(1);
-        let camera_buffer = engine.factory.create_constant_buffer(1);
-        let transform_buffer = engine.factory.create_constant_buffer(1);
-        let (vertex_buffer, index) = engine.factory.create_vertex_buffer_with_slice(self.vertices.as_slice(), ());
+        let data_buffer = DataBuffer::new(engine, self.vertices.clone());
         if self.texture.is_none() {
             return;
         }
@@ -114,17 +158,17 @@ impl Mesh {
             return;
         }
         let sampler = engine.factory.create_sampler_linear();
-        let data = pipe::Data {
-            vbuf: vertex_buffer,
-            light: light_buffer,
-            camera: camera_buffer,
-            transformation: transform_buffer,
-            texture: (texture.resource.unwrap(), sampler),
-            out: engine.color.clone(),
-            depth: engine.depth.clone()
-        };
+        
+        let data = create_data(
+            engine, 
+            data_buffer.vertex_buffer,
+            data_buffer.light_buffer, 
+            data_buffer.camera_buffer,
+            data_buffer.transform_buffer,
+            texture, 
+            sampler);
 
-        self.index = Option::Some(index);
+        self.index = Option::Some(data_buffer.index);
         self.data = Option::Some(data);
     }
 }

@@ -6,12 +6,10 @@ use balaklava::Application;
 use nalgebra::Vector3;
 use std::*;
 
-struct SquareApplication {
-    shader_program: ShaderProgram
-}
+struct SquareApplication {}
 
-impl Default for SquareApplication {
-    fn default() -> Self {
+impl SquareApplication {
+    fn create_shader(&self) -> ShaderProgram {
         let vertex_shader = include_bytes!("shader/shader_150.glslf");
         let pixel_shader = include_bytes!("shader/shader_150.glslv");
         let mut shader_program = ShaderProgram::new(
@@ -22,17 +20,20 @@ impl Default for SquareApplication {
         shader_program.vertices.push(Vector3::new(0.0, 0.5, 0.0));
         shader_program.vertices.push(Vector3::new(1.0, 0.0, 0.0));
         shader_program.vertices.push(Vector3::new(1.0, 1.0, 0.0));
-        
-        Self{
-            shader_program
-        }
+        shader_program
+    }
+}
+
+impl Default for SquareApplication {
+    fn default() -> Self {        
+        Self{}
     }
 }
 
 impl Application for SquareApplication {
     fn run(&mut self, backend: &mut dyn Backend){
         let graphic = backend.graphic();
-        graphic.bind(&mut self.shader_program);
+        graphic.bind(self.create_shader());
     }
 }
 
