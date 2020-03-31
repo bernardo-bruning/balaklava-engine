@@ -1,4 +1,5 @@
 mod pool;
+mod pipeline;
 
 extern crate gfx;
 extern crate gfx_device_gl as back;
