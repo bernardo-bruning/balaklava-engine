@@ -19,9 +19,9 @@ impl SquareApplication {
             pixel_shader.to_vec()
         );
 
-        shader_program.vertices.push(Vector3::new(0.0, 0.5, 0.0));
-        shader_program.vertices.push(Vector3::new(1.0, 0.0, 0.0));
-        shader_program.vertices.push(Vector3::new(1.0, 1.0, 0.0));
+        shader_program.vertices.push(Vector3::new(0.0, 1.0, 0.0));
+        shader_program.vertices.push(Vector3::new(-1.0, -1.0, 0.0));
+        shader_program.vertices.push(Vector3::new(1.0, -1.0, 0.0));
         shader_program
     }
 }
@@ -37,8 +37,9 @@ impl Default for SquareApplication {
 impl Application for SquareApplication {
     fn run(&mut self, backend: &mut dyn Backend){
         let graphic = backend.graphic();
-        match self.triangle {
+        match &self.triangle {
             Option::None => self.triangle = Option::Some(graphic.bind(self.create_shader())),
+            Option::Some(handle) => graphic.render(handle),
             _ => ()
         }
     }

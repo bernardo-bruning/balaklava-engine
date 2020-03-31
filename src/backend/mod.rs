@@ -2,6 +2,7 @@ pub mod gfx;
 use crate::graphics::{ShaderProgram};
 use std::marker::PhantomData;
 
+#[derive(Debug, Clone, Copy)]
 pub struct Handle<T> {
     identifier: u64,
     type_marker: PhantomData<T>
@@ -12,7 +13,7 @@ pub trait Binder<T> {
 }
 
 pub trait Render<T> {
-    fn render(&mut self, renderable: Handle<T>);
+    fn render(&mut self, renderable: &Handle<T>);
 }
 
 pub trait Graphic : 

@@ -13,17 +13,6 @@ use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
 use glutin::GlContext;
 use gfx::traits::FactoryExt;
 
-gfx_defines!{
-    vertex Vertex {
-        position: [f32; 4] = "vertex_position",
-    }
-    
-    pipeline pipe {
-        vbuf: gfx::VertexBuffer<Vertex> = (),
-        out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
-        depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
-    }
-}
 
 pub struct Config {
     title: String,
@@ -153,7 +142,7 @@ impl Binder<ShaderProgram> for Graphic {
 }
 
 impl Render<ShaderProgram> for Graphic {
-    fn render(&mut self, renderable: Handle<ShaderProgram>) {
+    fn render(&mut self, renderable: &Handle<ShaderProgram>) {
         let handle: Handle<instance::ShaderProgram> = Handle{ 
             identifier: renderable.identifier, 
             type_marker: std::marker::PhantomData 
@@ -161,6 +150,7 @@ impl Render<ShaderProgram> for Graphic {
 
         let instance: &mut instance::ShaderProgram = self.shaders.borrow_mut(&handle).unwrap();
         self.encoder.clear(&instance.data.out, [0.1, 0.2, 0.3, 1.0]);
+        self.encoder.clear_depth(&self.depth_view, 1.0);
         self.encoder.draw(&instance.slice, &instance.pso, &instance.data);
         self.encoder.flush(&mut self.device);
         self.window.swap_buffers().unwrap();
