@@ -9,6 +9,7 @@ use crate::Application;
 use crate::graphics::{ShaderProgram};
 use crate::backend::{Handle, Binder, Render};
 use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
+use nalgebra::Vector3;
 
 
 gfx_defines!{
@@ -111,6 +112,13 @@ impl Graphic {
 struct TextureResource {
     shaderResourceView: gfx::handle::ShaderResourceView<back::Resources, [f32; 4]>
 } 
+
+fn convert_as_slice(vertices: Vec<Vector3<f32>>) -> Vec<[f32; 4]> {
+    let vec_own = vertices.to_owned();
+    vec_own.iter().map(|vertice: &Vector3<f32>| 
+        [vertice[0], vertice[1], vertice[2], 0.]
+    ).collect()
+}
 
 impl crate::backend::Graphic 
     for Graphic {}
