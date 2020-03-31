@@ -33,4 +33,8 @@ impl <T> Pool<T> {
     pub fn borrow(&self, handle: &Handle<T>) -> Option<&T> {
         self.records.get(&handle.identifier)
     }
+
+    pub fn borrow_mut(&self, handle: &Handle<T>) -> Option<&mut T> {
+        self.records.get_mut(&handle.identifier)
+    }
 }
