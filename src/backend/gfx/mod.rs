@@ -106,7 +106,13 @@ struct TextureResource {
 }
 
 impl crate::backend::Graphic 
-    for Graphic {}
+    for Graphic {
+        fn flush(&mut self) {
+            self.encoder.flush(&mut self.device);
+            self.window.swap_buffers().unwrap();
+            self.device.cleanup();
+        }
+    }
 
 impl Binder<ShaderProgram> for Graphic {
     fn bind(&mut self, bindable: ShaderProgram) -> Handle<ShaderProgram> {
@@ -152,9 +158,6 @@ impl Render<ShaderProgram> for Graphic {
         self.encoder.clear(&instance.data.out, [0.1, 0.2, 0.3, 1.0]);
         self.encoder.clear_depth(&self.depth_view, 1.0);
         self.encoder.draw(&instance.slice, &instance.pso, &instance.data);
-        self.encoder.flush(&mut self.device);
-        self.window.swap_buffers().unwrap();
-        self.device.cleanup();
     }
 }
 

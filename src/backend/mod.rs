@@ -18,7 +18,9 @@ pub trait Render<T> {
 
 pub trait Graphic : 
     Binder<ShaderProgram> 
-    + Render<ShaderProgram> {}
+    + Render<ShaderProgram> {
+        fn flush(&mut self);
+}
 
 pub trait Backend {
     fn graphic(&mut self) -> &mut dyn Graphic;

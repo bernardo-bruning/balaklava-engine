@@ -42,6 +42,7 @@ impl Application for SquareApplication {
             Option::Some(handle) => graphic.render(handle),
             _ => ()
         }
+        graphic.flush();
     }
 }
 
