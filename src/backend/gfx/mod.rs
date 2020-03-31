@@ -9,8 +9,7 @@ use crate::Application;
 use crate::graphics::{ShaderProgram};
 use crate::backend::{Handle, Binder, Render};
 use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
-use nalgebra::Vector3;
-
+use gfx::traits::FactoryExt;
 
 gfx_defines!{
     vertex Vertex {
