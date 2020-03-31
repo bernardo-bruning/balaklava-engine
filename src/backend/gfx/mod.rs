@@ -6,7 +6,7 @@ use glutin::{WindowBuilder};
 use gfx::Encoder;
 use crate::Application;
 use crate::graphics::{ShaderProgram};
-use crate::backend::{Handle, Binder};
+use crate::backend::{Handle, Binder, Render};
 use glutin::{EventsLoop, Event, WindowEvent, ContextBuilder};
 
 
@@ -120,6 +120,12 @@ impl Binder<ShaderProgram> for Graphic {
             identifier: 0,
             type_marker: std::marker::PhantomData
         };
+    }
+}
+
+impl Render<ShaderProgram> for Graphic {
+    fn render(&mut self, renderable: Handle<ShaderProgram>) {
+        unimplemented!();
     }
 }
 
