@@ -1,5 +1,6 @@
 mod pool;
 mod pipeline;
+mod instance;
 
 extern crate gfx;
 extern crate gfx_device_gl as back;
@@ -67,7 +68,8 @@ struct Graphic {
     color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     depth_view: gfx::handle::DepthStencilView<back::Resources, gfx::format::DepthStencil>,
     events_loop: EventsLoop,
-    encoder: Encoder<back::Resources, back::CommandBuffer>
+    encoder: Encoder<back::Resources, back::CommandBuffer>,
+    shaders: pool::Pool<instance::ShaderProgram>
 }
 
 impl Graphic {
@@ -103,20 +105,14 @@ impl Graphic {
             color,
             depth_view,
             events_loop,
-            encoder
+            encoder,
+            shaders: pool::Pool::default()
         }
     }
 }
 
 struct TextureResource {
     shaderResourceView: gfx::handle::ShaderResourceView<back::Resources, [f32; 4]>
-} 
-
-fn convert_as_slice(vertices: Vec<Vector3<f32>>) -> Vec<[f32; 4]> {
-    let vec_own = vertices.to_owned();
-    vec_own.iter().map(|vertice: &Vector3<f32>| 
-        [vertice[0], vertice[1], vertice[2], 0.]
-    ).collect()
 }
 
 impl crate::backend::Graphic 
@@ -124,8 +120,26 @@ impl crate::backend::Graphic
 
 impl Binder<ShaderProgram> for Graphic {
     fn bind(&mut self, bindable: ShaderProgram) -> Handle<ShaderProgram> {
+        let (vertex_buffer, slice) = self.factory.create_vertex_buffer_with_slice(&pipeline::as_vertex(bindable.vertices), ());
+        let pso = self.factory.create_pipeline_simple(
+            bindable.vertex_shader.as_ref(), 
+            bindable.pixel_shader.as_ref(),
+            pipeline::pipe::new()
+        );
+
+        if pso.is_err() {
+            panic!("Error to load pso!");
+        }
+
+        let instance = instance::ShaderProgram {
+            vertex_buffer,
+            slice,
+            pso: pso.unwrap()
+        };
+
+        let handle = self.shaders.insert(instance);
         return Handle {
-            identifier: 0,
+            identifier: handle.identifier,
             type_marker: std::marker::PhantomData
         };
     }
