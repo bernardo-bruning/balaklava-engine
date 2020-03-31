@@ -129,7 +129,7 @@ impl Binder<ShaderProgram> for Graphic {
         );
 
         if pso.is_err() {
-            panic!("Error to load pso!");
+            panic!("Error to load pso! {:?}", pso.err());
         }
 
         let data = pipeline::pipe::Data {

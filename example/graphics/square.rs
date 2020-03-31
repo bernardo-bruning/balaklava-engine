@@ -12,8 +12,8 @@ struct SquareApplication {
 
 impl SquareApplication {
     fn create_shader(&self) -> ShaderProgram {
-        let vertex_shader = include_bytes!("shader/shader_150.glslf");
-        let pixel_shader = include_bytes!("shader/shader_150.glslv");
+        let vertex_shader = include_bytes!("shader/shader_150.glslv");
+        let pixel_shader = include_bytes!("shader/shader_150.glslf");
         let mut shader_program = ShaderProgram::new(
             vertex_shader.to_vec(), 
             pixel_shader.to_vec()
