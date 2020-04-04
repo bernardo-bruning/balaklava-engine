@@ -1,8 +1,8 @@
 pub struct Config {
-    title: String,
-    dimension_width: usize,
-    dimension_height: usize,
-    fullscreen: bool
+    pub title: String,
+    pub dimension_width: usize,
+    pub dimension_height: usize,
+    pub fullscreen: bool
 }
 
 impl Config {
