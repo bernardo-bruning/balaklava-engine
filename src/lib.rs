@@ -4,6 +4,8 @@ extern crate nalgebra as na;
 extern crate log;
 extern crate env_logger;
 
+mod gpu;
+mod gpu_gfx;
 mod core;
 mod geometry;
 mod camera;
