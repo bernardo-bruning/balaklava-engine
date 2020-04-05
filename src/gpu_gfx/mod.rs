@@ -1,12 +1,20 @@
 pub mod config;
+mod pipeline;
 
 extern crate gfx;
 extern crate gfx_device_gl as back;
 
-use crate::gpu::{Vector, Device, Program};
+use crate::gpu::{Vector, Device};
 use glutin::{WindowBuilder};
 use gfx::{Encoder};
+use gfx::traits::FactoryExt;
 use glutin::{ContextBuilder};
+
+pub struct Program {
+    pub data: pipeline::pipe::Data<back::Resources>,
+    pub slice: gfx::Slice<back::Resources>,
+    pub pso: gfx::PipelineState<back::Resources, pipeline::pipe::Meta>
+}
 
 pub struct GfxDevice {
     window: glutin::GlWindow,
@@ -57,11 +65,34 @@ impl GfxDevice {
 }
 
 impl Device for GfxDevice {
-    fn create_program(vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Program {
-        unimplemented!();
+    type Program = Program;
+
+    fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Program {
+        let (vertex_buffer, slice) = self.factory.create_vertex_buffer_with_slice(&pipeline::as_vertex(vertices), ());
+        let pso = self.factory.create_pipeline_simple(
+            vertex_shader.as_ref(), 
+            pixel_shader.as_ref(),
+            pipeline::pipe::new()
+        );
+
+        if pso.is_err() {
+            panic!("Error to load pso! {:?}", pso.err());
+        }
+
+        let data = pipeline::pipe::Data {
+            vbuf: vertex_buffer,
+            out: self.color.clone(),
+            depth: self.depth_view.clone()
+        };
+
+        return Program {
+            data,
+            slice,
+            pso: pso.unwrap()
+        }
     }
     
-    fn render_program(program: Program) {
+    fn render_program(&mut self, program: Program) {
         unimplemented!();
     }
 }
