@@ -93,6 +93,8 @@ impl Device for GfxDevice {
     }
     
     fn render_program(&mut self, program: Program) {
-        unimplemented!();
+        self.encoder.clear(&program.data.out, [0.1, 0.2, 0.3, 1.0]);
+        self.encoder.clear_depth(&self.depth_view, 1.0);
+        self.encoder.draw(&program.slice, &program.pso, &program.data);
     }
 }
