@@ -4,11 +4,11 @@ mod pipeline;
 extern crate gfx;
 extern crate gfx_device_gl as back;
 
-use crate::gpu::{Vector, Device};
+use crate::gpu::{Vector};
 use glutin::{WindowBuilder};
-use gfx::{Encoder};
+use gfx::{Encoder, Device};
 use gfx::traits::FactoryExt;
-use glutin::{ContextBuilder};
+use glutin::{ContextBuilder, GlContext};
 
 pub struct Program {
     pub data: pipeline::pipe::Data<back::Resources>,
@@ -64,10 +64,10 @@ impl GfxDevice {
     }
 }
 
-impl Device for GfxDevice {
+impl crate::gpu::Device for GfxDevice {
     type Program = Program;
 
-    fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Program {
+    fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Self::Program {
         let (vertex_buffer, slice) = self.factory.create_vertex_buffer_with_slice(&pipeline::as_vertex(vertices), ());
         let pso = self.factory.create_pipeline_simple(
             vertex_shader.as_ref(), 
@@ -92,9 +92,15 @@ impl Device for GfxDevice {
         }
     }
     
-    fn render_program(&mut self, program: Program) {
+    fn render_program(&mut self, program: &Program) {
         self.encoder.clear(&program.data.out, [0.1, 0.2, 0.3, 1.0]);
         self.encoder.clear_depth(&self.depth_view, 1.0);
         self.encoder.draw(&program.slice, &program.pso, &program.data);
+    }
+
+    fn flush(&mut self) { 
+        self.encoder.flush(&mut self.device);
+        self.window.swap_buffers().unwrap();
+        self.device.cleanup();
     }
 }

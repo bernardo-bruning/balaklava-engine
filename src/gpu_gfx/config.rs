@@ -22,3 +22,14 @@ impl Config {
         self
     }
 }
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            title: "Balaklava Engine".to_string(),
+            dimension_height: 600,
+            dimension_width: 800,
+            fullscreen: false
+        }
+    }
+}
