@@ -22,13 +22,11 @@ pub struct GfxDevice {
     factory: back::Factory,
     color: gfx::handle::RenderTargetView<back::Resources, gfx::format::Srgba8>,
     depth_view: gfx::handle::DepthStencilView<back::Resources, gfx::format::DepthStencil>,
-    events_loop: glutin::EventsLoop,
     encoder: Encoder<back::Resources, back::CommandBuffer>
 }
 
 impl GfxDevice {
-    pub fn new(config: config::Config) -> Self {
-        let events_loop = glutin::EventsLoop::new();
+    pub fn new(config: config::Config, events_loop: &glutin::EventsLoop) -> Self {
         let mut builder = WindowBuilder::new()
             .with_title(config.title)
             .with_dimensions(config.dimension_width as u32, config.dimension_height as u32);
@@ -58,7 +56,6 @@ impl GfxDevice {
             factory,
             color,
             depth_view,
-            events_loop,
             encoder,
         }
     }

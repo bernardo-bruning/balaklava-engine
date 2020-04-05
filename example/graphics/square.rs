@@ -7,7 +7,8 @@ use std::*;
 
 fn main() {
     let config = Config::default();
-    let mut device = GfxDevice::new(config);
+    let events_loop = glutin::EventsLoop::new();
+    let mut device = GfxDevice::new(config, &events_loop);
     let vertex_shader = include_bytes!("shader/shader_150.glslv");
     let pixel_shader = include_bytes!("shader/shader_150.glslf");
     let mut vertices = Vec::new();
