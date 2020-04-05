@@ -11,28 +11,7 @@ mod geometry;
 mod camera;
 mod loaders;
 mod events;
-pub mod backend;
-pub mod graphics;
-use backend::{Backend};
 
-
-pub trait Application {
-    fn run(&mut self, backend: &mut dyn Backend);
-}
-
-pub struct DummyApplication {}
-
-impl Default for DummyApplication {
-    fn default() -> Self {
-        DummyApplication{}
-    }
-}
-
-impl Application for DummyApplication {
-    fn run(&mut self, backend: &mut dyn Backend){}
-}
-
-struct Example{}
 // impl Application for Example {
 
 //     fn create(&mut self) {
