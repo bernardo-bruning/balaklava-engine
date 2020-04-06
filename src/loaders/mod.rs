@@ -1,90 +1,87 @@
-use crate::geometry::Mesh;
-use crate::core::Vertex;
-use crate::core::Texture;
-use tobj::{Model, Material};
-use std::path::Path;
-use std::fs::File;
-use std::error::Error;
-use std::iter::Map;
+// use tobj::{Model, Material};
+// use std::path::Path;
+// use std::fs::File;
+// use std::error::Error;
+// use std::iter::Map;
 
-mod test;
+// mod test;
 
-#[derive(Debug)]
-pub struct Obj {
-    models: Vec<Model>,
-    materials: Vec<Material>
-}
+// #[derive(Debug)]
+// pub struct Obj {
+//     models: Vec<Model>,
+//     materials: Vec<Material>
+// }
 
-fn load_vector_n(plan_vector: &Vec<f32>, v: usize, n: usize) -> Vec<f32>{
-    let mut result = Vec::new();
+// fn load_vector_n(plan_vector: &Vec<f32>, v: usize, n: usize) -> Vec<f32>{
+//     let mut result = Vec::new();
 
-    for i in 0..n {
-        if plan_vector.len() > n*v+i {
-            result.push(plan_vector[n*v+i]);
-        }
-    }
+//     for i in 0..n {
+//         if plan_vector.len() > n*v+i {
+//             result.push(plan_vector[n*v+i]);
+//         }
+//     }
 
-    return result;
-}
+//     return result;
+// }
 
-impl Obj {
-    pub fn new(models: Vec<Model>, materials: Vec<Material>) -> Obj {
-        Obj {
-            models,
-            materials
-        }
-    }
+// impl Obj {
+//     pub fn new(models: Vec<Model>, materials: Vec<Material>) -> Obj {
+//         Obj {
+//             models,
+//             materials
+//         }
+//     }
 
-    pub fn open<P: AsRef<Path>>(path: P) -> Result<Self, String> {
-        let file_name = path.as_ref();
-        let result = tobj::load_obj(file_name);
-        if result.is_err() {
-            let error = result.unwrap_err();
-            return Result::Err(String::from(error.description()));
-        }
+//     pub fn open<P: AsRef<Path>>(path: P) -> Result<Self, String> {
+//         let file_name = path.as_ref();
+//         let result = tobj::load_obj(file_name);
+//         if result.is_err() {
+//             let error = result.unwrap_err();
+//             return Result::Err(String::from(error.description()));
+//         }
 
-        let (models, materials) = result.unwrap();
+//         let (models, materials) = result.unwrap();
 
-        return Result::Ok(Obj {
-            models,
-            materials
-        })
-    }
-}
+//         return Result::Ok(Obj {
+//             models,
+//             materials
+//         })
+//     }
+// }
 
-impl From<File> for Obj {
-    fn from(file: File) -> Self{
-        unimplemented!();
-    }
-}
+// impl From<File> for Obj {
+//     fn from(file: File) -> Self{
+//         unimplemented!();
+//     }
+// }
 
-impl <'a> Into<Result<Mesh, String>> for Obj {
-    fn into(self) -> Result<Mesh, String> {
-        let result_model = self.models.first();
-        if result_model.is_none() {
-            return Result::Err("Not contains model in OBJ file.".to_string());
-        }
-        let model: &tobj::Model = result_model.unwrap();
-        let mut vertices = Vec::new();
-        for f in 0..model.mesh.indices.len()/3 {
-            let v1 = model.mesh.indices[3*f];
-            let v2 = model.mesh.indices[3*f + 1];
-            let v3 = model.mesh.indices[3*f + 2];
+// impl <'a> Into<Result<Mesh, String>> for Obj {
+//     fn into(self) -> Result<Mesh, String> {
+//         let result_model = self.models.first();
+//         if result_model.is_none() {
+//             return Result::Err("Not contains model in OBJ file.".to_string());
+//         }
+//         let model: &tobj::Model = result_model.unwrap();
+//         let mut vertices = Vec::new();
+//         for f in 0..model.mesh.indices.len()/3 {
+//             let v1 = model.mesh.indices[3*f];
+//             let v2 = model.mesh.indices[3*f + 1];
+//             let v3 = model.mesh.indices[3*f + 2];
 
-            for v in vec![v1, v2, v3] {
-                let position = load_vector_n(&model.mesh.positions, v as usize, 3);
-                let normals = load_vector_n(&model.mesh.normals, v as usize, 3);
-                let uv = load_vector_n(&model.mesh.texcoords, v as usize, 2);
+//             for v in vec![v1, v2, v3] {
+//                 let position = load_vector_n(&model.mesh.positions, v as usize, 3);
+//                 let normals = load_vector_n(&model.mesh.normals, v as usize, 3);
+//                 let uv = load_vector_n(&model.mesh.texcoords, v as usize, 2);
                 
-                vertices.push(Vertex {
-                    position: [ position[0], position[1], position[2], 1.0 ], 
-                    normal: [normals[0], normals[1], normals[2]], 
-                    color: [0.0, 0.0, 0.0],
-                    uv: [uv[0], 1.-uv[1]]
-                })
-            }
-        }
+//                 vertices.push(Vertex {
+//                     position: [ position[0], position[1], position[2], 1.0 ], 
+//                     normal: [normals[0], normals[1], normals[2]], 
+//                     color: [0.0, 0.0, 0.0],
+//                     uv: [uv[0], 1.-uv[1]]
+//                 })
+//             }
+//         }
         
-        return Result::Ok(Mesh::new_with_texture(vertices, Texture::default()));
-    }
-}
+//         return Result::Ok(Mesh::new_with_texture(vertices, Texture::default()));
+//     }
+// }

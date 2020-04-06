@@ -1,10 +1,11 @@
-pub mod config;
-mod pipeline;
-
+#[macro_use]
 extern crate gfx;
 extern crate gfx_device_gl as back;
 
-use crate::gpu::{Vector};
+pub mod config;
+mod pipeline;
+
+use balaklava_gpu::{Vector};
 use glutin::{WindowBuilder};
 use gfx::{Encoder, Device};
 use gfx::traits::FactoryExt;
@@ -61,7 +62,7 @@ impl GfxDevice {
     }
 }
 
-impl crate::gpu::Device for GfxDevice {
+impl balaklava_gpu::Device for GfxDevice {
     type Program = Program;
 
     fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Self::Program {

@@ -1,17 +1,11 @@
-#[macro_use]
-extern crate gfx;
 extern crate nalgebra as na;
 extern crate log;
 extern crate env_logger;
 
-pub mod gpu;
-pub mod gpu_gfx;
-pub mod gl;
 mod core;
 mod geometry;
 mod camera;
 mod loaders;
-mod events;
 
 // impl Application for Example {
 

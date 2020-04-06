@@ -1,4 +1,5 @@
 
+extern crate nalgebra;
 use nalgebra::Vector3;
 
 pub type Vector = Vector3<f32>;

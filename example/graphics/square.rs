@@ -1,7 +1,7 @@
 extern crate balaklava;
-use balaklava::gpu_gfx::config::Config;
-use balaklava::gpu_gfx::GfxDevice;
-use balaklava::gpu::{Device, Vector};
+use balaklava_gfx::config::Config;
+use balaklava_gfx::GfxDevice;
+use balaklava_gpu::{Device, Vector};
 use glutin::{Event, WindowEvent};
 use std::*;
 

@@ -1,5 +1,5 @@
 [package]
-name = "learn-gfx"
+name = "balaklava"
 version = "0.1.0"
 authors = ["Bernardo de Oliveira Bruning <bernardo.bruning@resultadosdigitais.com.br>"]
 edition = "2018"
@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["tobj/log"]
+default = []
 
 [lib]
 name = "balaklava"
@@ -15,23 +15,14 @@ name = "balaklava"
 [dependencies]
 log = "0.4.8"
 env_logger = "0.7.1"
-glutin = "0.12.0"
-gfx = "0.17"
-gfx_window_glutin = "0.20"
-gfx_device_gl = "0.15.5"
 nalgebra = "0.20.0"
 image  = "0.23.0"
 tobj = "0.1.12"
 nalgebra-glm = "0.6"
+balaklava_gpu = {path = "src/gpu", version="0.1"}
+glutin = "0.12.0"
+balaklava_gfx = {path = "src/gfx", version="0.1"}
 
-
-[[example]]
-name = "application_dimensions"
-path = "example/application/dimensions.rs"
-
-[[example]]
-name = "application_fullscreen"
-path = "example/application/fullscreen.rs"
 
 [[example]]
 name = "graphics_square"

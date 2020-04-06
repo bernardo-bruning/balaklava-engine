@@ -1,5 +1,5 @@
 extern crate gfx;
-use nalgebra::Vector3;
+use balaklava_gpu::Vector;
 use gfx::macros;
 
 
@@ -15,9 +15,9 @@ gfx_defines!{
     }
 }
 
-pub fn as_vertex(vertices: Vec<Vector3<f32>>) -> Vec<Vertex> {
+pub fn as_vertex(vertices: Vec<Vector>) -> Vec<Vertex> {
     let vec_own = vertices.to_owned();
-    let vertex = vec_own.iter().map(|vertice: &Vector3<f32>| 
+    let vertex = vec_own.iter().map(|vertice: &Vector| 
         Vertex{ position: [vertice[0], vertice[1], vertice[2], 1.] }
     ).collect();
     vertex
