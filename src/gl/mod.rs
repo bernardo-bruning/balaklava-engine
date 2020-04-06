@@ -1,11 +1,13 @@
-use gpu::{Device, Vector}
+use crate::gpu::{Device, Vector};
 
 pub struct Program {
 
 }
 
-pub struct GlDevice {
-    type Program = Program
+pub struct GlDevice {}
+
+impl Device for GlDevice {
+    type Program = Program;
 
     fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Self::Program {
         unimplemented!();

@@ -6,6 +6,7 @@ extern crate env_logger;
 
 pub mod gpu;
 pub mod gpu_gfx;
+pub mod gl;
 mod core;
 mod geometry;
 mod camera;
