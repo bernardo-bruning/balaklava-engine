@@ -5,6 +5,7 @@ extern crate gfx_device_gl as back;
 pub mod config;
 mod pipeline;
 
+pub use glutin;
 use balaklava_gpu::{Vector};
 use glutin::{WindowBuilder};
 use gfx::{Encoder, Device};

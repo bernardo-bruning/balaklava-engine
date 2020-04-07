@@ -2,13 +2,13 @@ extern crate balaklava;
 use balaklava_gfx::config::Config;
 use balaklava_gfx::GfxDevice;
 use balaklava_gpu::{Device, Vector};
-use glutin::{Event, WindowEvent};
+use balaklava_gfx::glutin::{Event, WindowEvent, EventsLoop};
 use std::*;
 
 
 fn main() {
     let config = Config::default();
-    let mut events_loop = glutin::EventsLoop::new();
+    let mut events_loop = EventsLoop::new();
     let mut device = GfxDevice::new(config, &events_loop);
     let vertex_shader = include_bytes!("shader/shader_150.glslv");
     let pixel_shader = include_bytes!("shader/shader_150.glslf");

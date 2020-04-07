@@ -59,7 +59,6 @@ dependencies = [
  "balaklava_gfx 0.1.0",
  "balaklava_gpu 0.1.0",
  "env_logger 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "glutin 0.12.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.23.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "nalgebra 0.20.0 (registry+https://github.com/rust-lang/crates.io-index)",

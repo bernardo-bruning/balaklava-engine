@@ -20,7 +20,6 @@ image  = "0.23.0"
 tobj = "0.1.12"
 nalgebra-glm = "0.6"
 balaklava_gpu = {path = "src/gpu", version="0.1"}
-glutin = "0.12.0"
 balaklava_gfx = {path = "src/gfx", version="0.1"}
 
 
