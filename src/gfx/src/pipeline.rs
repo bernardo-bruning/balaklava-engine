@@ -1,6 +1,5 @@
 extern crate gfx;
 use balaklava_gpu::Vector;
-use gfx::macros;
 
 
 gfx_defines!{
