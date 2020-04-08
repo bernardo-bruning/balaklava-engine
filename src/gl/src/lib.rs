@@ -1,4 +1,6 @@
-use crate::gpu::{Device, Vector};
+extern crate glium;
+
+use balaklava_gpu::{Device, Vector};
 
 pub struct Program {
 
@@ -8,7 +10,9 @@ pub struct GlDevice {}
 
 impl GlDevice {
     fn new() -> Self {
-        GlDevice{}
+        GlDevice{
+
+        }
     }
 }
 

@@ -21,7 +21,7 @@ tobj = "0.1.12"
 nalgebra-glm = "0.6"
 balaklava_gpu = {path = "src/gpu", version="0.1"}
 balaklava_gfx = {path = "src/gfx", version="0.1"}
-
+balaklava_gl = {path = "src/gl", version="0.1"}
 
 [[example]]
 name = "graphics_square"

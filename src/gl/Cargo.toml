@@ -10,4 +10,5 @@ edition = "2018"
 name = "balaklava_gl"
 
 [dependencies]
-balaklava_gpu = {path="../../gpu", version=0.1.0}
+glium = "0.27.0"
+balaklava_gpu = {path="../../src/gpu", version="0.1" }
