@@ -1,14 +1,32 @@
+#[macro_use]
 extern crate glium;
 
-use glium::{Display, Frame};
+use glium::{Display, Frame, VertexBuffer};
+use glium::index::NoIndices;
 use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
 use balaklava_gpu::{Device, Vector};
 
+#[derive(Copy, Clone)]
+struct Vertex {
+    position: [f32; 3]
+}
+
+implement_vertex!(Vertex, position);
+
+impl From<&Vector> for Vertex {
+    fn from(vector: &Vector) -> Self {
+        return Vertex {
+            position: [vector[0], vector[1], vector[3]]
+        }
+    }
+}
+
 pub struct Program {
     inner_program: glium::Program,
-    vertices: Vec<Vector>
+    indices: NoIndices,
+    vertex_buffer: VertexBuffer<Vertex>
 }
 
 pub struct GlDevice {
@@ -40,14 +58,20 @@ impl Device for GlDevice {
         let vertex = std::str::from_utf8(vertex_shader.as_ref()).unwrap();
         let pixel = std::str::from_utf8(pixel_shader.as_ref()).unwrap();
         let program_result = glium::Program::from_source(&self.display, vertex, pixel, None);
+        let vertex: Vec<Vertex> = vertices
+            .iter()
+            .map(|vertice| Vertex::from(vertice)).collect();
+
+        let vertex_buffer_result = VertexBuffer::new(&self.display, vertex.as_ref());
+        let indices = NoIndices(glium::index::PrimitiveType::TrianglesList);
         return Program {
             inner_program: program_result.unwrap(),
-            vertices: vertices
-        }
+            vertex_buffer: vertex_buffer_result.unwrap(),
+            indices
+        };
     }
 
     fn render_program(&mut self, program: &Self::Program) {
-        
         unimplemented!();
     }
 
