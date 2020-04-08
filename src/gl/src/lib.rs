@@ -1,6 +1,6 @@
 extern crate glium;
 
-use glium::{Display};
+use glium::{Display, Frame};
 use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
@@ -12,7 +12,8 @@ pub struct Program {
 }
 
 pub struct GlDevice {
-    display: Display
+    display: Display,
+    frame: Frame
 }
 
 impl GlDevice {
@@ -24,9 +25,10 @@ impl GlDevice {
 
         let display_result = Display::new(window_builder, context_builder, &events_loop);
         let display = display_result.unwrap();
-
+        let frame = display.draw();
         GlDevice{
-            display
+            display,
+            frame,
         }
     }
 }
@@ -45,10 +47,12 @@ impl Device for GlDevice {
     }
 
     fn render_program(&mut self, program: &Self::Program) {
+        
         unimplemented!();
     }
 
     fn flush(&mut self) {
-        unimplemented!();
+        self.frame.set_finish().unwrap();
+        self.frame = self.display.draw();
     }
 }
