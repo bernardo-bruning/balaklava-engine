@@ -6,6 +6,12 @@ pub struct Program {
 
 pub struct GlDevice {}
 
+impl GlDevice {
+    fn new() -> Self {
+        GlDevice{}
+    }
+}
+
 impl Device for GlDevice {
     type Program = Program;
 
