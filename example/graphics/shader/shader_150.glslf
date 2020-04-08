@@ -1,6 +1,6 @@
 #version 150 core
-out vec4 target;
+out vec4 color;
 
 void main() {
-    target = vec4(1.0, 0.0, 0.0, 1.0);
+    color = vec4(1.0, 0.0, 0.0, 1.0);
 }

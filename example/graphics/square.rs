@@ -1,7 +1,6 @@
 extern crate balaklava;
-use balaklava::{Application, lauch_gfx};
-use balaklava_gfx::config::Config;
-use balaklava_gfx::{GfxDevice};
+use balaklava::{Application, lauch_gl};
+use balaklava_gl::GlDevice;
 use balaklava_gpu::{Device, Vector};
 
 struct Game <D: Device> {
@@ -30,5 +29,5 @@ impl<D: Device> Application<D> for Game<D> {
 }
 
 fn main() {
-    lauch_gfx::<Game<GfxDevice>>(Config::default());
+    lauch_gl::<Game<GlDevice>>();
 }

@@ -10,7 +10,7 @@ use balaklava_gpu::{Device, Vector};
 
 #[derive(Copy, Clone)]
 struct Vertex {
-    position: [f32; 3]
+    position: [f32; 4]
 }
 
 implement_vertex!(Vertex, position);
@@ -18,7 +18,7 @@ implement_vertex!(Vertex, position);
 impl From<&Vector> for Vertex {
     fn from(vector: &Vector) -> Self {
         return Vertex {
-            position: [vector[0], vector[1], vector[3]]
+            position: [vector[0], vector[1], vector[2], 1.0]
         }
     }
 }

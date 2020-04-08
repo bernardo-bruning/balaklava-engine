@@ -4,12 +4,12 @@ use balaklava_gpu::Vector;
 
 gfx_defines!{
     vertex Vertex {
-        position: [f32; 4] = "vertex_position",
+        position: [f32; 4] = "position",
     }
     
     pipeline pipe {
         vbuf: gfx::VertexBuffer<Vertex> = (),
-        out: gfx::RenderTarget<gfx::format::Srgba8> = "target",
+        out: gfx::RenderTarget<gfx::format::Srgba8> = "color",
         depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
     }
 }
