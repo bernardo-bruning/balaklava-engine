@@ -1,5 +1,5 @@
 #[macro_use]
-extern crate glium;
+pub extern crate glium;
 
 use glium::{Display, Frame, VertexBuffer, Surface};
 use glium::index::NoIndices;
