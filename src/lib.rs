@@ -33,6 +33,7 @@ pub fn lauch_gl<A: Application<GlDevice> + 'static>() {
     });
 }
 
+#[deprecated(note="method not supported use lauch_gl")]
 pub fn lauch_gfx<A: Application<GfxDevice>>(config: Config) {
     let mut events_loop = EventsLoop::new();
     let mut device = GfxDevice::new(config, &events_loop);
