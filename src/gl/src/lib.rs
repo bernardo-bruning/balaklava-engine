@@ -71,6 +71,10 @@ impl Device for GlDevice {
         };
     }
 
+    fn create_vertex_buffer(&mut self, _program: &Self::Program, _vertices: Vec<Vector>) {
+        unimplemented!();
+    }
+
     fn render_program(&mut self, program: &Program) {
         self.frame.draw(
             &program.vertex_buffer, 

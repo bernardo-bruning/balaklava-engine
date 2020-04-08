@@ -90,6 +90,10 @@ impl balaklava_gpu::Device for GfxDevice {
             pso: pso.unwrap()
         }
     }
+
+    fn create_vertex_buffer(&mut self, _program: &Self::Program, _vertices: Vec<Vector>) {
+        unimplemented!();
+    }
     
     fn render_program(&mut self, program: &Program) {
         self.encoder.clear(&program.data.out, [0.1, 0.2, 0.3, 1.0]);
