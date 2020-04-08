@@ -51,9 +51,11 @@ impl GlDevice {
     }
 }
 
+pub struct Buffer {}
+
 impl Device for GlDevice {
     type Program = Program;
-
+    type Buffer = Buffer;
     fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Self::Program {
         let vertex = std::str::from_utf8(vertex_shader.as_ref()).unwrap();
         let pixel = std::str::from_utf8(pixel_shader.as_ref()).unwrap();
@@ -71,7 +73,7 @@ impl Device for GlDevice {
         };
     }
 
-    fn create_vertex_buffer(&mut self, _program: &Self::Program, _vertices: Vec<Vector>) {
+    fn create_vertex_buffer(&mut self, _program: &Self::Program, _vertices: Vec<Vector>) -> Self::Buffer {
         unimplemented!();
     }
 

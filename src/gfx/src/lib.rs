@@ -18,6 +18,8 @@ pub struct Program {
     pub pso: gfx::PipelineState<back::Resources, pipeline::pipe::Meta>
 }
 
+pub struct Buffer {}
+
 pub struct GfxDevice {
     window: glutin::GlWindow,
     device: back::Device,
@@ -65,7 +67,7 @@ impl GfxDevice {
 
 impl balaklava_gpu::Device for GfxDevice {
     type Program = Program;
-
+    type Buffer = Buffer; 
     fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Self::Program {
         let (vertex_buffer, slice) = self.factory.create_vertex_buffer_with_slice(&pipeline::as_vertex(vertices), ());
         let pso = self.factory.create_pipeline_simple(
@@ -91,7 +93,7 @@ impl balaklava_gpu::Device for GfxDevice {
         }
     }
 
-    fn create_vertex_buffer(&mut self, _program: &Self::Program, _vertices: Vec<Vector>) {
+    fn create_vertex_buffer(&mut self, _program: &Self::Program, _vertices: Vec<Vector>) -> Self::Buffer {
         unimplemented!();
     }
     
