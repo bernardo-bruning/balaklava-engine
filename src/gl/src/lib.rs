@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate glium;
 
-use glium::{Display, Frame, VertexBuffer};
+use glium::{Display, Frame, VertexBuffer, Surface};
 use glium::index::NoIndices;
 use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
@@ -71,12 +71,19 @@ impl Device for GlDevice {
         };
     }
 
-    fn render_program(&mut self, program: &Self::Program) {
-        unimplemented!();
+    fn render_program(&mut self, program: &Program) {
+        self.frame.draw(
+            &program.vertex_buffer, 
+            &program.indices, 
+            &program.inner_program, 
+            &glium::uniforms::EmptyUniforms, 
+            &Default::default())
+            .unwrap();
     }
 
     fn flush(&mut self) {
         self.frame.set_finish().unwrap();
         self.frame = self.display.draw();
+        self.frame.clear_color(0.1, 0.2, 0.3, 1.0)
     }
 }
