@@ -7,6 +7,8 @@ use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
 use balaklava_gpu::{Device, Vector};
+use std::sync::Arc;
+use std::cell::RefCell;
 
 #[derive(Copy, Clone)]
 struct Vertex {
@@ -23,10 +25,12 @@ impl From<&Vector> for Vertex {
     }
 }
 
+#[derive(Clone)]
+pub struct Buffer (Arc<RefCell<(VertexBuffer<Vertex>, NoIndices)>>);
+
 pub struct Program {
     inner_program: glium::Program,
-    indices: NoIndices,
-    vertex_buffer: VertexBuffer<Vertex>
+    buffer: Buffer
 }
 
 pub struct GlDevice {
@@ -49,9 +53,18 @@ impl GlDevice {
             frame,
         }
     }
-}
 
-pub struct Buffer {}
+    fn create_vertex_buffer(&mut self, vertices: Vec<Vector>) -> Buffer {
+        let vertex: Vec<Vertex> = vertices
+            .iter()
+            .map(|vertice| Vertex::from(vertice)).collect();
+
+        let vertex_buffer_result = VertexBuffer::new(&self.display, vertex.as_ref());
+        let indices = NoIndices(glium::index::PrimitiveType::TrianglesList);
+        let buffer = Buffer(Arc::from(RefCell::from((vertex_buffer_result.unwrap(), indices))));
+        return buffer;
+    }
+}
 
 impl Device for GlDevice {
     type Program = Program;
@@ -60,27 +73,24 @@ impl Device for GlDevice {
         let vertex = std::str::from_utf8(vertex_shader.as_ref()).unwrap();
         let pixel = std::str::from_utf8(pixel_shader.as_ref()).unwrap();
         let program_result = glium::Program::from_source(&self.display, vertex, pixel, None);
-        let vertex: Vec<Vertex> = vertices
-            .iter()
-            .map(|vertice| Vertex::from(vertice)).collect();
-
-        let vertex_buffer_result = VertexBuffer::new(&self.display, vertex.as_ref());
-        let indices = NoIndices(glium::index::PrimitiveType::TrianglesList);
+        let buffer = self.create_vertex_buffer(vertices);
         return Program {
             inner_program: program_result.unwrap(),
-            vertex_buffer: vertex_buffer_result.unwrap(),
-            indices
+            buffer
         };
     }
 
-    fn create_vertex_buffer(&mut self, _program: &Self::Program, _vertices: Vec<Vector>) -> Self::Buffer {
-        unimplemented!();
+    fn create_vertex_buffer(&mut self, program: &mut Self::Program, vertices: Vec<Vector>) -> Self::Buffer {
+        let buffer = self.create_vertex_buffer(vertices);
+        program.buffer = buffer.clone();
+        return buffer;
     }
 
     fn render_program(&mut self, program: &Program) {
+        let buffer = program.buffer.0.as_ref().borrow();
         self.frame.draw(
-            &program.vertex_buffer, 
-            &program.indices, 
+            &buffer.0, 
+            &buffer.1, 
             &program.inner_program, 
             &glium::uniforms::EmptyUniforms, 
             &Default::default())
