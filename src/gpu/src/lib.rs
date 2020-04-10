@@ -1,8 +1,9 @@
 
 extern crate nalgebra;
-use nalgebra::Vector3;
+use nalgebra::{Vector3, Matrix4};
 
 pub type Vector = Vector3<f32>;
+pub type Transform = Matrix4<f32>;
 
 pub trait Device {
     type Program;

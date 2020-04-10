@@ -6,9 +6,8 @@ use glium::index::NoIndices;
 use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
-use balaklava_gpu::{Device, Vector};
-use std::sync::Arc;
-use std::cell::RefCell;
+use balaklava_gpu::{Device, Vector, Transform};
+use std::rc::Rc;
 
 #[derive(Copy, Clone)]
 struct Vertex {
@@ -26,7 +25,19 @@ impl From<&Vector> for Vertex {
 }
 
 #[derive(Clone)]
-pub struct Buffer (Arc<RefCell<(VertexBuffer<Vertex>, NoIndices)>>);
+pub struct Buffer {
+    inner: Rc<VertexBuffer<Vertex>>,
+    indice: NoIndices,
+}
+
+impl Buffer {
+    fn new(buffer: VertexBuffer<Vertex>, indice: NoIndices) -> Self {
+        Buffer { 
+            inner: Rc::from(buffer), 
+            indice: indice
+        }
+    }
+}
 
 pub struct Program {
     inner_program: glium::Program,
@@ -61,8 +72,20 @@ impl GlDevice {
 
         let vertex_buffer_result = VertexBuffer::new(&self.display, vertex.as_ref());
         let indices = NoIndices(glium::index::PrimitiveType::TrianglesList);
-        let buffer = Buffer(Arc::from(RefCell::from((vertex_buffer_result.unwrap(), indices))));
-        return buffer;
+        return Buffer::new(vertex_buffer_result.unwrap(), indices);
+    }
+
+    fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Transform) {
+        let matrix_transform: [[f32; 4]; 4] = transform.into();
+        let uniforms = uniform!{ transform: matrix_transform  };
+        let buffer_borrow = buffer;
+        self.frame.draw(
+            buffer_borrow.inner.as_ref(), 
+            &buffer_borrow.indice, 
+            &program.inner_program, 
+            &uniforms, 
+            &Default::default())
+            .unwrap();
     }
 }
 
@@ -87,14 +110,7 @@ impl Device for GlDevice {
     }
 
     fn render_program(&mut self, program: &Program) {
-        let buffer = program.buffer.0.as_ref().borrow();
-        self.frame.draw(
-            &buffer.0, 
-            &buffer.1, 
-            &program.inner_program, 
-            &glium::uniforms::EmptyUniforms, 
-            &Default::default())
-            .unwrap();
+        self.render_program(program, &program.buffer, Transform::identity());
     }
 
     fn flush(&mut self) {
