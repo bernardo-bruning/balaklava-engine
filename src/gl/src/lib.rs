@@ -74,19 +74,6 @@ impl GlDevice {
         let indices = NoIndices(glium::index::PrimitiveType::TrianglesList);
         return Buffer::new(vertex_buffer_result.unwrap(), indices);
     }
-
-    fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Transform) {
-        let matrix_transform: [[f32; 4]; 4] = transform.into();
-        let uniforms = uniform!{ transform: matrix_transform  };
-        let buffer_borrow = buffer;
-        self.frame.draw(
-            buffer_borrow.inner.as_ref(), 
-            &buffer_borrow.indice, 
-            &program.inner_program, 
-            &uniforms, 
-            &Default::default())
-            .unwrap();
-    }
 }
 
 impl Device for GlDevice {
@@ -109,8 +96,17 @@ impl Device for GlDevice {
         return buffer;
     }
 
-    fn render_program(&mut self, program: &Program) {
-        self.render_program(program, &program.buffer, Transform::identity());
+    fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Transform) {
+        let matrix_transform: [[f32; 4]; 4] = transform.into();
+        let uniforms = uniform!{ transform: matrix_transform  };
+        let buffer_borrow = buffer;
+        self.frame.draw(
+            buffer_borrow.inner.as_ref(), 
+            &buffer_borrow.indice, 
+            &program.inner_program, 
+            &uniforms, 
+            &Default::default())
+            .unwrap();
     }
 
     fn flush(&mut self) {
