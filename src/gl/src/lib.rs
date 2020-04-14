@@ -109,9 +109,9 @@ impl Device for GlDevice {
         return texture
     }
 
-    fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Transform, texture: &Texture2d) {
-        let matrix_transform: [[f32; 4]; 4] = transform.into();
-        let uniforms = uniform!{ transform: matrix_transform, texture: texture  };
+    fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Option<Transform>, texture: Option<&Texture2d>) {
+        let matrix_transform: [[f32; 4]; 4] = transform.unwrap().into();
+        let uniforms = uniform!{ transform: matrix_transform, texture: texture.unwrap()  };
         let buffer_borrow = buffer;
         self.frame.draw(
             buffer_borrow.inner.as_ref(), 
