@@ -102,7 +102,7 @@ impl balaklava_gpu::Device for GfxDevice {
         unimplemented!();
     }
     
-    fn create_texture<R: BufRead+Seek>(&mut self, reader: R) -> Self::Texture {
+    fn create_texture<R: BufRead+Seek>(&mut self, _reader: R) -> Self::Texture {
         unimplemented!();
     }
 
