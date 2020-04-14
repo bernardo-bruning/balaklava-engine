@@ -7,6 +7,7 @@ use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
 use balaklava_gpu::{Device, Vector, Transform};
+use glium::texture::Texture2d;
 use std::io::{BufRead, Seek};
 use std::rc::Rc;
 
@@ -80,7 +81,7 @@ impl GlDevice {
 impl Device for GlDevice {
     type Program = Program;
     type Buffer = Buffer;
-    type Texture = glium::texture::Texture2d;
+    type Texture = Texture2d;
 
     fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Self::Program {
         let vertex = std::str::from_utf8(vertex_shader.as_ref()).unwrap();
@@ -108,9 +109,9 @@ impl Device for GlDevice {
         return texture
     }
 
-    fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Transform, _texture: Self::Texture) {
+    fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Transform, texture: &Texture2d) {
         let matrix_transform: [[f32; 4]; 4] = transform.into();
-        let uniforms = uniform!{ transform: matrix_transform  };
+        let uniforms = uniform!{ transform: matrix_transform, texture: texture  };
         let buffer_borrow = buffer;
         self.frame.draw(
             buffer_borrow.inner.as_ref(), 

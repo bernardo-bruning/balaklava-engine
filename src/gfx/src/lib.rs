@@ -106,7 +106,7 @@ impl balaklava_gpu::Device for GfxDevice {
         unimplemented!();
     }
 
-    fn render_program(&mut self, program: &Program, _buffer: &Buffer, _transform: Transform, _texture: Self::Texture) {
+    fn render_program(&mut self, program: &Program, _buffer: &Buffer, _transform: Transform, _texture: &Self::Texture) {
         self.encoder.clear(&program.data.out, [0.1, 0.2, 0.3, 1.0]);
         self.encoder.clear_depth(&self.depth_view, 1.0);
         self.encoder.draw(&program.slice, &program.pso, &program.data);
