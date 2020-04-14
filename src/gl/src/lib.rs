@@ -42,8 +42,7 @@ impl Buffer {
 }
 
 pub struct Program {
-    inner_program: glium::Program,
-    buffer: Buffer
+    inner_program: glium::Program
 }
 
 pub struct GlDevice {
@@ -83,20 +82,17 @@ impl Device for GlDevice {
     type Buffer = Buffer;
     type Texture = Texture2d;
 
-    fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Self::Program {
+    fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, _vertices: Vec<Vector>) -> Self::Program {
         let vertex = std::str::from_utf8(vertex_shader.as_ref()).unwrap();
         let pixel = std::str::from_utf8(pixel_shader.as_ref()).unwrap();
         let program_result = glium::Program::from_source(&self.display, vertex, pixel, None);
-        let buffer = self.create_vertex_buffer(vertices);
         return Program {
-            inner_program: program_result.unwrap(),
-            buffer
+            inner_program: program_result.unwrap()
         };
     }
 
     fn create_vertex_buffer(&mut self, program: &mut Self::Program, vertices: Vec<Vector>) -> Self::Buffer {
         let buffer = self.create_vertex_buffer(vertices);
-        program.buffer = buffer.clone();
         return buffer;
     }
 
