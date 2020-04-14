@@ -73,7 +73,8 @@ impl balaklava_gpu::Device for GfxDevice {
     type Buffer = Buffer; 
     type Texture = Texture;
 
-    fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Self::Program {
+    fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>) -> Self::Program {
+        let vertices = Vec::new();
         let (vertex_buffer, slice) = self.factory.create_vertex_buffer_with_slice(&pipeline::as_vertex(vertices), ());
         let pso = self.factory.create_pipeline_simple(
             vertex_shader.as_ref(), 
