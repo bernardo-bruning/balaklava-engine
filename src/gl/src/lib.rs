@@ -77,12 +77,10 @@ impl GlDevice {
     }
 }
 
-pub struct Texture{}
-
 impl Device for GlDevice {
     type Program = Program;
     type Buffer = Buffer;
-    type Texture = Texture;
+    type Texture = glium::texture::Texture2d;
 
     fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>, vertices: Vec<Vector>) -> Self::Program {
         let vertex = std::str::from_utf8(vertex_shader.as_ref()).unwrap();
@@ -102,7 +100,12 @@ impl Device for GlDevice {
     }
 
     fn create_texture<R: BufRead+Seek>(&mut self, reader: R) -> Self::Texture {
-        unimplemented!();
+        let image = image::load(reader, image::ImageFormat::Png)
+            .unwrap().to_rgb();
+        let image_dimension = image.dimensions();
+        let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimension);
+        let texture = glium::texture::Texture2d::new(&self.display, image).unwrap();
+        return texture
     }
 
     fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Transform) {
