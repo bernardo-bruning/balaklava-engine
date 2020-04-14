@@ -47,7 +47,8 @@ pub struct Program {
 
 pub struct GlDevice {
     display: Display,
-    frame: Frame
+    frame: Frame,
+    empty_texture: Texture2d
 }
 
 impl GlDevice {
@@ -60,9 +61,11 @@ impl GlDevice {
         let display_result = Display::new(window_builder, context_builder, &events_loop);
         let display = display_result.unwrap();
         let frame = display.draw();
+        let empty_texture = Texture2d::empty(&display, 0, 0).unwrap();
         GlDevice{
             display,
             frame,
+            empty_texture 
         }
     }
 
@@ -88,6 +91,7 @@ impl Device for GlDevice {
         let program_result = glium::Program::from_source(&self.display, vertex, pixel, None);
         return Program {
             inner_program: program_result.unwrap()
+
         };
     }
 
@@ -106,11 +110,16 @@ impl Device for GlDevice {
     }
 
     fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Option<Transform>, texture: Option<&Texture2d>) {
-        let mut transform_mut = transform;
-        if transform_mut.is_none() {
-            transform_mut = Option::Some(Transform::default());
+        let mut transform = transform;
+        let mut texture = texture;
+        if transform.is_none() {
+            transform = Option::Some(Transform::default());
         }
-        let matrix_transform: [[f32; 4]; 4] = transform_mut.unwrap().into();
+
+        if texture.is_none() {
+            texture = Option::Some(&self.empty_texture);
+        }
+        let matrix_transform: [[f32; 4]; 4] = transform.unwrap().into();
         let uniforms = uniform!{ transform: matrix_transform, texture: texture.unwrap()  };
         let buffer_borrow = buffer;
         self.frame.draw(
