@@ -3,7 +3,24 @@ use nalgebra::{Vector3, Matrix4};
 use std::io::{BufRead, Seek};
 
 pub type Vector = Vector3<f32>;
-pub type Transform = Matrix4<f32>;
+
+pub struct Transform {
+    matrix: Matrix4<f32>
+}
+
+impl Into<[[f32; 4]; 4]> for Transform {
+    fn into(self) -> [[f32; 4]; 4] {
+        self.matrix.into()
+    }
+}
+
+impl Default for Transform {
+    fn default() -> Transform {
+        Transform {
+            matrix: Matrix4::<f32>::identity()
+        }
+    }
+}
 
 pub trait Device {
     type Program;
