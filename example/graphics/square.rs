@@ -2,10 +2,12 @@ extern crate balaklava;
 use balaklava::{Application, lauch_gl};
 use balaklava_gl::GlDevice;
 use balaklava_gpu::{Device, Vector};
+use std::io::Cursor;
 
 struct Game <D: Device> {
     program: D::Program,
-    vertices: D::Buffer
+    vertices: D::Buffer,
+    texture: D::Texture
 }
 
 impl<D: Device> Application<D> for Game<D> {
@@ -18,15 +20,17 @@ impl<D: Device> Application<D> for Game<D> {
         vertices.push(Vector::new(1.0, -1.0, 0.0));
         let mut program = device.create_program(vertex_shader.to_vec(), pixel_shader.to_vec());
         let buffer = device.create_vertex_buffer(&mut program, vertices);
-        
+        let texture = device.create_texture(Cursor::new(&include_bytes!("texture.png")[..]));
+
         Game {
-            program,
-            vertices: buffer
+            program: program,
+            vertices: buffer,
+            texture: texture
         }
     }
     
     fn render(&mut self, device: &mut D) {
-        device.render_program(&self.program, &self.vertices, Option::None, Option::None);
+        device.render_program(&self.program, &self.vertices, Option::None, Option::Some(&self.texture));
     }
 }
 

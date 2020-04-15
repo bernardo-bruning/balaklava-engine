@@ -23,7 +23,7 @@ impl From<&Vector> for Vertex {
     fn from(vector: &Vector) -> Self {
         return Vertex {
             position: [vector[0], vector[1], vector[2], 1.0],
-            texture_region: [vector[0], vector[1], 1.0]
+            texture_region: [(vector[0]+1.)/2., (vector[1]+1.)/2., 1.0]
         }
     }
 }
@@ -104,7 +104,7 @@ impl Device for GlDevice {
 
     fn create_texture<R: BufRead+Seek>(&mut self, reader: R) -> Self::Texture {
         let image = image::load(reader, image::ImageFormat::Png)
-            .unwrap().to_rgb();
+            .unwrap().to_rgba();
         let image_dimension = image.dimensions();
         let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimension);
         let texture = glium::texture::Texture2d::new(&self.display, image).unwrap();
