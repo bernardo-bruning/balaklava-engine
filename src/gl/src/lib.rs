@@ -63,7 +63,7 @@ impl GlDevice {
         let display_result = Display::new(window_builder, context_builder, &events_loop);
         let display = display_result.unwrap();
         let frame = display.draw();
-        let empty_texture = Texture2d::empty(&display, 0, 0).unwrap();
+        let empty_texture = Texture2d::empty(&display, 1, 1).unwrap();
         GlDevice{
             display,
             frame,
