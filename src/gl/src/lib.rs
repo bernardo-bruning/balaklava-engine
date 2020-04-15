@@ -122,7 +122,7 @@ impl Device for GlDevice {
             texture = Option::Some(&self.empty_texture);
         }
         let matrix_transform: [[f32; 4]; 4] = transform.unwrap().into();
-        let uniforms = uniform!{ transform: matrix_transform, texture: texture.unwrap()  };
+        let uniforms = uniform!{ transform: matrix_transform, sampler_texture: texture.unwrap()  };
         let buffer_borrow = buffer;
         self.frame.draw(
             buffer_borrow.inner.as_ref(), 
