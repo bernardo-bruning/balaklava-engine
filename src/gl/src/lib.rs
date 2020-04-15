@@ -23,7 +23,7 @@ impl From<&Vector> for Vertex {
     fn from(vector: &Vector) -> Self {
         return Vertex {
             position: [vector[0], vector[1], vector[2], 1.0],
-            texture_region: [0.0, 0.0, 0.0]
+            texture_region: [vector[0], vector[1], 1.0]
         }
     }
 }
