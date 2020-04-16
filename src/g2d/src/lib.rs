@@ -43,10 +43,12 @@ impl <D: Device> Sprite<D> {
 impl <D: Device> From<PathBuf> for Sprite<D> {
     fn from(path: PathBuf) -> Self{
         let mut rect = Vec::new();
-        rect.push(Vector::new(-1.0, 1.0, 0.0));
         rect.push(Vector::new(-1.0, -1.0, 0.0));
         rect.push(Vector::new(1.0, -1.0, 0.0));
         rect.push(Vector::new(1.0, 1.0, 0.0));
+        rect.push(Vector::new(-1.0, 1.0, 0.0));
+        rect.push(Vector::new(1.0, 1.0, 0.0));
+        rect.push(Vector::new(-1.0, -1.0, 0.0));
 
         Sprite::<D>{
             path: path,
