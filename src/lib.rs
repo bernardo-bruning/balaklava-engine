@@ -30,6 +30,7 @@ pub fn lauch_gl<A: Application<GlDevice> + 'static>() {
         }
         app.render(&mut device);
         device.flush();       
+        std::thread::sleep(std::time::Duration::from_millis(1));
     });
 }
 
