@@ -4,13 +4,23 @@ use std::io::{BufRead, Seek};
 
 pub type Vector = Vector3<f32>;
 
+use nalgebra::Orthographic3;
 pub struct Camera {
-    matrix: Matrix4<f32>
+    matrix: Orthographic3<f32>
 }
 
 impl Into<[[f32; 4]; 4]> for Camera {
     fn into(self) -> [[f32;4]; 4] {
-        self.matrix.into()
+        let camera = self.matrix.to_homogeneous();
+        camera.into()
+    }
+}
+
+impl Default for Camera {
+    fn default() -> Self {
+        Camera {
+            matrix: Orthographic3::new(1., 1., 1., 1., 0.1, 100.0)
+        }
     }
 }
 
