@@ -6,7 +6,7 @@ use glium::index::NoIndices;
 use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
-use balaklava_gpu::{Device, Vector, Transform};
+use balaklava_gpu::{Device, Vector, Transform, Camera};
 use glium::texture::Texture2d;
 use std::io::{BufRead, Seek};
 use std::rc::Rc;
@@ -121,7 +121,10 @@ impl Device for GlDevice {
         if texture.is_none() {
             texture = Option::Some(&self.empty_texture);
         }
-        let matrix_transform: [[f32; 4]; 4] = transform.unwrap().into();
+
+        let camera = Camera::default();
+        let transform = camera*transform.unwrap();
+        let matrix_transform: [[f32; 4]; 4] = transform.into();
         let uniforms = uniform!{ transform: matrix_transform, sampler_texture: texture.unwrap()  };
         let buffer_borrow = buffer;
         self.frame.draw(

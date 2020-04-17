@@ -6,6 +6,7 @@ use nalgebra::Orthographic3;
 
 pub type Vector = Vector3<f32>;
 
+#[derive(Debug, Clone)]
 pub struct Camera {
     matrix: Orthographic3<f32>
 }
@@ -29,7 +30,7 @@ impl Into<[[f32; 4]; 4]> for Camera {
 impl Default for Camera {
     fn default() -> Self {
         Camera {
-            matrix: Orthographic3::new(1., 1., 1., 1., 0.1, 100.0)
+            matrix: Orthographic3::new(0., 1., 0., 1., -0.1, 1000.0)
         }
     }
 }
