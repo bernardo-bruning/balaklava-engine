@@ -4,6 +4,16 @@ use std::io::{BufRead, Seek};
 
 pub type Vector = Vector3<f32>;
 
+pub struct Camera {
+    matrix: Matrix4<f32>
+}
+
+impl Into<[[f32; 4]; 4]> for Camera {
+    fn into(self) -> [[f32;4]; 4] {
+        self.matrix.into()
+    }
+}
+
 pub struct Transform {
     matrix: Matrix4<f32>
 }
