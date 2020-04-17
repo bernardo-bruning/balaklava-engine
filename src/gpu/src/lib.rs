@@ -1,12 +1,22 @@
 extern crate nalgebra;
 use nalgebra::{Vector3, Matrix4};
 use std::io::{BufRead, Seek};
+use std::ops::Mul;
+use nalgebra::Orthographic3;
 
 pub type Vector = Vector3<f32>;
 
-use nalgebra::Orthographic3;
 pub struct Camera {
     matrix: Orthographic3<f32>
+}
+
+impl Mul<Transform> for Camera {
+    type Output = Transform;
+    fn mul(self, rhs: Transform) -> Self::Output {
+        Transform {
+            matrix: rhs.matrix * self.matrix.to_homogeneous()
+        }
+    }
 }
 
 impl Into<[[f32; 4]; 4]> for Camera {
