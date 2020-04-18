@@ -7,6 +7,7 @@ use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
 use balaklava_gpu::{Device, Vector, Transform, Camera};
+use balaklava_gpu as gpu;
 use glium::texture::Texture2d;
 use std::io::{BufRead, Seek};
 use std::rc::Rc;
@@ -47,6 +48,16 @@ pub struct Program {
     inner_program: glium::Program
 }
 
+pub struct Texture {
+    inner: Texture2d
+}
+
+impl gpu::Texture for Texture {
+    fn get_dimension() -> Vector {
+        Vector::new(0., 0., 0.)
+    }
+}
+
 pub struct GlDevice {
     display: Display,
     frame: Frame,
@@ -85,7 +96,7 @@ impl GlDevice {
 impl Device for GlDevice {
     type Program = Program;
     type Buffer = Buffer;
-    type Texture = Texture2d;
+    type Texture = Texture;
 
     fn create_program(&mut self, vertex_shader: Vec<u8>, pixel_shader: Vec<u8>) -> Self::Program {
         let vertex = std::str::from_utf8(vertex_shader.as_ref()).unwrap();
@@ -108,24 +119,26 @@ impl Device for GlDevice {
         let image_dimension = image.dimensions();
         let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimension);
         let texture = glium::texture::Texture2d::new(&self.display, image).unwrap();
-        return texture
+        return Texture {
+            inner: texture
+        }
     }
 
-    fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Option<Transform>, texture: Option<&Texture2d>) {
+    fn render_program(&mut self, program: &Program, buffer: &Buffer, transform: Option<Transform>, texture: Option<&Texture>) {
         let mut transform = transform;
-        let mut texture = texture;
         if transform.is_none() {
             transform = Option::Some(Transform::default());
         }
 
-        if texture.is_none() {
-            texture = Option::Some(&self.empty_texture);
-        }
+        let texture = match texture {
+            Some(texture) => &texture.inner,
+            None => &self.empty_texture
+        };
 
         let camera = Camera::default();
         let transform = camera*transform.unwrap();
         let matrix_transform: [[f32; 4]; 4] = transform.into();
-        let uniforms = uniform!{ transform: matrix_transform, sampler_texture: texture.unwrap()  };
+        let uniforms = uniform!{ transform: matrix_transform, sampler_texture: texture };
         let buffer_borrow = buffer;
         self.frame.draw(
             buffer_borrow.inner.as_ref(), 

@@ -68,6 +68,12 @@ impl GfxDevice {
 
 pub struct Texture {}
 
+impl balaklava_gpu::Texture for Texture {
+    fn get_dimension() -> balaklava_gpu::Vector {
+        balaklava_gpu::Vector::new(0., 0., 0.)
+    }
+}
+
 impl balaklava_gpu::Device for GfxDevice {
     type Program = Program;
     type Buffer = Buffer; 
