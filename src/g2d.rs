@@ -1,10 +1,40 @@
 use std::path::PathBuf;
 use balaklava_gpu::Vector;
 use balaklava_gpu::Device;
+#[derive(Debug, Clone)]
+struct Rectangle {
+    a: Vector,
+    b: Vector,
+    c: Vector,
+    d: Vector
+}
+
+impl Default for Rectangle {
+    fn default() -> Self {
+        Self {
+            a: Vector::new(0.0, 0.0, 0.0),
+            b: Vector::new(1.0, 0.0, 0.0),
+            c: Vector::new(1.0, 1.0, 0.0),
+            d: Vector::new(0.0, 1.0, 0.0)
+        }
+    }
+}
+
+impl Into<Vec<Vector>> for Rectangle {
+    fn into(self) -> Vec<Vector> {
+        let mut rect = Vec::new();
+        rect.push(self.a);
+        rect.push(self.b);
+        rect.push(self.c);
+        rect.push(self.d);
+        rect.push(self.c);
+        rect.push(self.a);
+        return rect
+    }
+}
 
 pub struct Sprite<D: Device> {
     path: PathBuf,
-    rect: Vec<Vector>,
     texture: Option<D::Texture>,
     program: Option<D::Program>,
     buffer: Option<D::Buffer>
@@ -28,7 +58,7 @@ impl <D: Device> Sprite<D> {
 
         if self.buffer.is_none() {
             let program = self.program.as_mut().unwrap();
-            let buffer = device.create_vertex_buffer(program, self.rect.clone());
+            let buffer = device.create_vertex_buffer(program, Rectangle::default().into());
             self.buffer = Option::Some(buffer);
         }
 
@@ -48,17 +78,8 @@ impl <D: Device> From<&'_ str> for Sprite<D> {
 
 impl <D: Device> From<PathBuf> for Sprite<D> {
     fn from(path: PathBuf) -> Self{
-        let mut rect = Vec::new();
-        rect.push(Vector::new(0.0, 0.0, 0.0));
-        rect.push(Vector::new(1.0, 0.0, 0.0));
-        rect.push(Vector::new(1.0, 1.0, 0.0));
-        rect.push(Vector::new(0.0, 1.0, 0.0));
-        rect.push(Vector::new(1.0, 1.0, 0.0));
-        rect.push(Vector::new(0.0, 0.0, 0.0));
-
         Sprite::<D>{
             path: path,
-            rect: rect, 
             texture: Option::None,
             program: Option::None,
             buffer: Option::None

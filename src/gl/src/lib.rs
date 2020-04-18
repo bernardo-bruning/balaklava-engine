@@ -53,8 +53,13 @@ pub struct Texture {
 }
 
 impl gpu::Texture for Texture {
-    fn get_dimension() -> Vector {
-        Vector::new(0., 0., 0.)
+    fn get_dimension(&self) -> Vector {
+        let dimensions = self.inner.get_texture_type();
+        match dimensions {
+            glium::texture::Dimensions::Texture2d{ width, height } =>
+                Vector::new(width as f32, height as f32, 0.),
+            _ => Vector::new(0., 0., 0.)
+        }
     }
 }
 

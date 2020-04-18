@@ -7,7 +7,7 @@ use nalgebra::Orthographic3;
 pub type Vector = Vector3<f32>;
 
 pub trait Texture {
-    fn get_dimension() -> Vector;
+    fn get_dimension(&self) -> Vector;
 }
 
 #[derive(Debug, Clone)]
