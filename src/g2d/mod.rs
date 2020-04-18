@@ -40,6 +40,12 @@ impl <D: Device> Sprite<D> {
     }
 }
 
+impl <D: Device> From<&'_ str> for Sprite<D> {
+    fn from<'a>(path: &str) -> Self {
+        Sprite::from(PathBuf::from(path))
+    }
+}
+
 impl <D: Device> From<PathBuf> for Sprite<D> {
     fn from(path: PathBuf) -> Self{
         let mut rect = Vec::new();

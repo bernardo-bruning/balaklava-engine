@@ -3,7 +3,6 @@ use balaklava::{Application, lauch_gl};
 use balaklava::gpu::Device;
 use balaklava::g2d::Sprite;
 use balaklava_gl::GlDevice;
-use std::path::PathBuf;
 
 struct Game <D: Device> {
     sprite: Sprite<D>
@@ -11,7 +10,7 @@ struct Game <D: Device> {
 
 impl<D: Device> Application<D> for Game<D> {
     fn new(_: &mut D) -> Self {
-        let sprite = Sprite::from(PathBuf::from("example/graphics/texture.png"));
+        let sprite = Sprite::from("example/graphics/texture.png");
         Game {
             sprite
         }
