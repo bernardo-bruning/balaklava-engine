@@ -1,8 +1,8 @@
 extern crate balaklava;
 use balaklava::{Application, lauch_gl};
+use balaklava::g2d::Sprite;
 use balaklava_gl::GlDevice;
 use balaklava_gpu::{Device};
-use balaklava_g2d::Sprite;
 use std::path::PathBuf;
 
 struct Game <D: Device> {

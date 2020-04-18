@@ -7,6 +7,8 @@ use balaklava_gfx::config::Config;
 use balaklava_gfx::GfxDevice;
 use balaklava_gfx::glutin::{EventsLoop, Event, WindowEvent};
 
+pub mod g2d;
+
 pub trait Application<D: Device> {
     fn new(device: &mut D) -> Self;
     fn render(&mut self, device: &mut D);
