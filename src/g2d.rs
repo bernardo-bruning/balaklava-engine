@@ -34,6 +34,26 @@ impl Into<Vec<Vector>> for Rectangle {
     }
 }
 
+pub struct Texture {
+    data: Vec<u8>
+}
+
+impl Texture {
+    fn new(path: &PathBuf) -> Self{
+        let content = std::fs::read(path.as_path()).unwrap();
+        Texture {
+            data: content
+        }
+    }
+}
+
+use std::io::Cursor;
+impl Into<Cursor<Vec<u8>>> for Texture {
+    fn into(self) -> Cursor<Vec<u8>> {
+        return std::io::Cursor::new(self.data);
+    }
+}
+
 pub struct Sprite<D: Device> {
     path: PathBuf,
     texture: Option<D::Texture>,
@@ -51,8 +71,8 @@ impl <D: Device> Sprite<D> {
         }
 
         if self.texture.is_none() {
-            let content = std::fs::read(self.path.as_path()).unwrap();
-            let cursor = std::io::Cursor::new(content);
+            let texture = Texture::new(&self.path);
+            let cursor: Cursor<Vec<u8>> = texture.into();
             let texture = device.create_texture(cursor);
             self.texture = Option::Some(texture);
         }
