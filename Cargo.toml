@@ -25,4 +25,5 @@ balaklava_gl = {path = "src/gl", version="0.1"}
 
 [[example]]
 name = "sprite"
+image = "*"
 path = "example/graphics/sprite.rs"
