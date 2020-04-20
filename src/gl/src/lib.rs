@@ -8,7 +8,6 @@ use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
 use balaklava_gpu::{Device, Vector, Transform, Camera};
 use glium::texture::Texture2d;
-use std::io::{BufRead, Seek};
 use std::rc::Rc;
 
 #[derive(Copy, Clone)]
