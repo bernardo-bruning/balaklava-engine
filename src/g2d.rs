@@ -35,6 +35,7 @@ impl Into<Vec<Vector>> for Rectangle {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Texture {
     image: image::RgbaImage
 }
@@ -51,7 +52,7 @@ impl Texture {
         }
     }
 
-    fn dimensions(self) -> Vector {
+    fn dimensions(&self) -> Vector {
         let (x, y) = self.image.dimensions();
         return Vector::new(x as f32, y as f32, 0.);
     }
@@ -81,7 +82,7 @@ impl <D: Device> Sprite<D> {
 
         if self.texture.is_none() {
             let texture = Texture::new(&self.path);
-            let texture = device.create_texture(texture.image.into_raw(), texture.dimensions()  );
+            let texture = device.create_texture(texture.image.clone().into_raw(), texture.dimensions());
             self.texture = Option::Some(texture);
         }
 
