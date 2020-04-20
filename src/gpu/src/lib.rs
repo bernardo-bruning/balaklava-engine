@@ -1,6 +1,5 @@
 extern crate nalgebra;
 use nalgebra::{Vector3, Matrix4};
-use std::io::{BufRead, Seek};
 use std::ops::Mul;
 use nalgebra::Orthographic3;
 
