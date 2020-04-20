@@ -106,11 +106,9 @@ impl Device for GlDevice {
         return buffer;
     }
 
-    fn create_texture<R: BufRead+Seek>(&mut self, reader: R) -> Self::Texture {
-        let image = image::load(reader, image::ImageFormat::Png)
-            .unwrap().to_rgba();
-        let image_dimension = image.dimensions();
-        let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimension);
+    fn create_texture(&mut self, data: Vec<u8>, dimensions: Vector) -> Self::Texture {
+        let dimensions = (dimensions[0] as u32, dimensions[1] as u32);
+        let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&data, dimensions);
         let texture = glium::texture::Texture2d::new(&self.display, image).unwrap();
         return Texture {
             inner: texture

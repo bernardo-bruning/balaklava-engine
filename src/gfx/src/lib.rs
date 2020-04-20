@@ -11,7 +11,6 @@ use glutin::{WindowBuilder};
 use gfx::{Encoder, Device};
 use gfx::traits::FactoryExt;
 use glutin::{ContextBuilder, GlContext};
-use std::io::{BufRead, Seek};
 
 pub struct Program {
     pub data: pipeline::pipe::Data<back::Resources>,
@@ -102,8 +101,8 @@ impl balaklava_gpu::Device for GfxDevice {
     fn create_vertex_buffer(&mut self, _program: &mut Self::Program, _vertices: Vec<Vector>) -> Self::Buffer {
         unimplemented!();
     }
-    
-    fn create_texture<R: BufRead+Seek>(&mut self, _reader: R) -> Self::Texture {
+
+    fn create_texture(&mut self, _data: Vec<u8>, _dimensions: Vector) -> Self::Texture {
         unimplemented!();
     }
 

@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use balaklava_gpu::Vector;
 use balaklava_gpu::Device;
+use std::io::Cursor;
 
 #[derive(Debug, Clone)]
 struct Rectangle {
@@ -49,9 +50,13 @@ impl Texture {
             image
         }
     }
+
+    fn dimensions(self) -> Vector {
+        let (x, y) = self.image.dimensions();
+        return Vector::new(x as f32, y as f32, 0.);
+    }
 }
 
-use std::io::Cursor;
 impl Into<Cursor<Vec<u8>>> for Texture {
     fn into(self) -> Cursor<Vec<u8>> {
         return std::io::Cursor::new(self.image.into_vec());
@@ -76,8 +81,7 @@ impl <D: Device> Sprite<D> {
 
         if self.texture.is_none() {
             let texture = Texture::new(&self.path);
-            let cursor: Cursor<Vec<u8>> = texture.into();
-            let texture = device.create_texture(cursor);
+            let texture = device.create_texture(texture.image.into_raw(), texture.dimensions()  );
             self.texture = Option::Some(texture);
         }
 
