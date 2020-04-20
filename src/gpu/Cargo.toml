@@ -10,4 +10,5 @@ edition = "2018"
 name = "balaklava_gpu"
 
 [dependencies]
+image = "*"
 nalgebra = "0.20.0"
