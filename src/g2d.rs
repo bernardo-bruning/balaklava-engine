@@ -35,14 +35,18 @@ impl Into<Vec<Vector>> for Rectangle {
 }
 
 pub struct Texture {
-    data: Vec<u8>
+    image: image::RgbaImage
 }
 
 impl Texture {
     fn new(path: &PathBuf) -> Self{
         let content = std::fs::read(path.as_path()).unwrap();
+        let cursor = Cursor::new(content);
+        let image = image::load(cursor, image::ImageFormat::Png)
+            .unwrap().to_rgba();
+
         Texture {
-            data: content
+            image
         }
     }
 }
@@ -50,7 +54,7 @@ impl Texture {
 use std::io::Cursor;
 impl Into<Cursor<Vec<u8>>> for Texture {
     fn into(self) -> Cursor<Vec<u8>> {
-        return std::io::Cursor::new(self.data);
+        return std::io::Cursor::new(self.image.into_vec());
     }
 }
 
