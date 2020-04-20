@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use balaklava_gpu::Vector;
 use balaklava_gpu::Device;
+
 #[derive(Debug, Clone)]
 struct Rectangle {
     a: Vector,

@@ -7,7 +7,6 @@ use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
 use balaklava_gpu::{Device, Vector, Transform, Camera};
-use balaklava_gpu as gpu;
 use glium::texture::Texture2d;
 use std::io::{BufRead, Seek};
 use std::rc::Rc;
@@ -50,17 +49,6 @@ pub struct Program {
 
 pub struct Texture {
     inner: Texture2d
-}
-
-impl gpu::Texture for Texture {
-    fn get_dimension(&self) -> Vector {
-        let dimensions = self.inner.get_texture_type();
-        match dimensions {
-            glium::texture::Dimensions::Texture2d{ width, height } =>
-                Vector::new(width as f32, height as f32, 0.),
-            _ => Vector::new(0., 0., 0.)
-        }
-    }
 }
 
 pub struct GlDevice {
