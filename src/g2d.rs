@@ -11,6 +11,17 @@ struct Rectangle {
     d: Vector
 }
 
+impl From<Vector> for Rectangle {
+    fn from(vector: Vector) -> Self {
+        Self {
+            a: Vector::new(0., 0., 0.),
+            b: Vector::new(vector[0], 0., 0.),
+            c: Vector::new(vector[0], vector[1], 0.),
+            d: Vector::new(0., vector[1], 0.)
+        }
+    }
+}
+
 impl Default for Rectangle {
     fn default() -> Self {
         Self {
