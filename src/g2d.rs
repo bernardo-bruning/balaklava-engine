@@ -76,8 +76,7 @@ impl <D:Device> Into<Cursor<Vec<u8>>> for Texture<D> {
 }
 
 pub struct Sprite<D: Device> {
-    path: PathBuf,
-    texture: Option<D::Texture>,
+    texture: Texture<D>,
     program: Option<D::Program>,
     buffer: Option<D::Buffer>
 }
@@ -91,11 +90,7 @@ impl <D: Device> Sprite<D> {
             self.program = Option::Some(program);
         }
 
-        if self.texture.is_none() {
-            let texture = Texture::<D>::new(&self.path);
-            let texture = device.create_texture(texture.image.clone().into_raw(), texture.dimensions());
-            self.texture = Option::Some(texture);
-        }
+        self.texture.bind(device);
 
         if self.buffer.is_none() {
             let program = self.program.as_mut().unwrap();
@@ -108,7 +103,7 @@ impl <D: Device> Sprite<D> {
             self.program.as_ref().unwrap(), 
             self.buffer.as_ref().unwrap(), 
             Option::None,
-            self.texture.as_ref());
+            self.texture.instance.as_ref());
     }
 }
 
@@ -121,8 +116,7 @@ impl <D: Device> From<&'_ str> for Sprite<D> {
 impl <D: Device> From<PathBuf> for Sprite<D> {
     fn from(path: PathBuf) -> Self{
         Sprite::<D>{
-            path: path,
-            texture: Option::None,
+            texture: Texture::new(&path),
             program: Option::None,
             buffer: Option::None
         }
