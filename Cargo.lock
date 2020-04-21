@@ -97,6 +97,7 @@ dependencies = [
  "balaklava_gfx 0.1.0",
  "balaklava_gl 0.1.0",
  "balaklava_gpu 0.1.0",
+ "balaklava_math 0.1.0",
  "env_logger 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.23.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -131,6 +132,13 @@ name = "balaklava_gpu"
 version = "0.1.0"
 dependencies = [
  "image 0.23.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nalgebra 0.20.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "balaklava_math"
+version = "0.1.0"
+dependencies = [
  "nalgebra 0.20.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
