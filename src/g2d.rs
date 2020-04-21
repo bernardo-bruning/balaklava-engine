@@ -106,7 +106,7 @@ impl <D: Device> Sprite<D> {
 
         if self.buffer.is_none() {
             let program = self.program.as_mut().unwrap();
-            let dimension = Rectangle::from(self.texture.dimensions()).into();
+            let dimension = Rectangle::default().into();
             let buffer = device.create_vertex_buffer(program, dimension);
             self.buffer = Option::Some(buffer);
         }

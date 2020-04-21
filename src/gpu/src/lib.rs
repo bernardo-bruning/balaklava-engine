@@ -14,7 +14,7 @@ impl Mul<Transform> for Camera {
     type Output = Transform;
     fn mul(self, rhs: Transform) -> Self::Output {
         Transform {
-            matrix: rhs.matrix * self.matrix.to_homogeneous()
+            matrix: self.matrix.to_homogeneous() * rhs.matrix
         }
     }
 }
@@ -23,6 +23,15 @@ impl Into<[[f32; 4]; 4]> for Camera {
     fn into(self) -> [[f32;4]; 4] {
         let camera = self.matrix.to_homogeneous();
         camera.into()
+    }
+}
+
+impl From<(f32, f32)> for Camera {
+    fn from(dimension: (f32, f32)) -> Self {
+        let (width, height) = dimension;
+        Camera {
+            matrix: Orthographic3::new(0., width, 0., height, -0.1, 1000.0)
+        }
     }
 }
 

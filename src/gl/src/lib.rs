@@ -125,7 +125,7 @@ impl Device for GlDevice {
             None => &self.empty_texture
         };
 
-        let camera = Camera::default();
+        let camera = Camera::from((800., 600.));
         let transform = camera*transform.unwrap();
         let matrix_transform: [[f32; 4]; 4] = transform.into();
         let uniforms = uniform!{ transform: matrix_transform, sampler_texture: texture };
