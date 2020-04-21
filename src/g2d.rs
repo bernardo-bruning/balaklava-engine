@@ -36,11 +36,12 @@ impl Into<Vec<Vector>> for Rectangle {
 }
 
 #[derive(Debug, Clone)]
-pub struct Texture {
-    image: image::RgbaImage
+pub struct Texture<D: Device> {
+    image: image::RgbaImage,
+    instance: Option<D::Texture>
 }
 
-impl Texture {
+impl <D: Device> Texture<D> {
     fn new(path: &PathBuf) -> Self{
         let content = std::fs::read(path.as_path()).unwrap();
         let cursor = Cursor::new(content);
@@ -48,7 +49,8 @@ impl Texture {
             .unwrap().to_rgba();
 
         Texture {
-            image
+            image: image,
+            instance: Option::None
         }
     }
 
@@ -56,9 +58,18 @@ impl Texture {
         let (x, y) = self.image.dimensions();
         return Vector::new(x as f32, y as f32, 0.);
     }
+
+    fn bind(&mut self, device: &mut D) {
+        if self.instance.is_some() {
+            return
+        }
+
+        let instance = device.create_texture(self.image.clone().into_raw(), self.dimensions());
+        self.instance = Option::Some(instance);
+    }
 }
 
-impl Into<Cursor<Vec<u8>>> for Texture {
+impl <D:Device> Into<Cursor<Vec<u8>>> for Texture<D> {
     fn into(self) -> Cursor<Vec<u8>> {
         return std::io::Cursor::new(self.image.into_vec());
     }
@@ -81,14 +92,15 @@ impl <D: Device> Sprite<D> {
         }
 
         if self.texture.is_none() {
-            let texture = Texture::new(&self.path);
+            let texture = Texture::<D>::new(&self.path);
             let texture = device.create_texture(texture.image.clone().into_raw(), texture.dimensions());
             self.texture = Option::Some(texture);
         }
 
         if self.buffer.is_none() {
             let program = self.program.as_mut().unwrap();
-            let buffer = device.create_vertex_buffer(program, Rectangle::default().into());
+            let dimension = Rectangle::default().into();
+            let buffer = device.create_vertex_buffer(program, dimension);
             self.buffer = Option::Some(buffer);
         }
 
