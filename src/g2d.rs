@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use balaklava_gpu::Vector;
+use balaklava_gpu::Transform;
 use balaklava_gpu::Device;
 use std::io::Cursor;
 
@@ -113,7 +114,7 @@ impl <D: Device> Sprite<D> {
         device.render_program(
             self.program.as_ref().unwrap(), 
             self.buffer.as_ref().unwrap(), 
-            Option::None,
+            Option::Some(Transform::from(self.texture.dimensions())),
             self.texture.instance.as_ref());
     }
 }

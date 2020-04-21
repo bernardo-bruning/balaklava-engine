@@ -38,6 +38,15 @@ pub struct Transform {
     matrix: Matrix4<f32>
 }
 
+impl From<Vector> for Transform {
+    fn from(vector: Vector) -> Self {
+        let matrix = Matrix4::<f32>::new_nonuniform_scaling(&vector);
+        Transform {
+            matrix: matrix
+        }
+    }
+}
+
 impl Into<[[f32; 4]; 4]> for Transform {
     fn into(self) -> [[f32; 4]; 4] {
         self.matrix.into()
