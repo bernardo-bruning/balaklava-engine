@@ -50,6 +50,7 @@ impl Into<Vec<Vector>> for Rectangle {
 #[derive(Debug, Clone)]
 pub struct Texture<D: Device> {
     image: image::RgbaImage,
+    transform: Transform,
     instance: Option<D::Texture>
 }
 
@@ -59,9 +60,10 @@ impl <D: Device> Texture<D> {
         let cursor = Cursor::new(content);
         let image = image::load(cursor, image::ImageFormat::Png)
             .unwrap().to_rgba();
-
+        let (x, y) = image.dimensions();
         Texture {
             image: image,
+            transform: Transform::from(Vector::new(x as f32, y as f32, 0.)),
             instance: Option::None
         }
     }
@@ -114,7 +116,7 @@ impl <D: Device> Sprite<D> {
         device.render_program(
             self.program.as_ref().unwrap(), 
             self.buffer.as_ref().unwrap(), 
-            Option::Some(Transform::from(self.texture.dimensions())),
+            Option::Some(self.texture.transform.clone()),
             self.texture.instance.as_ref());
     }
 }
@@ -129,6 +131,7 @@ impl <D: Device> From<PathBuf> for Sprite<D> {
     fn from(path: PathBuf) -> Self{
         Sprite::<D>{
             texture: Texture::new(&path),
+            transform: Transform::default(),
             program: Option::None,
             buffer: Option::None
         }

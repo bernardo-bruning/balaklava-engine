@@ -43,6 +43,7 @@ impl Default for Camera {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Transform {
     matrix: Matrix4<f32>
 }
