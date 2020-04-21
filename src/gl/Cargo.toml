@@ -14,3 +14,4 @@ image = "*"
 glium = "0.27.0"
 nalgebra = "0.20.0"
 balaklava_gpu = {path="../../src/gpu", version="0.1" }
+balaklava_math = {path="../../src/math", version="0.1" }

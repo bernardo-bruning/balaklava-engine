@@ -12,3 +12,4 @@ name = "balaklava_gpu"
 [dependencies]
 image = "*"
 nalgebra = "0.20.0"
+balaklava_math = {path = "../math", version="0.1"}

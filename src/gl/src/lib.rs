@@ -6,7 +6,8 @@ use glium::index::NoIndices;
 use glium::glutin::ContextBuilder;
 use glium::glutin::window::WindowBuilder;
 use glium::glutin::event_loop::EventLoop;
-use balaklava_gpu::{Device, Vector, Transform, Camera};
+use balaklava_math::{Vector, Transform, Camera};
+use balaklava_gpu::{Device};
 use glium::texture::Texture2d;
 use std::rc::Rc;
 

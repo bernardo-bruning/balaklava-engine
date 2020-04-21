@@ -111,6 +111,7 @@ name = "balaklava_gfx"
 version = "0.1.0"
 dependencies = [
  "balaklava_gpu 0.1.0",
+ "balaklava_math 0.1.0",
  "gfx 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx_device_gl 0.15.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx_window_glutin 0.20.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -122,6 +123,7 @@ name = "balaklava_gl"
 version = "0.1.0"
 dependencies = [
  "balaklava_gpu 0.1.0",
+ "balaklava_math 0.1.0",
  "glium 0.27.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.23.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "nalgebra 0.20.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -131,6 +133,7 @@ dependencies = [
 name = "balaklava_gpu"
 version = "0.1.0"
 dependencies = [
+ "balaklava_math 0.1.0",
  "image 0.23.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "nalgebra 0.20.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

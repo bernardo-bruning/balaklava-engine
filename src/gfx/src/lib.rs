@@ -6,7 +6,7 @@ pub mod config;
 mod pipeline;
 
 pub use glutin;
-use balaklava_gpu::{Vector, Transform};
+use balaklava_math::{Vector, Transform};
 use glutin::{WindowBuilder};
 use gfx::{Encoder, Device};
 use gfx::traits::FactoryExt;

@@ -1,13 +1,13 @@
 #[allow(unused_imports)]
 use balaklava_gl::glium::{glutin, Surface};
-
+pub use balaklava_gpu as gpu;
+pub use balaklava_math as math;
 use balaklava_gpu::Device;
 use balaklava_gl::GlDevice;
 use balaklava_gfx::config::Config;
 use balaklava_gfx::GfxDevice;
 use balaklava_gfx::glutin::{EventsLoop, Event, WindowEvent};
-pub use balaklava_gpu as gpu;
-pub use balaklava_gpu::Vector;
+pub use math::Vector;
 
 pub mod g2d;
 

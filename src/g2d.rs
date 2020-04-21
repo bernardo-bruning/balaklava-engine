@@ -1,6 +1,6 @@
 use std::path::PathBuf;
-use balaklava_gpu::Vector;
-use balaklava_gpu::Transform;
+use balaklava_math::Vector;
+use balaklava_math::Transform;
 use balaklava_gpu::Device;
 use std::io::Cursor;
 
