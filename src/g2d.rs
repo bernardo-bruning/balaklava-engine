@@ -91,7 +91,7 @@ impl <D:Device> Into<Cursor<Vec<u8>>> for Texture<D> {
 
 pub struct Sprite<D: Device> {
     texture: Texture<D>,
-    transform: Transform,
+    pub transform: Transform,
     program: Option<D::Program>,
     buffer: Option<D::Buffer>
 }

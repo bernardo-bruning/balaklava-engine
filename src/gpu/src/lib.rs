@@ -48,6 +48,13 @@ pub struct Transform {
     matrix: Matrix4<f32>
 }
 
+impl Transform {
+    pub fn translate(&mut self, vector: Vector){
+        let translation = Matrix4::new_translation(&vector);
+        self.matrix = self.matrix*translation;
+    }
+}
+
 impl From<Vector> for Transform {
     fn from(vector: Vector) -> Self {
         let matrix = Matrix4::<f32>::new_nonuniform_scaling(&vector);

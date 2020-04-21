@@ -7,6 +7,7 @@ use balaklava_gfx::config::Config;
 use balaklava_gfx::GfxDevice;
 use balaklava_gfx::glutin::{EventsLoop, Event, WindowEvent};
 pub use balaklava_gpu as gpu;
+pub use balaklava_gpu::Vector;
 
 pub mod g2d;
 
