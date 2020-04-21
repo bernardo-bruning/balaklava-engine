@@ -57,6 +57,15 @@ impl From<Vector> for Transform {
     }
 }
 
+impl Mul<&Transform> for &Transform {
+    type Output = Transform;
+    fn mul(self, rhs: &Transform) -> Self::Output {
+        Transform {
+            matrix: self.matrix * rhs.matrix
+        }
+    }
+}
+
 impl Into<[[f32; 4]; 4]> for Transform {
     fn into(self) -> [[f32; 4]; 4] {
         self.matrix.into()

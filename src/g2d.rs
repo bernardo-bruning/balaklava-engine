@@ -91,6 +91,7 @@ impl <D:Device> Into<Cursor<Vec<u8>>> for Texture<D> {
 
 pub struct Sprite<D: Device> {
     texture: Texture<D>,
+    transform: Transform,
     program: Option<D::Program>,
     buffer: Option<D::Buffer>
 }
@@ -116,7 +117,7 @@ impl <D: Device> Sprite<D> {
         device.render_program(
             self.program.as_ref().unwrap(), 
             self.buffer.as_ref().unwrap(), 
-            Option::Some(self.texture.transform.clone()),
+            Option::Some(&self.transform*&self.texture.transform),
             self.texture.instance.as_ref());
     }
 }
