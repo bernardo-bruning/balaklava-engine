@@ -1,4 +1,3 @@
-extern crate nalgebra;
 use balaklava_math::{Vector, Transform};
 
 pub trait Device {
