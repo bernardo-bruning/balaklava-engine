@@ -90,18 +90,24 @@ impl Default for Transform {
 #[derive(Debug, Clone)]
 pub struct Rectangle {
     a: Vector,
-    b: Vector,
-    c: Vector,
-    d: Vector
+    b: Vector
 }
 
 impl From<Vector> for Rectangle {
     fn from(vector: Vector) -> Self {
         Self {
             a: Vector::new(0., 0., 0.),
-            b: Vector::new(vector[0], 0., 0.),
-            c: Vector::new(vector[0], vector[1], 0.),
-            d: Vector::new(0., vector[1], 0.)
+            b: vector
+        }
+    }
+}
+
+impl From<(Vector, Vector)> for Rectangle {
+    fn from(vectors: (Vector, Vector)) -> Self {
+        let (a, b) = vectors;
+        Self {
+            a: a,
+            b: b
         }
     }
 }
@@ -110,9 +116,7 @@ impl Default for Rectangle {
     fn default() -> Self {
         Self {
             a: Vector::new(0.0, 0.0, 0.0),
-            b: Vector::new(1.0, 0.0, 0.0),
-            c: Vector::new(1.0, 1.0, 0.0),
-            d: Vector::new(0.0, 1.0, 0.0)
+            b: Vector::new(1.0, 1.0, 0.0),
         }
     }
 }
@@ -121,11 +125,11 @@ impl Into<Vec<Vector>> for Rectangle {
     fn into(self) -> Vec<Vector> {
         let mut rect = Vec::new();
         rect.push(self.a);
+        rect.push(Vector::new(self.a[0], self.b[1], 0.));
         rect.push(self.b);
-        rect.push(self.c);
-        rect.push(self.d);
-        rect.push(self.c);
         rect.push(self.a);
+        rect.push(Vector::new(self.b[0], self.a[1], 0.));
+        rect.push(self.b);
         return rect
     }
 }
