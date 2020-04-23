@@ -86,3 +86,46 @@ impl Default for Transform {
         }
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct Rectangle {
+    a: Vector,
+    b: Vector,
+    c: Vector,
+    d: Vector
+}
+
+impl From<Vector> for Rectangle {
+    fn from(vector: Vector) -> Self {
+        Self {
+            a: Vector::new(0., 0., 0.),
+            b: Vector::new(vector[0], 0., 0.),
+            c: Vector::new(vector[0], vector[1], 0.),
+            d: Vector::new(0., vector[1], 0.)
+        }
+    }
+}
+
+impl Default for Rectangle {
+    fn default() -> Self {
+        Self {
+            a: Vector::new(0.0, 0.0, 0.0),
+            b: Vector::new(1.0, 0.0, 0.0),
+            c: Vector::new(1.0, 1.0, 0.0),
+            d: Vector::new(0.0, 1.0, 0.0)
+        }
+    }
+}
+
+impl Into<Vec<Vector>> for Rectangle {
+    fn into(self) -> Vec<Vector> {
+        let mut rect = Vec::new();
+        rect.push(self.a);
+        rect.push(self.b);
+        rect.push(self.c);
+        rect.push(self.d);
+        rect.push(self.c);
+        rect.push(self.a);
+        return rect
+    }
+}
