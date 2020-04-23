@@ -7,7 +7,8 @@ use std::io::Cursor;
 pub struct Texture<D: Device> {
     image: image::RgbaImage,
     transform: Transform,
-    instance: Option<D::Texture>
+    instance: Option<D::Texture>,
+    buffer: Option<D::Buffer>
 }
 
 impl <D: Device> Texture<D> {
@@ -20,7 +21,8 @@ impl <D: Device> Texture<D> {
         Texture {
             image: image,
             transform: Transform::from(Vector::new(x as f32, y as f32, 0.)),
-            instance: Option::None
+            instance: Option::None,
+            buffer: Option::None
         }
     }
 
@@ -29,13 +31,17 @@ impl <D: Device> Texture<D> {
         return Vector::new(x as f32, y as f32, 0.);
     }
 
-    fn bind(&mut self, device: &mut D) {
-        if self.instance.is_some() {
-            return
+    fn bind(&mut self, device: &mut D, program: &mut D::Program) {
+        if self.instance.is_none() {
+            let instance = device.create_texture(self.image.clone().into_raw(), self.dimensions());
+            self.instance = Option::Some(instance);
         }
 
-        let instance = device.create_texture(self.image.clone().into_raw(), self.dimensions());
-        self.instance = Option::Some(instance);
+        if self.buffer.is_none() {
+            let dimension = Rectangle::default().into();
+            let buffer = device.create_vertex_buffer(program, dimension);
+            self.buffer = Option::Some(buffer);
+        }
     }
 }
 
@@ -47,9 +53,8 @@ impl <D:Device> Into<Cursor<Vec<u8>>> for Texture<D> {
 
 pub struct Sprite<D: Device> {
     texture: Texture<D>,
-    pub transform: Transform,
     program: Option<D::Program>,
-    buffer: Option<D::Buffer>
+    pub transform: Transform
 }
 
 impl <D: Device> Sprite<D> {
@@ -61,18 +66,11 @@ impl <D: Device> Sprite<D> {
             self.program = Option::Some(program);
         }
 
-        self.texture.bind(device);
-
-        if self.buffer.is_none() {
-            let program = self.program.as_mut().unwrap();
-            let dimension = Rectangle::default().into();
-            let buffer = device.create_vertex_buffer(program, dimension);
-            self.buffer = Option::Some(buffer);
-        }
+        self.texture.bind(device, self.program.as_mut().unwrap());
 
         device.render_program(
             self.program.as_ref().unwrap(), 
-            self.buffer.as_ref().unwrap(), 
+            self.texture.buffer.as_ref().unwrap(), 
             Option::Some(&self.transform*&self.texture.transform),
             self.texture.instance.as_ref());
     }
@@ -90,7 +88,6 @@ impl <D: Device> From<PathBuf> for Sprite<D> {
             texture: Texture::new(&path),
             transform: Transform::default(),
             program: Option::None,
-            buffer: Option::None
         }
     }
 }
