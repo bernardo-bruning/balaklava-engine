@@ -3,6 +3,11 @@ use balaklava_math::{Vector, Transform, Rectangle};
 use balaklava_gpu::Device;
 use std::io::Cursor;
 
+pub struct TextureRegion {
+    u: f32,
+    v: f32
+}
+
 #[derive(Debug, Clone)]
 pub struct Texture<D: Device> {
     image: image::RgbaImage,
