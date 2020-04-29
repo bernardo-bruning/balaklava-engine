@@ -98,7 +98,7 @@ impl balaklava_gpu::Device for GfxDevice {
         }
     }
 
-    fn create_vertex_buffer(&mut self, _program: &mut Self::Program, _vertices: Vec<Vector>) -> Self::Buffer {
+    fn create_vertex_buffer(&mut self, _: &mut Self::Program, _: Vec<Vector>, _: Option<Vec<Vector>>) -> Self::Buffer {
         unimplemented!();
     }
 

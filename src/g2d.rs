@@ -40,7 +40,7 @@ impl <D: Device> Texture<D> {
 
         if self.buffer.is_none() {
             let dimension = Rectangle::default().into();
-            let buffer = device.create_vertex_buffer(program, dimension);
+            let buffer = device.create_vertex_buffer(program, dimension, Option::None);
             self.buffer = Option::Some(buffer);
         }
     }

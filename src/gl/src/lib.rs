@@ -111,9 +111,11 @@ impl Device for GlDevice {
         };
     }
 
-    fn create_vertex_buffer(&mut self, _program: &mut Self::Program, vertices: Vec<Vector>) -> Self::Buffer {
-        let texture_region = vertices.clone();
-        let buffer = self.create_vertex_buffer(vertices, texture_region);
+    fn create_vertex_buffer(&mut self, _program: &mut Self::Program, vertices: Vec<Vector>, mut texture_region: Option<Vec<Vector>>) -> Self::Buffer {
+        if texture_region.is_none() {
+            texture_region = Option::Some(vertices.clone());
+        }
+        let buffer = self.create_vertex_buffer(vertices, texture_region.unwrap());
         return buffer;
     }
 
