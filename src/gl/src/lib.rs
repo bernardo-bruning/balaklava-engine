@@ -75,7 +75,7 @@ impl GlDevice {
         }
     }
 
-    fn create_vertex_buffer_with_texture_region(&mut self, vertices: Vec<Vector>, texture_regions: Vec<Vector>) -> Buffer {
+    fn create_vertex_buffer(&mut self, vertices: Vec<Vector>, texture_regions: Vec<Vector>) -> Buffer {
         let vertex: Vec<Vertex> = vertices
             .iter()
             .map(|vertice| Vertex::from(vertice)).collect();
@@ -93,11 +93,6 @@ impl GlDevice {
         let vertex_buffer_result = VertexBuffer::new(&self.display, vertex.as_ref());
         let indices = NoIndices(glium::index::PrimitiveType::TrianglesList);
         return Buffer::new(vertex_buffer_result.unwrap(), indices);
-    }
-
-    fn create_vertex_buffer(&mut self, vertices: Vec<Vector>) -> Buffer {
-        let texture_regions = vertices.clone();
-        return self.create_vertex_buffer_with_texture_region(vertices, texture_regions);
     }
 }
 
@@ -117,7 +112,8 @@ impl Device for GlDevice {
     }
 
     fn create_vertex_buffer(&mut self, _program: &mut Self::Program, vertices: Vec<Vector>) -> Self::Buffer {
-        let buffer = self.create_vertex_buffer(vertices);
+        let texture_region = vertices.clone();
+        let buffer = self.create_vertex_buffer(vertices, texture_region);
         return buffer;
     }
 
