@@ -12,30 +12,41 @@ use glium::texture::Texture2d;
 use std::rc::Rc;
 
 #[derive(Copy, Clone)]
-struct Vertex {
+struct GlVertex {
     position: [f32; 4],
     texture_region: [f32; 3]
 }
 
-implement_vertex!(Vertex, position, texture_region);
+implement_vertex!(GlVertex, position, texture_region);
 
-impl From<&Vector> for Vertex {
+impl From<&Vector> for GlVertex {
     fn from(vector: &Vector) -> Self {
-        return Vertex {
+        return GlVertex {
             position: [vector[0], vector[1], vector[2], 1.0],
             texture_region: [vector[0], vector[1], 1.0]
         }
     }
 }
 
+impl From<&(Vector, Option<Vector>)> for GlVertex {
+    fn from(vector: &(Vector, Option<Vector>)) -> Self {
+        let position = vector.0;
+        let texture_region = vector.1.unwrap_or(vector.0);
+        return GlVertex {
+            position: [position[0], position[1], position[2], 1.0],
+            texture_region: [texture_region[0], texture_region[1], 1.0]
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct Buffer {
-    inner: Rc<VertexBuffer<Vertex>>,
+    inner: Rc<VertexBuffer<GlVertex>>,
     indice: NoIndices,
 }
 
 impl Buffer {
-    fn new(buffer: VertexBuffer<Vertex>, indice: NoIndices) -> Self {
+    fn new(buffer: VertexBuffer<GlVertex>, indice: NoIndices) -> Self {
         Buffer { 
             inner: Rc::from(buffer), 
             indice: indice
@@ -75,24 +86,22 @@ impl GlDevice {
         }
     }
 
-    fn create_vertex_buffer(&mut self, vertices: Vec<Vector>, texture_regions: Vec<Vector>) -> Buffer {
-        let vertex: Vec<Vertex> = vertices
-            .iter()
-            .map(|vertice| Vertex::from(vertice)).collect();
-        
-            let vertex: Vec<Vertex> = texture_regions
-                .iter()
-                .enumerate()
-                .map(|(i, texture_region)| 
-                    Vertex {
-                        position: vertex[i].position,
-                        texture_region: [texture_region[0], texture_region[1], 1.0]
-                    }
-                ).collect();
-
-        let vertex_buffer_result = VertexBuffer::new(&self.display, vertex.as_ref());
+    fn create_vertex_buffer_with_vertex(&mut self, vertex: Vec<(Vector, Option<Vector>)>) -> Buffer {
+        let gl_vertex: Vec<GlVertex> = vertex.iter()
+            .map(|vertex| GlVertex::from(vertex))
+            .collect();
+        let vertex_buffer_result = VertexBuffer::new(&self.display, &gl_vertex);
         let indices = NoIndices(glium::index::PrimitiveType::TrianglesList);
         return Buffer::new(vertex_buffer_result.unwrap(), indices);
+    }
+
+    fn create_vertex_buffer(&mut self, vertices: Vec<Vector>, texture_regions: Vec<Vector>) -> Buffer {        
+        let vertex: Vec<(Vector, Option<Vector>)> = texture_regions
+            .iter()
+            .enumerate()
+            .map(|(i, texture_region)| (vertices[i], Option::Some(texture_region.clone())))
+            .collect();
+        return self.create_vertex_buffer_with_vertex(vertex);
     }
 }
 

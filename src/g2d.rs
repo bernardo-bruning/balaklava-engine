@@ -37,12 +37,6 @@ impl <D: Device> Texture<D> {
             let instance = device.create_texture(self.image.clone().into_raw(), self.dimensions());
             self.instance = Option::Some(instance);
         }
-
-        if self.buffer.is_none() {
-            let dimension = Rectangle::default().into();
-            let buffer = device.create_vertex_buffer(program, dimension, Option::None);
-            self.buffer = Option::Some(buffer);
-        }
     }
 }
 
@@ -55,11 +49,12 @@ impl <D:Device> Into<Cursor<Vec<u8>>> for Texture<D> {
 pub struct Sprite<D: Device> {
     texture: Texture<D>,
     program: Option<D::Program>,
+    buffer: Option<D::Buffer>,
     pub transform: Transform
 }
 
 impl <D: Device> Sprite<D> {
-    pub fn render(&mut self, device: &mut D) {
+    fn bind(&mut self, device: &mut D) {
         if self.program.is_none() {
             let vertex_shader = include_bytes!("sharder/shader_150.glslv");
             let pixel_shader = include_bytes!("sharder/shader_150.glslf");
@@ -67,11 +62,21 @@ impl <D: Device> Sprite<D> {
             self.program = Option::Some(program);
         }
 
+        if self.buffer.is_none() {
+            let dimension = Rectangle::default().into();
+            let buffer = device.create_vertex_buffer(self.program.as_mut().unwrap(), dimension, Option::None);
+            self.buffer = Option::Some(buffer);
+        }
+
         self.texture.bind(device, self.program.as_mut().unwrap());
+    }
+
+    pub fn render(&mut self, device: &mut D) {
+        self.bind(device);
 
         device.render_program(
             self.program.as_ref().unwrap(), 
-            self.texture.buffer.as_ref().unwrap(), 
+            self.buffer.as_ref().unwrap(), 
             Option::Some(&self.transform*&self.texture.transform),
             self.texture.instance.as_ref());
     }
@@ -89,6 +94,7 @@ impl <D: Device> From<PathBuf> for Sprite<D> {
             texture: Texture::new(&path),
             transform: Transform::default(),
             program: Option::None,
+            buffer: Option::None,
         }
     }
 }
