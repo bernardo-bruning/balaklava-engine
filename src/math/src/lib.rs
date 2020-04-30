@@ -73,6 +73,17 @@ impl Mul<&Transform> for &Transform {
     }
 }
 
+impl Mul<&Vector> for &Transform {
+    type Output = Transform;
+
+    fn mul(self, rhs: &Vector) -> Self::Output {
+        let matrix = Matrix4::<f32>::new_nonuniform_scaling(&rhs).transpose();
+        Transform {
+            matrix: self.matrix * matrix
+        }
+    }
+}
+
 impl Into<[[f32; 4]; 4]> for Transform {
     fn into(self) -> [[f32; 4]; 4] {
         self.matrix.into()
@@ -118,6 +129,12 @@ impl Default for Rectangle {
             a: Vector::new(0.0, 0.0, 0.0),
             b: Vector::new(1.0, 1.0, 0.0),
         }
+    }
+}
+
+impl Into<Vector> for Rectangle {
+    fn into(self) -> Vector {
+        return self.b - self.a
     }
 }
 

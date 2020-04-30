@@ -40,14 +40,60 @@ impl <D: Device> Texture<D> {
     }
 }
 
+impl <D:Device> From<&str> for Texture<D> {
+    fn from(path: &str) -> Self {
+        Texture::new(&PathBuf::from(path))
+    }
+}
+
 impl <D:Device> Into<Cursor<Vec<u8>>> for Texture<D> {
     fn into(self) -> Cursor<Vec<u8>> {
         return std::io::Cursor::new(self.image.into_vec());
     }
 }
 
-pub struct Sprite<D: Device> {
+pub struct TextureRegion<D: Device> {
     texture: Texture<D>,
+    region: Rectangle,
+    buffer: Option<D::Buffer>
+}
+
+impl <D: Device> TextureRegion<D> {
+    pub fn new(texture: Texture<D>, rectangle: Rectangle) -> Self {
+        return TextureRegion {
+            texture,
+            region: rectangle,
+            buffer: Option::None,
+        }
+    }
+
+    pub fn render(&mut self, device: &mut D, program: &mut D::Program, transform: Transform) {
+        if self.buffer.is_none() {
+            let dimension = Rectangle::default().into();
+            let region = self.region.clone();
+            let buffer = device.create_vertex_buffer(program, dimension, Option::Some(region.into()));
+            self.buffer = Option::Some(buffer);
+        }
+
+        self.texture.bind(device);
+        let region: Vector = self.region.clone().into();
+        device.render_program(
+            program, 
+            self.buffer.as_ref().unwrap(), 
+            Option::Some(&transform*&(&self.texture.transform*&region)),
+            self.texture.instance.as_ref());
+    }
+}
+
+impl <D:Device> From<&PathBuf> for TextureRegion<D> {
+    fn from(path: &PathBuf) -> Self{
+        let texture = Texture::new(path);
+        TextureRegion::new(texture, Rectangle::from(Vector::new(1., 1., 1.)))
+    }
+}
+
+pub struct Sprite<D: Device> {
+    texture: TextureRegion<D>,
     program: Option<D::Program>,
     buffer: Option<D::Buffer>,
     pub transform: Transform
@@ -64,21 +110,15 @@ impl <D: Device> Sprite<D> {
 
         if self.buffer.is_none() {
             let dimension = Rectangle::default().into();
-            let buffer = device.create_vertex_buffer(self.program.as_mut().unwrap(), dimension, Option::None);
+            let region = Rectangle::from(Vector::new(0.5, 0.5, 1.0));
+            let buffer = device.create_vertex_buffer(self.program.as_mut().unwrap(), dimension, Option::Some(region.into()));
             self.buffer = Option::Some(buffer);
         }
-
-        self.texture.bind(device);
     }
 
     pub fn render(&mut self, device: &mut D) {
         self.bind(device);
-
-        device.render_program(
-            self.program.as_ref().unwrap(), 
-            self.buffer.as_ref().unwrap(), 
-            Option::Some(&self.transform*&self.texture.transform),
-            self.texture.instance.as_ref());
+        self.texture.render(device, self.program.as_mut().unwrap(), self.transform.clone());
     }
 }
 
@@ -91,7 +131,18 @@ impl <D: Device> From<&'_ str> for Sprite<D> {
 impl <D: Device> From<PathBuf> for Sprite<D> {
     fn from(path: PathBuf) -> Self{
         Sprite::<D>{
-            texture: Texture::new(&path),
+            texture: TextureRegion::from(&path),
+            transform: Transform::default(),
+            program: Option::None,
+            buffer: Option::None,
+        }
+    }
+}
+
+impl <D: Device> From<TextureRegion<D>> for Sprite<D> {
+    fn from(texture_region: TextureRegion<D>) -> Self {
+        Sprite::<D>{
+            texture: texture_region,
             transform: Transform::default(),
             program: Option::None,
             buffer: Option::None,
