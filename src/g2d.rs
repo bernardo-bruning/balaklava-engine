@@ -68,7 +68,7 @@ impl <D: Device> Sprite<D> {
             self.buffer = Option::Some(buffer);
         }
 
-        self.texture.bind(device, self.program.as_mut().unwrap());
+        self.texture.bind(device);
     }
 
     pub fn render(&mut self, device: &mut D) {
