@@ -32,7 +32,7 @@ impl <D: Device> Texture<D> {
         return Vector::new(x as f32, y as f32, 0.);
     }
 
-    fn bind(&mut self, device: &mut D, program: &mut D::Program) {
+    fn bind(&mut self, device: &mut D) {
         if self.instance.is_none() {
             let instance = device.create_texture(self.image.clone().into_raw(), self.dimensions());
             self.instance = Option::Some(instance);
