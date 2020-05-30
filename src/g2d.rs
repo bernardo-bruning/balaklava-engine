@@ -2,7 +2,8 @@ use std::path::PathBuf;
 use balaklava_math::{Vector, Transform, Rectangle};
 use balaklava_gpu::Device;
 use std::io::Cursor;
-
+use std::rc::Rc;
+use std::cell::RefCell;
 
 #[derive(Debug, Clone)]
 pub struct Texture<D: Device> {
@@ -53,7 +54,7 @@ impl <D:Device> Into<Cursor<Vec<u8>>> for Texture<D> {
 }
 
 pub struct TextureRegion<D: Device> {
-    texture: Texture<D>,
+    texture: Rc<RefCell<Texture<D>>>,
     region: Rectangle,
     buffer: Option<D::Buffer>
 }
@@ -61,7 +62,7 @@ pub struct TextureRegion<D: Device> {
 impl <D: Device> TextureRegion<D> {
     pub fn new(texture: Texture<D>, rectangle: Rectangle) -> Self {
         return TextureRegion {
-            texture,
+            texture: Rc::from(RefCell::from(texture)),
             region: rectangle,
             buffer: Option::None,
         }
@@ -75,13 +76,13 @@ impl <D: Device> TextureRegion<D> {
             self.buffer = Option::Some(buffer);
         }
 
-        self.texture.bind(device);
+        &self.texture.borrow_mut().bind(device);
         let region: Vector = self.region.clone().into();
         device.render_program(
             program, 
             self.buffer.as_ref().unwrap(), 
-            Option::Some(&transform*&(&self.texture.transform*&region)),
-            self.texture.instance.as_ref());
+            Option::Some(&transform*&(&self.texture.borrow().transform*&region)),
+            self.texture.borrow().instance.as_ref());
     }
 }
 
