@@ -76,8 +76,8 @@ impl Animation {
 }
 
 pub struct TextureRegion<D: Device> {
-    texture: Rc<RefCell<Texture<D>>>,
     region: Rectangle,
+    texture: Rc<RefCell<Texture<D>>>,
     buffer: Option<D::Buffer>
 }
 
@@ -105,6 +105,15 @@ impl <D: Device> TextureRegion<D> {
             self.buffer.as_ref().unwrap(), 
             Option::Some(&transform*&(&self.texture.borrow().transform*&region)),
             self.texture.borrow().instance.as_ref());
+    }
+
+    pub fn set_region(&mut self, x:f32, y:f32, u:f32, v: f32) {
+        self.region = Rectangle::from(
+            (
+                Vector::new(x, y, 0.0), 
+                Vector::new(u, v, 0.0)
+            )
+        )
     }
 }
 
