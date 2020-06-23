@@ -59,6 +59,12 @@ pub struct Animation {
 }
 
 impl Animation {
+    pub fn new(size: Vector) -> Animation {
+        Animation {
+            size,
+            current_step: 0
+        }
+    }
     pub fn next_region(&mut self, step: u32) -> Rectangle {
         self.current_step += step;
         let offset_step = self.current_step + 1;
