@@ -54,19 +54,20 @@ impl <D:Device> Into<Cursor<Vec<u8>>> for Texture<D> {
 }
 
 pub struct Animation {
-    size: Vector
+    size: Vector,
+    current_step: u32
 }
 
 impl Animation {
-    pub fn next_region(self, step: u32) -> Rectangle {
-        let offset_step = step + 1;
-        let position = Vector::new(self.size[0]*(step as f32), self.size[1]*(step as f32), 0.0);    
+    pub fn next_region(&mut self, step: u32) -> Rectangle {
+        self.current_step += step;
+        let offset_step = self.current_step + 1;
+        let position = Vector::new(self.size[0]*(self.current_step as f32), self.size[1]*(self.current_step as f32), 0.0);    
         let offset_position = Vector::new(self.size[0]*(offset_step as f32), self.size[1]*(offset_step as f32), 0.0);
 
         return Rectangle::from((position, offset_position));
     }
 }
-
 
 pub struct TextureRegion<D: Device> {
     texture: Rc<RefCell<Texture<D>>>,
