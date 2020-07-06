@@ -159,3 +159,63 @@ impl <D: Device> From<TextureRegion<D>> for Sprite<D> {
         }
     }
 }
+
+use std::time::Duration;
+use std::collections::BTreeMap;
+
+pub struct Animation<T:Clone> {
+    started: Option<Duration>,
+    states: BTreeMap<Duration, T>,
+    last_state: T
+}
+
+impl<T:Clone> Animation<T> {
+    pub fn new(initial_state: T) -> Self {
+        let states = BTreeMap::new();
+        return Animation{ 
+            started: Option::None,
+            states:  states, 
+            last_state: initial_state 
+        };
+    }
+
+    pub fn insert(&mut self, moment: Duration, state: T) {
+        self.states.insert(moment, state);
+    }
+
+    pub fn start(&mut self, moment: Duration) {
+        self.started = Option::Some(moment);
+    }
+
+    pub fn next(&mut self, moment: Duration) -> &T{
+        if self.started.is_none() {
+            self.start(moment)
+        }
+
+        let started = self.started.unwrap();
+        let current_opt = self.states.get(&(moment- started));
+        self.last_state = current_opt.unwrap_or(&self.last_state).clone();
+        return &self.last_state;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::g2d::Animation;
+    use std::time::Duration;
+
+    #[test]
+    fn test_animation() {
+        let mut animation = Animation::<i32>::new(1);
+        animation.insert(Duration::from_secs(1), 2);
+        animation.insert(Duration::from_secs(2), 3);
+        animation.insert(Duration::from_secs(3), 4);
+
+        animation.start(Duration::from_secs(2));
+        assert_eq!(&1, animation.next(Duration::from_secs(2)));
+        assert_eq!(&2, animation.next(Duration::from_secs(3)));
+        assert_eq!(&3, animation.next(Duration::from_secs(4)));
+        assert_eq!(&4, animation.next(Duration::from_secs(5)));
+        assert_eq!(&4, animation.next(Duration::from_secs(6)));
+    }
+}
