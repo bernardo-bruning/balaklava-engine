@@ -161,26 +161,40 @@ impl <D: Device> From<TextureRegion<D>> for Sprite<D> {
 }
 
 use std::time::Duration;
-use std::collections::BTreeMap;
+
+#[derive(Debug)]
+struct StateMoment<T> {
+    moment: Duration,
+    state: T
+}
 
 pub struct Animation<T:Clone> {
     started: Option<Duration>,
-    states: BTreeMap<Duration, T>,
-    last_state: T
+    states: Vec<StateMoment<T>>,
+    duration: Duration,
+    last_index: usize
 }
 
+pub const ETERNITY: Duration = Duration::from_secs(u64::MAX);
+
 impl<T:Clone> Animation<T> {
-    pub fn new(initial_state: T) -> Self {
-        let states = BTreeMap::new();
-        return Animation{ 
+    pub fn new_with_duration(initial_state: T, duration: Duration) -> Self {
+        let mut states = Vec::new();
+        states.push(StateMoment{ moment: Duration::from_secs(0), state: initial_state});
+        Self {
+            duration: duration,
             started: Option::None,
             states:  states, 
-            last_state: initial_state 
-        };
+            last_index: 0 
+        }
+    }
+
+    pub fn new(initial_state: T) -> Self {
+        return Self::new_with_duration(initial_state, ETERNITY);
     }
 
     pub fn insert(&mut self, moment: Duration, state: T) {
-        self.states.insert(moment, state);
+        self.states.push(StateMoment{ moment, state});
     }
 
     pub fn start(&mut self, moment: Duration) {
@@ -193,9 +207,22 @@ impl<T:Clone> Animation<T> {
         }
 
         let started = self.started.unwrap();
-        let current_opt = self.states.get(&(moment- started));
-        self.last_state = current_opt.unwrap_or(&self.last_state).clone();
-        return &self.last_state;
+        let mut state_moment = moment - started;
+        if state_moment >= self.duration {
+            state_moment -= self.duration;
+            self.last_index = 0;
+        }
+        
+        for index in self.last_index..self.states.len() {
+            let moment = self.states.get(index).unwrap().moment;
+            if state_moment < moment {
+                break
+            }
+
+            self.last_index = index;
+        }
+
+        return &self.states.get(self.last_index).unwrap().state;
     }
 }
 
@@ -206,7 +233,7 @@ mod tests {
 
     #[test]
     fn test_animation() {
-        let mut animation = Animation::<i32>::new(1);
+        let mut animation = Animation::<i32>::new_with_duration(1, Duration::from_secs(5));
         animation.insert(Duration::from_secs(1), 2);
         animation.insert(Duration::from_secs(2), 3);
         animation.insert(Duration::from_secs(3), 4);
@@ -214,8 +241,8 @@ mod tests {
         animation.start(Duration::from_secs(2));
         assert_eq!(&1, animation.next(Duration::from_secs(2)));
         assert_eq!(&2, animation.next(Duration::from_secs(3)));
-        assert_eq!(&3, animation.next(Duration::from_secs(4)));
         assert_eq!(&4, animation.next(Duration::from_secs(5)));
         assert_eq!(&4, animation.next(Duration::from_secs(6)));
+        assert_eq!(&1, animation.next(Duration::from_secs(7)));
     }
 }
